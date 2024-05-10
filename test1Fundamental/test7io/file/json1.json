@@ -1,0 +1,22 @@
+[
+ {
+  "name": "zhan",
+  "age": 18,
+  "id": 2022,
+  "hobby": [
+   "minecraft",
+   "study"
+  ]
+ },
+ {
+  "name": "xiao",
+  "age": 17,
+  "habit": "f",
+  "marry": false
+ },
+ {
+  "name": "duo",
+  "id": 2025,
+  "marry": true
+ }
+]
