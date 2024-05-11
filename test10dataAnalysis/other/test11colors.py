@@ -23,3 +23,17 @@ cmaps = [('Perceptually Uniform Sequential', [
             'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
             'gist_ncar'])]
 """
+import matplotlib
+import matplotlib.pyplot as plt
+from objprint import objprint
+
+print(matplotlib.colormaps)
+
+print(matplotlib.colormaps["rainbow"])
+objprint(matplotlib.colormaps["rainbow"])
+
+color = matplotlib.colormaps["rainbow"](0.5)
+print(color)
+
+color2 = matplotlib.colormaps["rainbow"](258)
+print(color2)

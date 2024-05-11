@@ -1,11 +1,9 @@
 """
 柱状图
 
-command1:
 x = ['A', 'B', 'C', 'D', 'E']
 y = [300, 234, 561, 272, 105]
 生成柱状图，x为地名，y单位为m，表头为柱状图,柱状图矩形上标出y值
-command2:
 将该图柱子改为绿色，柱子边缘改为红色，宽度改为50，柱子填充为斜线，背景色改为灰色，表头字体改为楷体，刻度改为白色
 """
 import matplotlib.pyplot as plt
@@ -39,5 +37,4 @@ ax.tick_params(axis='both', colors='white')
 plt.xlabel('地名')
 plt.ylabel('高度（m）')
 
-# 显示图形
 plt.show()
