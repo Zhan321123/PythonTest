@@ -8,7 +8,7 @@ print(os.getcwd())
 # listdir获取模块所在文件夹的所有文件和文件夹
 l = os.listdir()
 print(l)
-print(os.listdir('../test0'))
+print(os.listdir('../test1'))
 
 # mkdir创建文件夹，只能创建单层文件夹
 # 如果有该文件夹，则会异常
