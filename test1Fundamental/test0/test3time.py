@@ -1,9 +1,12 @@
 """
-测试time
+time.
+    time()返回当前时间戳，自1970年1月1日0时0分0秒起至现在的秒数
+    ctime()返回当前时间戳，格式为：weekday month day hour:minute:second year
 """
 import time
-# 现在的时间戳
+
 print(time.time())
+print(time.ctime())
 
 # 本地时间对象，class=struct_time
 t = time.localtime()
@@ -24,4 +27,3 @@ print(time.strptime('2024 year 2 month 16 day','%Y year %m month %d day'))
 # 线程休息秒数
 time.sleep(5)
 print('thread sleep 5 seconds')
-

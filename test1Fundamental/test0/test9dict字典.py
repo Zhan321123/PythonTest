@@ -62,21 +62,6 @@ print(a)
 print(a.popitem())
 print(a)
 
-# 序列解包
-(a, b, c) = (1, 2, 3)
-a, b, c = 1, 2, 3
-[a, b, c] = [a, b, c]
-a, b, c = (1, 2, 3)
-(a, b, c) = 1, 2, 3
-(a, b, c) = [1, 2, 3]
-print(a, b, c)
-# 字典的解包
-(a, b, c) = d
-print(a, b, c)
-(a, b, c) = d.items()
-print(a, b, c)
-(a, b, c) = d.values()
-print(a, b, c)
 
 # 集合，相当于字典的key，不可重复，无顺序
 a = {1, 2, 3}
@@ -106,3 +91,27 @@ print(a.intersection(b))
 # 差集
 print(a - b)
 print(a.difference(b))
+
+print("-----------应用--------------")
+import random
+
+for i in range(1, 10):
+    for j in range(1, i + 1):
+        print(str(j) + '*' + str(i) + '=' + str(i * j), end='\t')
+    print()
+
+# for下的else，当for语句没有被break时，else会执行
+for i in range(1, 11):
+    a = random.randint(0, 10)
+    print(a)
+    if a == 5:
+        break
+else:
+    print('successful')
+
+#
+a = ('zhan', 'xiao', 'duo')
+b = (12, 34, 56)
+c = ('male', 'female', 'male')
+for i, j, k in zip(a, b, c):
+    print('{0}-{1}-{2}'.format(i,j,k))

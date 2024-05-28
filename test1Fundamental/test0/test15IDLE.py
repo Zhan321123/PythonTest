@@ -1,5 +1,5 @@
 """
-原生IDLE和pycharm产生的差别
+原生IDLE和Pycharm产生的差别
 
 1 整数池
 IDLE中只会存储一定数量的整数

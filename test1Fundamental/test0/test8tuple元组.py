@@ -56,3 +56,16 @@ print(a)
 # 生成器只能用一次，第二次就成了
 b = tuple(s)
 print(b)
+
+print("------------1--------")
+a = tuple((x, y) for x in range(1, 17) for y in range(1, 17))
+for i in range(0, 16):
+    for j in range(0, 16):
+        print(a[i * 16 + j], end='  \t')
+    print()
+
+print("----------句子的词频统计----------")
+s = 'x am zhan, x love minecraft, x dont love family'
+a = tuple(s)
+char={i:s.count(i) for i in s}
+print(char)
