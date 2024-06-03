@@ -3,21 +3,29 @@ from pandas import Timestamp
 from lib.excel import *
 import pandas as pd
 
-# 读取CSV文件
-df = pd.read_csv('雨量+水情整合.csv',encoding='gbk')
+class RawData:
+    es = range(1,46)
+    def __init__(self):
+        self.data = {}
+        for i in self.es:
+            self.data[i] = np.array(SingleSheetExcelReader(f'rain/{i}.xlsx').getSheet())
 
-# 遍历每一列
-for col in df.columns:
-    # 检查列的数据类型
-    if np.issubdtype(df[col].dtype, np.number):  # 如果是数值类型
-        # 直接替换0为100
-        df[col] = df[col].replace(0, '')
-    else:  # 对于非数值类型（可能是字符串）
-        try:
-            # 尝试转换为浮点数并替换
-            df[col] = pd.to_numeric(df[col], errors='coerce').replace(0.0, '')
-        except Exception as e:
-            print(f"Column {col} could not be converted to numeric: {e}")
-            continue
+        self.outData = {}
+        self.timeSet = self.getTimeSet()
 
-df.to_csv('output.csv', index=False, encoding='gbk')
+    def getTimeSet(self):
+        dates = []
+        for i in self.es:
+            dates += list(self.data[i].T[0])
+        dates = list(set(dates))
+        dates.sort()
+        return dates
+
+    def createRawOutputData(self):
+        first,last = self.timeSet[0],self.timeSet[-1]
+
+
+    def __str__(self):
+        return str(self.data)
+
+rawData = RawData()
