@@ -39,7 +39,7 @@ class RawData:
         timeStart = t.ceil('h')
         timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h')
         timeSeries = pd.date_range(start=timeStart, end=timeEnd, freq='h')
-        v = h / len(timeSeries)
+        v = h / len(timeSeries) # TODO 暂时先平均分配每小时雨量
         values = {}
         for i in timeSeries:
             values[i] = v
