@@ -25,7 +25,7 @@ class RawData:
         dates.sort()
         return dates
 
-    def _createRawOutputData(self):  # 创建输出数据，数据全为0
+    def _createRawOutputData(self):  # 创建输出数据，数据全为0，后面加上
         first, last = self.timeSet[0], self.timeSet[-1]
         last = last.floor('h')
         last += pd.Timedelta(hours=5)
@@ -35,7 +35,7 @@ class RawData:
             outData[i] = [0] * len(self.es)
         return outData
 
-    def __splitValue(self, t: Timestamp, h: float, duration: float):
+    def __splitValue(self, t: Timestamp, h: float, duration: float):  # 处理持续时间
         timeStart = t.ceil('h')
         timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h')
         timeSeries = pd.date_range(start=timeStart, end=timeEnd, freq='h')
@@ -45,7 +45,7 @@ class RawData:
             values[i] = v
         return values
 
-    def __dealDuration(self):
+    def __dealDuration(self):  # 处理时长，即去掉持续的时间
         for i in self.es:
             d = self.data[i]
             for j in range(len(d.getColumnData(1))):
@@ -56,7 +56,7 @@ class RawData:
                 for k in values:
                     self.outputData[k][i - 1] += values[k]
 
-    def SimplyOutputData(self):
+    def SimplyOutputData(self):  # 简化数据，去掉整行都为0的数据
         simpleOutputData = []
         sites = map(lambda ii: f"{ii}th step", self.es)
         simpleOutputData.append(['time'] + list(sites))
