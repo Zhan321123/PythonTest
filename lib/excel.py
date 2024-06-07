@@ -14,10 +14,10 @@ class ExcelReader:
     file: str
     workbook: dict[str, DataFrame]
 
-    def __init__(self, file: str,header=None):
-        self._excelChange(file,header)
+    def __init__(self, file: str, header=None):
+        self._excelChange(file, header)
 
-    def _excelChange(self, file: str,header=None):
+    def _excelChange(self, file: str, header=None):
         if file.endswith('.xlsx'):
             self.file = file
             self.workbook = pandas.read_excel(self.file, sheet_name=None, header=header)
@@ -78,13 +78,15 @@ class ExcelReader:
         else:
             return self.workbook[sheet].iloc[:, column - 1].to_list()
 
+
 class SingleSheetExcelReader(ExcelReader):
     """
     this excel only has one sheet
     if not,will only read the first sheet
     """
-    def __init__(self, file: str,header=0):
-        super().__init__(file,header)
+
+    def __init__(self, file: str, header=0):
+        super().__init__(file, header)
         self.sheet = self.getSheetNames()[0]
 
     def getSheet(self):
@@ -93,7 +95,7 @@ class SingleSheetExcelReader(ExcelReader):
     def getCell(self, row: int, column: int):
         return super().getCell(self.sheet, row, column)
 
-    def getRowData(self,  row: int):
+    def getRowData(self, row: int):
         return super().getRowData(self.sheet, row)
 
     def getColumnData(self, column: int):
@@ -187,12 +189,24 @@ class CsvWriter:
         self.data = data
 
     def write(self, file: str = 'output.csv'):
-        pandas.DataFrame(self.data).to_csv(file,header=False,index=False)
+        pandas.DataFrame(self.data).to_csv(file, header=False, index=False)
+
 
 class CsvReader:
-    def __init__(self, file: str):
+    def __init__(self, file: str,header=None):
         self.file = file
-        self.data = pandas.read_csv(self.file, header=None,encoding='gbk',low_memory=False).to_numpy().tolist()
+        self.csv = pandas.read_csv(file, header=header, encoding='gbk', low_memory=False)
+        self.rawData = self.csv.to_numpy().tolist()
+
+    def getData(self):
+        return self.rawData
+
+    def getColumn(self, column: int):
+        return self.csv.iloc[:, column - 1].to_list()
+
+    def getColumns(self, columns: list[int]):
+        d = [self.csv.iloc[:, i - 1].to_list() for i in columns]
+        return [list(i) for i in zip(*d)]  # 转置
 
 
 if __name__ == '__main__':
@@ -202,5 +216,7 @@ if __name__ == '__main__':
     # print(reader.getColumnData('P', 1))
     # print(type(reader.getSheet('P')))
     # print(reader.getColumnData('Q1', 3))
-    s = CsvWriter([[1, 2, 3], [4, 5, 6]])
-    s.write()
+    # s = CsvReader('../test0/雨量45+水情AB整合2.0.csv')
+    # print(s.getColumns([1, -3, -2, -1, 0]))
+
+    pass

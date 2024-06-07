@@ -1,19 +1,25 @@
+import numpy as np
 import pandas as pd
-from objprint import objprint
+from scipy.interpolate import CubicSpline
+import matplotlib.pyplot as plt
 
-t = pd.Timestamp('2021-01-01 09:30:50')
-x = 0.3
+# 假设你有一个包含时间（时间戳或序号）和值的DataFrame
+from lib.excel import CsvReader, CsvWriter
 
-print(t.time().hour)
-print(t.time().minute)
-print(t.time().second)
+data = np.array(CsvReader('雨量45+水情AB整合2.0.csv', header=0).getColumns([1, 0]))  # 示例数据，第一列时间，第二列值
 
-duration = 0.5
+# 转换为DataFrame，并将时间列转换为datetime类型
+df = pd.DataFrame(data, columns=['time', 'value'])
 
-timeStart = t.ceil('h')
-timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h')
+df['value'] = df['value'].astype(float)
 
-print(timeStart,timeEnd)
+df['value'] = df['value'].replace(0, np.nan)
 
-# 获取相差的小时
-print((timeEnd-timeStart).total_seconds()/3600)
+df['time'] = pd.to_datetime(df['time'])
+
+# 使用PCHIP插值方法进行插值，它适用于非等距时间序列
+df['value'] = df['value'].interpolate(method='nearest')
+
+# 显示插值后的数据
+w = CsvWriter(df.to_numpy().tolist())
+w.write()
