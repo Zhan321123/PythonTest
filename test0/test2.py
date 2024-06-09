@@ -28,6 +28,7 @@ class RawData:
         self.outputData = self._createRawOutputData()
         self.__dealDuration()
         self.__dealWater()
+        self.__interpolateWater()
 
     def _getTimeSet(self):  # 获取持续时间集合
         dates = []
@@ -48,7 +49,7 @@ class RawData:
         self.timeSeries = pd.date_range(start=self.first, end=self.last, freq='h')
         outData = {}
         for i in self.timeSeries:
-            outData[i] = [0] * (len(self.es)+4)
+            outData[i] = [0] * 49
         return outData
 
     def __splitValue(self, t: Timestamp, h: float, duration: float):  # 处理持续时间
@@ -76,60 +77,64 @@ class RawData:
         dates = self.waterData['A'].getColumnData(1)
         for i in dates:
             j = i.ceil('h')
-            l,f = list(self.waterData['A'].getRowData(dates.index(i) + 1)[1:])
-            self.outputData[j][45]=l
-            self.outputData[j][46]=f
+            l, f = list(self.waterData['A'].getRowData(dates.index(i) + 1)[1:])
+            self.outputData[j][45] = l
+            self.outputData[j][46] = f
         dates = self.waterData['B'].getColumnData(1)
         for i in dates:
             j = i.ceil('h')
             l, f = list(self.waterData['B'].getRowData(dates.index(i) + 1)[1:])
-            self.outputData[j][47]=l
-            self.outputData[j][48]=f
+            self.outputData[j][47] = l
+            self.outputData[j][48] = f
+
+    def __interpolateWater(self):  # 插补水情数据
+        d = np.array(list(self.outputData.values())).T
+        waterData = d[len(self.es):len(self.es) + 4]
+        deal = []
+        for i in waterData:
+            l = pd.DataFrame(i).astype(float)
+            l = l.replace(0, np.nan)
+            l = l.interpolate(method='nearest')
+            deal.append([float(j) for j in l.values])
+        print(deal)
+        for index,i in enumerate(self.timeSeries):
+            self.outputData[i][45] = deal[0][index]
+            self.outputData[i][46] = deal[1][index]
+            self.outputData[i][47] = deal[2][index]
+            self.outputData[i][48] = deal[3][index]
 
     def generateRainCurve(self):
         sum1 = {}  # y-m-d h:00:00 对应所有站的雨量
-        for index, i in enumerate(self.outputData):
-            sum1[index] = sum(self.outputData[i])
-        sum2 = {}  # y-m-d 对应所有站的雨量
-        dateRange = 24
-        for i in range(len(sum1) // dateRange):
-            v = 0
-            for j in range(dateRange):
-                try:
-                    v += sum1[i + j]
-                except IndexError:
-                    break
-            sum2[i] = v
-        sum3 = {}
-        for i in range(len(sum2)):
-            v = 0
-            for j in range(-4, 5):
-                if i + j >= 0 & i + j < len(sum2) - 1:
-                    print(i + j, sum2[i + j])
-                    v += sum2[i + j]
-            sum3[self.timeSeries[i * dateRange]] = v
-        self.generateCurve(sum3)
+        for i in self.outputData:
+            sum1[i] = sum(self.outputData[i])
 
-    def generateCurve(self, data: dict):
+        sum2 = {}  # y-m-d 对应所有站的雨量
+        dateRange = 24 * 30
+        for i in range(len(sum1) // dateRange):
+            sum2[self.timeSeries[i * dateRange]] = sum(list(sum1.values())[i * dateRange:(i + 1) * dateRange])
+        print(sum2)
+        self._generateCurve(sum2)
+
+    def _generateCurve(self, data: dict):
         fig = plt.figure()
         plt.plot(list(data.keys()), list(data.values()))
         plt.ylim(0)
         plt.xlim(self.first, self.last)
         plt.gca().xaxis.set_major_formatter(DateFormatter('%yy-%mm-%dd'))
-        plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=50))
-        plt.xticks(rotation=45)
+        plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=100))
+        plt.xticks(rotation=90)
         plt.grid()
         plt.show()
 
     def SimplyOutputData(self):  # 简化数据，去掉整行都为0的数据
         simpleOutputData = []
         sites = map(lambda ii: f"{ii}stop", self.es)
-        simpleOutputData.append(['time'] + list(sites) + ['A-Level','A-Flow', 'B-Level', 'B-Flow'])
+        simpleOutputData.append(['time'] + list(sites) + ['A-Level', 'A-Flow', 'B-Level', 'B-Flow'])
         for i in self.outputData:
-            if sum(self.outputData[i]) == 0:
-                continue
-            else:
-                simpleOutputData.append([i,] + self.outputData[i])
+            # if sum(self.outputData[i]) == 0:
+            #     continue
+            # else:
+            simpleOutputData.append([i, ] + self.outputData[i])
         return simpleOutputData
 
     def write(self):  # 写入csv文件
