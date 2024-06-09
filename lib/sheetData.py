@@ -23,7 +23,7 @@ class LineData:
         npData = np.array(self.data)
         x = np.nonzero(npData)[0]
         y = npData[x]
-        f = interp1d(x, y, kind='nearest', bounds_error=False, fill_value=(y[0], y[-1]))
+        f = interp1d(x, y, kind='linear', bounds_error=False, fill_value=(y[0], y[-1]))
         x = np.arange(len(npData))
         self.data = f(x).tolist()
         return self
@@ -132,11 +132,12 @@ class SheetData:
 
 
 if __name__ == '__main__':
-    # l = LineData([0, 2, 0, 0, 5, 0, 0, 0, 9, 0])
-    # l.interpolateByNearest()
+    l = LineData([0, 2, 0, 0, 5, 0, 0, 18, 9, 0])
+    l.interpolate0()
+    print(l)
     # d = SheetData(SingleSheetExcelReader("../test0/rain/1.xlsx").getSheet())
     # print(d.T())
-    d = SheetData([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    d.insertCol([100, 200, 300], 4)
-    print(d)
+    # d = SheetData([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    # d.insertCol([100, 200, 300], 4)
+    # print(d)
     pass
