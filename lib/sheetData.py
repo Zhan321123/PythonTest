@@ -132,12 +132,7 @@ class SheetData:
 
 
 if __name__ == '__main__':
-    l = LineData([0, 2, 0, 0, 5, 0, 0, 18, 9, 0])
+    l = LineData([0, 1, 11, 0, 0, 11, 0, 0, 0, 55, 9, 0, 3, 0])
     l.interpolate0()
     print(l)
-    # d = SheetData(SingleSheetExcelReader("../test0/rain/1.xlsx").getSheet())
-    # print(d.T())
-    # d = SheetData([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    # d.insertCol([100, 200, 300], 4)
-    # print(d)
     pass

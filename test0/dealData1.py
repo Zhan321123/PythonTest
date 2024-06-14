@@ -27,8 +27,8 @@ class RawData:
         self.timeSet = self._getTimeSet()
         self.outputData = self._createRawOutputData()
         self.__dealDuration()
-        self.__dealWater()
-        self.__interpolateWater()
+        # self.__dealWater()
+        # self.__interpolateWater()
 
     def _getTimeSet(self):  # 获取持续时间集合
         dates = []
@@ -56,10 +56,10 @@ class RawData:
         timeStart = t.ceil('h')
         timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h')
         timeSeries = pd.date_range(start=timeStart, end=timeEnd, freq='h')
-        v = h / len(timeSeries)  # TODO 暂时先平均分配每小时雨量
+
         values = {}
         for i in timeSeries:
-            values[i] = v
+            values[i] = h / len(timeSeries)  # TODO 暂时先平均分配每小时雨量
         return values
 
     def __dealDuration(self):  # 处理时长，即去掉持续的时间
@@ -97,7 +97,7 @@ class RawData:
             l = l.interpolate(method='nearest')
             deal.append([float(j) for j in l.values])
         print(deal)
-        for index,i in enumerate(self.timeSeries):
+        for index, i in enumerate(self.timeSeries):
             self.outputData[i][45] = deal[0][index]
             self.outputData[i][46] = deal[1][index]
             self.outputData[i][47] = deal[2][index]
@@ -109,7 +109,7 @@ class RawData:
             sum1[i] = sum(self.outputData[i])
 
         sum2 = {}  # y-m-d 对应所有站的雨量
-        dateRange = 24 * 30
+        dateRange = 24 * 1
         for i in range(len(sum1) // dateRange):
             sum2[self.timeSeries[i * dateRange]] = sum(list(sum1.values())[i * dateRange:(i + 1) * dateRange])
         print(sum2)
@@ -146,4 +146,4 @@ class RawData:
 
 
 rawData = RawData()
-rawData.write()
+rawData.generateRainCurve()

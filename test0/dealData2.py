@@ -1,3 +1,10 @@
+"""
+evaporation data, rain data, water data's dealing
+
+please
+    1. put file in dir named "evaporation","rain","water"
+    2.
+"""
 import numpy as np
 import pandas as pd
 from pandas import Timestamp
@@ -57,10 +64,10 @@ class DealWithData:
             timeStart = t.ceil('h')
             timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h')
             timeSeries = pd.date_range(start=timeStart, end=timeEnd, freq='h')
-            v = h / len(timeSeries)  # TODO 暂时先平均分配每小时雨量
+
             values = {}
             for i in timeSeries:
-                values[i] = v
+                values[i] = h / len(timeSeries)  # TODO 暂时先平均分配每小时雨量
             return values
 
         for i in self.rainRange:
@@ -80,15 +87,16 @@ class DealWithData:
         for t, h, q in sheet:
             t = t.ceil('h')
             self.dealData[t]["B-H"] = h
-            self.dealData[t]["B-Q"] = h
+            self.dealData[t]["B-Q"] = q
 
     def __dealEvaporate(self):  # 处理蒸发1-6站数据
-        def __evaporateDivide(y, m, d, h: float):  # 分配每日的蒸发量
-            if h == 0:
+        def __evaporateDivide(yy, mm, dd, hh: float):  # 分配每日的蒸发量
+            if hh == 0:
                 return {}
-            t = Timestamp(year=y, month=m, day=d)
-            v = h / 24  # TODO 暂时先平均分配每日蒸发量
-            return {i: v for i in pd.date_range(start=t, end=t + pd.Timedelta(hours=23), freq='h')}
+            t = Timestamp(year=yy, month=mm, day=dd)
+
+            v = hh / 24  # TODO 暂时先平均分配每日蒸发量
+            return {ii: v for ii in pd.date_range(start=t, end=t + pd.Timedelta(hours=23), freq='h')}
 
         for i in self.evaporateRange:
             for y, m, d, h in self.rawData['evaporate'][i]:
@@ -101,7 +109,8 @@ class DealWithData:
         for i in self.timeSeries:
             output.append([i, ] + list(self.dealData[i].values()))
         s = SheetData(output).T()
-        for i in [46, 47, 48, 49]:
+        # for i in [46, 47, 48, 49]:
+        for i in range(len(self.rainRange)+1, len(self.rainRange)+len(self.dealWaterRange)+1):
             s[i] = LineData(s[i]).interpolate0().tolist()
         output = s.T().toList()
         output.insert(0, ['date time'] + self.rainRange + self.dealWaterRange + self.evaporateRange)

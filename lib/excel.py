@@ -210,13 +210,5 @@ class CsvReader:
 
 
 if __name__ == '__main__':
-    # reader = ExcelReader('example.xlsx')
-    # print(reader.getSheetNames())
-    # print(reader.getRows('P', 1))
-    # print(reader.getColumnData('P', 1))
-    # print(type(reader.getSheet('P')))
-    # print(reader.getColumnData('Q1', 3))
-    # s = CsvReader('../test0/雨量45+水情AB整合2.0.csv')
-    # print(s.getColumns([1, -3, -2, -1, 0]))
 
     pass
