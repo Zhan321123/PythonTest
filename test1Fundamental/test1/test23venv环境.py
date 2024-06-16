@@ -1,6 +1,7 @@
 # encoding:utf-8
 r"""
-要在项目专属的虚拟环境中安装第三方库，而不将其安装到全局Python环境中，请按照以下步骤操作：
+一、
+    要在项目专属的虚拟环境中安装第三方库，而不将其安装到全局Python环境中，请按照以下步骤操作：
 
 1.创建虚拟环境： 在项目根目录下创建一个新的虚拟环境（venv）。这里以Python 3为例：
 shell{
@@ -21,4 +22,11 @@ shell{
 }
 如此一来，你就可以在项目中拥有一个干净且独立的Python环境，其中仅包含该项目所需的第三方库。
 当你需要在另一个项目中使用不同版本的库时，只需为那个项目创建并激活新的虚拟环境，然后在该环境中安装相应的库即可。
+
+二、
+    在特定目录安装库
+shell{
+    pip install --target=D:\code\pythonProject\PythonTest\venv\Lib\site-packages <library-name>
+}
+
 """
