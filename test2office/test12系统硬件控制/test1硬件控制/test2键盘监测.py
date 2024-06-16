@@ -7,6 +7,7 @@ keyboard库
 
 keyboard
     .is_pressed(" ") 监测键盘是否按住了空格
+    .is_pressed("ctrl") and .is_pressed("c") 监测 ctrl+c
     .press_and_release('g') 键盘点击一下G键
 """
 import time
@@ -14,11 +15,11 @@ import time
 import keyboard
 
 # 按空格时输出hello
-# while True:
-#     if keyboard.is_pressed(' '):
-#         print("hello")
-#         break
+while True:
+    if keyboard.is_pressed(' '):
+        print("hello")
+        break
 
 # 键盘点击一下G键
-# keyboard.press_and_release('g')
+keyboard.press_and_release('g')
 

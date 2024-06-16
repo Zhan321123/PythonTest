@@ -88,7 +88,7 @@ def entropyWeight(head: Sequence, distinct: Sequence[bool], data: dict[str, Sequ
         weightIj.append([standardIj[i][j] * WJ[j] for j in range(len(standardIj[i]))])
 
     # 模型最终评价分数
-    scoreI = [sum(i) for i in t(weightIj)]
+    scoreI = [sum(i) for i in weightIj]
     print(data.keys())
     print(scoreI)
     pass
