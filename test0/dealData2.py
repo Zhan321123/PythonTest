@@ -21,25 +21,28 @@ class DealWithData:
         'evaporate': {}
     }
     # 数据范围
-    rainRange = list(str(i) + 'rain' for i in range(1, 46))
+    rainDataName = list(range(1, 46))
+    evaporateDataName = list(range(1, 7))
     waterRange = ("A", "B")
-    evaporateRange = list(str(i) + 'evaporate' for i in range(1, 7))
+
+    rainRange = list(str(i) + 'rain' for i in rainDataName)
+    evaporateRange = list(str(i) + 'evaporate' for i in evaporateDataName)
     dealWaterRange = ["A-H", "A-Q", "B-H", "B-Q"]
 
     dealData = {}  # 处理后的数据
     outputData = {}  # 输出的数据
 
     dateStart = Timestamp(2007, 1, 1, 0, 0, 0)  # 时间范围
-    dateEnd = Timestamp(2014, 1, 1, 0, 0, 0)
+    dateEnd = Timestamp(2013, 12, 31, 23, 0, 0)
 
     def __init__(self):
-        for i in self.rainRange:
-            self.rawData['rain'][i] = SheetData(SingleSheetExcelReader(f'rain/{i[0]}.xlsx', header=0).getSheet())
+        for index,i in enumerate(self.rainRange):
+            self.rawData['rain'][i] = SheetData(SingleSheetExcelReader(f'rain/{self.rainDataName[index]}.xlsx', header=0).getSheet())
         for i in self.waterRange:
             self.rawData['water'][i] = SheetData(SingleSheetExcelReader(f'water/{i}.xlsx', header=0).getSheet())
-        for i in self.evaporateRange:
+        for index,i in enumerate(self.evaporateRange):
             self.rawData['evaporate'][i] = SheetData(
-                SingleSheetExcelReader(f'evaporation/{i[0]}.xlsx', header=0).getSheet())
+                SingleSheetExcelReader(f'evaporation/{self.evaporateDataName[index]}.xlsx', header=0).getSheet())
 
         self.timeSeries = pd.date_range(start=self.dateStart, end=self.dateEnd, freq='h')  # 时间范围序列
         for i in self.timeSeries:
@@ -146,17 +149,17 @@ class DealWithData:
             ]
             values = {}
             if duration == 0 or h == 0:
-                return values
+                return {t:h}
             timeStart = t.ceil('h')
             timeEnd = (t + pd.Timedelta(hours=duration)).ceil('h') - pd.Timedelta(hours=1)
-            timeSeries = pd.date_range(start=timeStart, end=timeEnd, freq='h')
+            series = pd.date_range(start=timeStart, end=timeEnd, freq='h')
 
             # HACK 目前按照正态分布来拆分雨量数据
-            d = len(timeSeries)
-            for index, i in enumerate(timeSeries):
-                values[i] = h * StandardNormalDistribution_24[d - 1][index]
+            length = len(series)
+            for index, ii in enumerate(series):
+                values[ii] = h * StandardNormalDistribution_24[length - 1][index]
                 if index == 0:
-                    values[i] += h * 0.0027
+                    values[ii] += h * 0.0027
             return values
 
         for i in self.rainRange:
@@ -184,7 +187,7 @@ class DealWithData:
                 return {}
             t = Timestamp(year=yy, month=mm, day=dd)
 
-            v = hh / 24  # TODO 暂时先平均分配每日蒸发量
+            v = hh / 24  # HACK 暂时先平均分配每日蒸发量
             return {ii: v for ii in pd.date_range(start=t, end=t + pd.Timedelta(hours=23), freq='h')}
 
         for i in self.evaporateRange:
@@ -197,13 +200,14 @@ class DealWithData:
         output = []
         for i in self.timeSeries:
             output.append([i, ] + list(self.dealData[i].values()))
+
         s = SheetData(output).T()
         # for i in [46, 47, 48, 49]:
         for i in range(len(self.rainRange) + 1, len(self.rainRange) + len(self.dealWaterRange) + 1):
             s[i] = LineData(s[i]).interpolate0().tolist()
         output = s.T().toList()
         output.insert(0, ['date time'] + self.rainRange + self.dealWaterRange + self.evaporateRange)
-        print(output)
+        # print(output)
         w = CsvWriter(output)
         w.write()
 

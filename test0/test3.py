@@ -123,12 +123,12 @@ def d(t: Timestamp, h: float, duration: float):
     d = len(timeSeries)
     for index, i in enumerate(timeSeries):
         values[i] = h * StandardNormalDistribution_24[d - 1][index]
-        if index==0:
-            values[i]+=h*0.0027
+        if index == 0:
+            values[i] += h * 0.0027
     return values
 
 
-d = d(Timestamp(2007, 1, 1, 0, 0, 0), 100, 2)
+d = d(Timestamp(2007, 1, 1, 0, 0, 0), 100, 24)
 for i in d:
     print(i, d[i])
 
