@@ -1,9 +1,8 @@
 """
 折线图
 
-command:
-生成折线图，data的key为日期，value为数量，要求图上标上数据
-
+data的key为日期，value为数量
+要求图上标上数据
 由于日期字符太长，斜着写
 """
 import pyarrow
