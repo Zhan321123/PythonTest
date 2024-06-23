@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import copy, deepcopy
 from typing import Sequence
 import numpy as np
 from scipy.interpolate import interp1d
@@ -46,7 +47,15 @@ class Line:
         """去重"""
         pass
 
-    def numOfEachElement(self, reverse=False) -> dict:
+    def countOfElement(self, value) -> int:
+        """统计元素出现的次数"""
+        pass
+
+    def elementOfCount(self, count: int) -> list:
+        """获取出现次数为count的元素"""
+        pass
+
+    def countOfEachElement(self, reverse=False) -> dict:
         """
         统计每个元素出现的次数
         非reverse时，返回{element:int}，各元素出现的次数
@@ -106,6 +115,21 @@ class Line:
     def __str__(self):
         pass
 
+    def __copy__(self):
+        pass
+
+    def __deepcopy__(self):
+        pass
+
+    def __iter__(self):
+        pass
+
+    def __next__(self):
+        pass
+
+    def __len__(self):
+        return self.length()
+
 
 class LineList(Line):
     def __init__(self, data: Sequence):
@@ -152,7 +176,24 @@ class LineList(Line):
         self.data = list(set(self.data))
         return self
 
-    def toList(self):
+    def countOfElement(self, value) -> int:
+        return self.data.count(value)
+
+    def elementOfCount(self, count: int) -> list:
+        if count <= 0:
+            print(f"count error, count = {count}, count must > 0")
+            return []
+        return [i for i in set(self.data) if self.data.count(i) == count]
+
+    def countOfEachElement(self, reverse=False) -> dict:
+        d = {i: self.data.count(i) for i in set(self.data)}
+        if reverse:
+            # HACK 效率待优化
+            return {i: self.elementOfCount(i) for i in d.values()}
+        else:
+            return d
+
+    def toList(self) -> list:
         return self.data
 
     def sort(self, reverse=False):
@@ -164,7 +205,6 @@ class LineList(Line):
         return self
 
     def printAll(self):
-        # 每行打印十个元素
         print("-------print all elements--------")
         for i in range(0, len(self.data), 10):
             print(f"row = {i // 10}, {self.data[i:i + 10]}")
@@ -186,7 +226,7 @@ class LineList(Line):
         return False
 
     def __correctIndex(self, index):
-        """修正index"""
+        """修正index，多数情况下，修正之后也不对"""
         length = self.length()
         if index < 0:
             while index < 0:
@@ -196,37 +236,38 @@ class LineList(Line):
                 index -= length
         return index
 
-    def insertAnElement(self, index, value):
+    def insertAnElement(self, index:int, value):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data.insert(index, value)
         return self
 
-    def removeAnElement(self, index):
+    def removeAnElement(self, index:int):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data.pop(index)
         return self
 
-    def insertList(self, index, value: Sequence):
+    def insertList(self, index:int, value: Sequence):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data = self.data[:index] + list(value) + self.data[index:]
         return self
 
-    def replaceList(self, index, value: Sequence):
+    def replaceList(self, index:int, value: Sequence):
         self.__checkIndex(index + len(value))
         self.data[index:index + len(value)] = list(value)
         return self
 
-    def __getitem__(self, item):
+    def __getitem__(self, item:int):
         return self.data[item]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key:int, value):
         self.data[key] = value
 
     def __add__(self, other: Sequence):
-        self.data += list(other)
+        for i in other:
+            self.data.append(i)
         return self
 
     def __str__(self):
@@ -234,6 +275,18 @@ class LineList(Line):
             return f"[{self.data[0]}, {self.data[1]}, {self.data[2]} ... {self.data[-1]}]"
         else:
             return str(self.data)
+
+    def __copy__(self):
+        return LineList(copy(self.data))
+
+    def __deepcopy__(self):
+        return LineList(deepcopy(self.data))
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __next__(self):
+        return self.data.__next__()
 
 
 class LineUtil:
@@ -245,10 +298,10 @@ class LineUtil:
 
 if __name__ == '__main__':
     l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 24, 1, 0, 0])
+    # print(l.getType())
     # l[0] = 2
     # l.print().interpolate().printAll()
     # l.replaceList(-1, [1, 2, ]).printAll()
     # print(LineUtil.equidistantList(1.1, 10, 1))
     # print(l.getType())
-
     pass
