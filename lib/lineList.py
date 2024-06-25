@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from copy import copy, deepcopy
-from typing import Sequence
+from typing import Sequence, Union
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -103,13 +103,32 @@ class Line:
         """替换列表部分元素"""
         pass
 
+    def isIt(self, value, isIndex=False) -> list:
+        """返回等于value的boolean列表或索引列表"""
+        pass
+
+    def greaterThan(self, value, isIndex=False, reverse=False) -> list:
+        """返回大于value的boolean列表或索引列表"""
+        pass
+
     def __getitem__(self, item):
+        """
+        lineList[int] -> object
+        lineList[Sequence[int]] -> Sequence[object]
+        """
         pass
 
     def __setitem__(self, key, value):
+        """
+        lineList[int] = object
+        lineList[Sequence[int]] = Sequence[object]
+        """
         pass
 
     def __add__(self, other):
+        """
+        self+other = self.list+list(other)
+        """
         pass
 
     def __str__(self):
@@ -159,17 +178,26 @@ class LineList(Line):
     _kinds = ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
 
     def interpolate(self, method: str = 'slinear', old=np.nan, lowest=None):
-        # TODO 未完成
         if method not in self._kinds:
             print('interpolate method error, will use slinear method')
             method = 'slinear'
-        # npData = np.array(self.data)
-        # x = np.nonzero(npData)[0]
-        # print(x)
-        # y = npData[x]
-        # f = interp1d(x, y, kind=method, bounds_error=False, fill_value=(y[0], y[-1]))
-        # x = np.arange(len(npData))
-        # self.data = f(x).tolist()
+
+        if old is not np.nan:
+            self.replace(old, np.nan)
+        x = self.isIt(np.nan, isIndex=True)
+        if len(x) == 0:
+            print('no value need to interpolate')
+            return self
+        y = self[x]
+        f = interp1d(x, y, kind=method, bounds_error=False, fill_value=(y[0], y[-1]))
+        x = np.arange(self.length())
+        self.data = f(x).tolist()
+
+        if lowest is not None:
+            self.printAll()
+            self[self.greaterThan(lowest, reverse=True)] = np.nan
+            self.interpolate()
+
         return self
 
     def toSet(self):
@@ -204,11 +232,11 @@ class LineList(Line):
         print(f"{self}, length = {self.length()}")
         return self
 
-    def printAll(self):
+    def printAll(self,column=10):
         print("-------print all elements--------")
-        for i in range(0, len(self.data), 10):
-            print(f"row = {i // 10}, {self.data[i:i + 10]}")
-        print("length = ", self.length())
+        for i in range(0, len(self.data), column):
+            print(f"row {i // column}, {self.data[i:i + column]}")
+        print(f"length = {self.length()}, column = {column}")
         print("------------end------------------")
         return self
 
@@ -236,34 +264,80 @@ class LineList(Line):
                 index -= length
         return index
 
-    def insertAnElement(self, index:int, value):
+    def insertAnElement(self, index: int, value):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data.insert(index, value)
         return self
 
-    def removeAnElement(self, index:int):
+    def removeAnElement(self, index: int):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data.pop(index)
         return self
 
-    def insertList(self, index:int, value: Sequence):
+    def insertList(self, index: int, value: Sequence):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
         self.data = self.data[:index] + list(value) + self.data[index:]
         return self
 
-    def replaceList(self, index:int, value: Sequence):
+    def replaceList(self, index: int, value: Sequence):
         self.__checkIndex(index + len(value))
         self.data[index:index + len(value)] = list(value)
         return self
 
-    def __getitem__(self, item:int):
-        return self.data[item]
+    def isIt(self, value, isIndex=False) -> list:
+        if isIndex:
+            ll = []
+            for i in range(self.length()):
+                # HACK 待修改
+                if (self.data[i] is value) | (self.data[i] == value):
+                    ll.append(i)
+            return ll
+        else:
+            return [i == value for i in self.data]
 
-    def __setitem__(self, key:int, value):
-        self.data[key] = value
+    def _reverseIndex(self, indexes: Sequence[int]):
+        ll = []
+        for i in range(self.length()):
+            if i not in indexes:
+                ll.append(i)
+        return ll
+
+    def greaterThan(self, value, isIndex=False, reverse=False) -> list:
+        if isIndex:
+            ll = []
+            for i in range(self.length()):
+                if self.data[i] > value:
+                    ll.append(i)
+        else:
+            ll = [i > value for i in self.data]
+        if reverse:
+            return self._reverseIndex(ll)
+        else:
+            return ll
+
+    def __getitem__(self, item: Union[int, Sequence[int]]):
+        if isinstance(item, int):
+            return self.data[item]
+        if isinstance(item, Sequence):
+            return list([self.data[i] for i in item])
+
+    def __setitem__(self, key: Union[int, Sequence[int]], value):
+        if isinstance(key, int):
+            self.data[key] = value
+        elif isinstance(key, Sequence):
+            if isinstance(value, Sequence):
+                if len(key) != len(value):
+                    print('key and value length not equal')
+                    return
+                for k, v in zip(key, value):
+                    self.data[k] = v
+                return
+            else:
+                self[key] = [value] * len(key)
+                return
 
     def __add__(self, other: Sequence):
         for i in other:
@@ -297,7 +371,10 @@ class LineUtil:
 
 
 if __name__ == '__main__':
-    l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 24, 1, 0, 0])
+    l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
+    l.interpolate(old=0, method='cubic', lowest=0).printAll()
+    # l[[0, 3, 5]] = [9, 9, 9]
+    # l.printAll()
     # print(l.getType())
     # l[0] = 2
     # l.print().interpolate().printAll()
