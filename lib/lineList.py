@@ -103,18 +103,23 @@ class Line:
         """替换列表部分元素"""
         pass
 
-    def isIt(self, value, isIndex=False) -> list:
-        """返回等于value的boolean列表或索引列表"""
+    def isIt(self, value) -> list[bool]:
+        """返回等于value的boolean列表"""
         pass
 
-    def greaterThan(self, value, isIndex=False, reverse=False) -> list:
-        """返回大于value的boolean列表或索引列表"""
+    def greaterThan(self, value) -> list[bool]:
+        """返回大于value的boolean列表"""
+        pass
+
+    def generateFigure(self):
+        """生成点图"""
         pass
 
     def __getitem__(self, item):
         """
         lineList[int] -> object
         lineList[Sequence[int]] -> Sequence[object]
+        lineList[Sequence[bool]] -> Sequence[object]
         """
         pass
 
@@ -143,8 +148,6 @@ class Line:
     def __iter__(self):
         pass
 
-    def __next__(self):
-        pass
 
     def __len__(self):
         return self.length()
@@ -184,18 +187,19 @@ class LineList(Line):
 
         if old is not np.nan:
             self.replace(old, np.nan)
-        x = self.isIt(np.nan, isIndex=True)
+        indexes = self._reverse(self.isIt(np.nan))
+        x = self._boolsToIndexes(indexes)
+
         if len(x) == 0:
             print('no value need to interpolate')
             return self
-        y = self[x]
+        y = self[indexes]
         f = interp1d(x, y, kind=method, bounds_error=False, fill_value=(y[0], y[-1]))
-        x = np.arange(self.length())
+        x = list(range(self.length()))
         self.data = f(x).tolist()
 
         if lowest is not None:
-            self.printAll()
-            self[self.greaterThan(lowest, reverse=True)] = np.nan
+            self[self._boolsToIndexes(self._reverse(self.greaterThan(lowest)))] = np.nan
             self.interpolate()
 
         return self
@@ -232,7 +236,7 @@ class LineList(Line):
         print(f"{self}, length = {self.length()}")
         return self
 
-    def printAll(self,column=10):
+    def printAll(self, column=10):
         print("-------print all elements--------")
         for i in range(0, len(self.data), column):
             print(f"row {i // column}, {self.data[i:i + column]}")
@@ -287,42 +291,40 @@ class LineList(Line):
         self.data[index:index + len(value)] = list(value)
         return self
 
-    def isIt(self, value, isIndex=False) -> list:
-        if isIndex:
-            ll = []
-            for i in range(self.length()):
-                # HACK 待修改
-                if (self.data[i] is value) | (self.data[i] == value):
-                    ll.append(i)
-            return ll
-        else:
-            return [i == value for i in self.data]
+    def isIt(self, value) -> list[bool]:
+        return [(i is value) | (i == value) for i in self.data]
 
-    def _reverseIndex(self, indexes: Sequence[int]):
-        ll = []
-        for i in range(self.length()):
-            if i not in indexes:
-                ll.append(i)
-        return ll
+    def _reverse(self, bs: Sequence[bool]) -> Sequence[bool]:
+        return [not i for i in bs]
 
-    def greaterThan(self, value, isIndex=False, reverse=False) -> list:
-        if isIndex:
-            ll = []
-            for i in range(self.length()):
-                if self.data[i] > value:
-                    ll.append(i)
-        else:
-            ll = [i > value for i in self.data]
-        if reverse:
-            return self._reverseIndex(ll)
-        else:
-            return ll
+    def _boolsToIndexes(self, bs: Sequence[bool])-> Sequence[int]:
+        return [i for i, j in enumerate(bs) if j]
 
-    def __getitem__(self, item: Union[int, Sequence[int]]):
-        if isinstance(item, int):
-            return self.data[item]
-        if isinstance(item, Sequence):
-            return list([self.data[i] for i in item])
+    def greaterThan(self, value, ) -> list[bool]:
+        return [i > value for i in self.data]
+
+    def generateFigure(self):
+        import matplotlib.pyplot as plt
+        import matplotlib
+        matplotlib.use('TkAgg')
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+        plt.plot(list(range(self.length())),self.data,marker='o')
+        plt.grid()
+        plt.show()
+
+    def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
+        if isinstance(items, int):
+            return self.data[items]
+        elif isinstance(items, Sequence):
+            # 此处必须先判断bool再判断int
+            if isinstance(items[0], bool):
+                if len(items) != self.length():
+                    print('Error, when get item, length of items less or greater than length of self')
+                    return
+                return list([ii for index, ii in enumerate(self) if items[index]])
+            elif isinstance(items[0], int):
+                return list([self.data[i] for i in items])
 
     def __setitem__(self, key: Union[int, Sequence[int]], value):
         if isinstance(key, int):
@@ -359,8 +361,6 @@ class LineList(Line):
     def __iter__(self):
         return iter(self.data)
 
-    def __next__(self):
-        return self.data.__next__()
 
 
 class LineUtil:
@@ -372,7 +372,9 @@ class LineUtil:
 
 if __name__ == '__main__':
     l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
-    l.interpolate(old=0, method='cubic', lowest=0).printAll()
+    l.interpolate(old=0, method='cubic',lowest=0).printAll()
+    l.generateFigure()
+    # print(l[[False] * 8 + [True] * 9])
     # l[[0, 3, 5]] = [9, 9, 9]
     # l.printAll()
     # print(l.getType())

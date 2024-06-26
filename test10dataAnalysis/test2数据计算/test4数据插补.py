@@ -1,5 +1,15 @@
 """
 单序列数据插补
+
+scipy.interp1d(
+    indexes|x, 自变量列表
+    data|y, 因变量列表
+    kind = "slinear", 插值方法
+    copy = True, 插值后是否复制输入的数据
+    bounds_error = True, 超出数据范围是否抛出异常
+    fill_value = None, 超出数据范围时填充的值，可以用(data[0], data[-1])
+)
+
 kind=
     zero: 向前插值
     next: 向后插值
@@ -7,6 +17,8 @@ kind=
     slinear: 线性插值
     quadratic: 二次插值
     cubic: 三次插值
+
+
 """
 import random
 from typing import Sequence
