@@ -14,7 +14,7 @@ asksaveasfile(**options)        返回保存的文件对象
 asksaveasfilename(**options)    返回保存的文件名
 
     二、options
-defaultextension                                    后缀名，默认为.xxx，没有输入则会自动添加
+defaultextension                                    后缀名，默认为.xx，没有输入则会自动添加
 filetypes=[(label1,pattern1),(label2,pattern2)]     文件显示过滤器，过滤pattern后缀名，显示为(label1,pattern1),(label2,pattern2)
 initaldir                                           初始目录
 initalfile                                          初始文件

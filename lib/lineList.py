@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from copy import copy, deepcopy
-from typing import Sequence, Union
+from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
 
 
-class Line:
-    """一维数组"""
+class Line(Sequence):
+    """一维数组，包含许多方法"""
     data: list
 
     def __init__(self, data: Sequence):
@@ -27,10 +27,6 @@ class Line:
     #     """判断是否为单一类型"""
     #     pass
 
-    def set(self, data: Sequence):
-        """重置数据"""
-        pass
-
     def length(self) -> int:
         """获取长度"""
         pass
@@ -39,8 +35,17 @@ class Line:
         """替换所有"""
         pass
 
-    def interpolate(self, method: str):
-        """插值"""
+    _kinds = ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
+
+    def interpolate(self, method: str = 'slinear', old=np.nan, lowest=None):
+        """
+        插值，先用linear方法插值中间内容，然后用临近法插值两端
+
+        指定old为缺失值，默认为np.nan，会进行替换和插补
+
+        lowest为最小值，如果插补后含有小于lowest的值，会先清除，然后linear插补
+        如果原本有的值就小于lowest，也会替换和插补
+        """
         pass
 
     def toSet(self):
@@ -71,6 +76,14 @@ class Line:
         """排序"""
         pass
 
+    def pop(self) -> Any:
+        """弹出最后一个元素"""
+        pass
+
+    def clear(self) -> list:
+        """清空"""
+        pass
+
     def print(self):
         """普通打印"""
         pass
@@ -95,6 +108,10 @@ class Line:
         """删除元素"""
         pass
 
+    def removeElements(self, value):
+        """删除所有该元素"""
+        pass
+
     def insertList(self, index, value: Sequence):
         """插入列表"""
         pass
@@ -115,7 +132,7 @@ class Line:
         """生成点图"""
         pass
 
-    def __getitem__(self, item):
+    def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         """
         lineList[int] -> object
         lineList[Sequence[int]] -> Sequence[object]
@@ -123,7 +140,7 @@ class Line:
         """
         pass
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Union[int, Sequence[int]], value):
         """
         lineList[int] = object
         lineList[Sequence[int]] = Sequence[object]
@@ -148,9 +165,11 @@ class Line:
     def __iter__(self):
         pass
 
-
     def __len__(self):
         return self.length()
+
+    def __eq__(self, other):
+        pass
 
 
 class LineList(Line):
@@ -159,10 +178,6 @@ class LineList(Line):
 
     def get(self):
         return self.data
-
-    def set(self, data: Sequence):
-        self.data = list(data)
-        return self
 
     def getType(self):
         types = LineList(type(i) for i in self.data).toSet()
@@ -177,8 +192,6 @@ class LineList(Line):
     def replace(self, old, new):
         self.data = [new if i == old else i for i in self.data]
         return self
-
-    _kinds = ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
 
     def interpolate(self, method: str = 'slinear', old=np.nan, lowest=None):
         if method not in self._kinds:
@@ -232,9 +245,19 @@ class LineList(Line):
         self.data.sort(reverse=reverse)
         return self
 
+    def pop(self) -> Any:
+        return self.data.pop()
+
+    def clear(self) -> list:
+        dd = self.data
+        self.data = []
+        return dd
+
     def print(self):
-        print(f"{self}, length = {self.length()}")
-        return self
+        if self.length() > 10:
+            print(f"[{self.data[0]}, {self.data[1]}, {self.data[2]} ... {self.data[-1]}], length = {self.length()}")
+        else:
+            print(self.data)
 
     def printAll(self, column=10):
         print("-------print all elements--------")
@@ -280,6 +303,13 @@ class LineList(Line):
         self.data.pop(index)
         return self
 
+    def removeElements(self, value):
+        length = self.length()
+        self.data = list([i for i in self.data if i != value])
+        if length == self.length():
+            print('no value removed')
+        return self
+
     def insertList(self, index: int, value: Sequence):
         if self.__checkIndex(index):
             index = self.__correctIndex(index)
@@ -297,7 +327,7 @@ class LineList(Line):
     def _reverse(self, bs: Sequence[bool]) -> Sequence[bool]:
         return [not i for i in bs]
 
-    def _boolsToIndexes(self, bs: Sequence[bool])-> Sequence[int]:
+    def _boolsToIndexes(self, bs: Sequence[bool]) -> Sequence[int]:
         return [i for i, j in enumerate(bs) if j]
 
     def greaterThan(self, value, ) -> list[bool]:
@@ -309,7 +339,7 @@ class LineList(Line):
         matplotlib.use('TkAgg')
         matplotlib.rcParams['axes.unicode_minus'] = False
         matplotlib.rcParams['font.sans-serif'] = ['SimHei']
-        plt.plot(list(range(self.length())),self.data,marker='o')
+        plt.plot(list(range(self.length())), self.data, marker='o')
         plt.grid()
         plt.show()
 
@@ -341,16 +371,17 @@ class LineList(Line):
                 self[key] = [value] * len(key)
                 return
 
-    def __add__(self, other: Sequence):
-        for i in other:
-            self.data.append(i)
+    def __add__(self, other: Union[Sequence, Any]):
+        if isinstance(other, Sequence):
+            for i in other:
+                self.data.append(i)
+        else:
+            self.data.append(other)
+            print(f'{other} is a element not a list, but has been added to the end of the list')
         return self
 
     def __str__(self):
-        if self.length() > 10:
-            return f"[{self.data[0]}, {self.data[1]}, {self.data[2]} ... {self.data[-1]}]"
-        else:
-            return str(self.data)
+        return str(self.data)
 
     def __copy__(self):
         return LineList(copy(self.data))
@@ -361,6 +392,10 @@ class LineList(Line):
     def __iter__(self):
         return iter(self.data)
 
+    def __eq__(self, other):
+        if isinstance(other, Sequence):
+            return all(i == j for i, j in zip(self.data, other))
+        return False
 
 
 class LineUtil:
@@ -372,8 +407,9 @@ class LineUtil:
 
 if __name__ == '__main__':
     l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
-    l.interpolate(old=0, method='cubic',lowest=0).printAll()
-    l.generateFigure()
+    l.interpolate(old=0, method='cubic', lowest=0).printAll()
+    # l.generateFigure()
+    print(isinstance(l, Sequence))
     # print(l[[False] * 8 + [True] * 9])
     # l[[0, 3, 5]] = [9, 9, 9]
     # l.printAll()
@@ -383,4 +419,5 @@ if __name__ == '__main__':
     # l.replaceList(-1, [1, 2, ]).printAll()
     # print(LineUtil.equidistantList(1.1, 10, 1))
     # print(l.getType())
-    pass
+    for i in l:
+        print(i)
