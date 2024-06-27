@@ -1,22 +1,23 @@
-import numpy as np
+import time
 
-# 假设aList是一个NumPy数组
-from scipy.interpolate import interp1d
+def timer_decorator(func):
+    """
+    计算并打印函数执行时间的装饰器。
+    """
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} executed in {end_time - start_time} seconds")
+        return result
+    return wrapper
 
-# data = [0, 7, 8, 9, 0, 11, 0, 0, 14, 0, 0, 17, 18, 0, 0, 0, 22, 23, 0, 25, 0, 27, 28, 0, 0, 0, ]
+@timer_decorator
+def example_function(n):
+    """
+    简单示例函数，计算n的平方。
+    """
+    return n ** 2
 
-# d = [0,1,2,4,5]
-# b = [True,False,True,True,True]
-# l = [i for index,i in enumerate(d) if b[index]]
-# print(l)
-
-# 定义 x 和 y 数据点
-x = np.array([0, 1, 2, 3])
-y = np.array([0, 1, 4, 9])
-
-# 创建一个线性插值函数
-linear_interp = interp1d(x, y)
-
-# 使用插值函数估算 x=1.5 时的 y 值
-estimated_y = linear_interp(1.5)
-print(estimated_y)  # 输出插值结果
+a = example_function(1000)  # 输出计算结果，并打印执行时间
+print(a)

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from copy import copy, deepcopy
+import random
 from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
 
 
-class Line(Sequence):
+class _Line(Sequence):
     """一维数组，包含许多方法"""
     data: list
 
@@ -85,11 +86,11 @@ class Line(Sequence):
         pass
 
     def print(self):
-        """普通打印"""
+        """简洁打印"""
         pass
 
     def printAll(self):
-        """打印所有数据，每行10个元素"""
+        """打印所有数据"""
         pass
 
     def has(self, value) -> bool:
@@ -126,10 +127,6 @@ class Line(Sequence):
 
     def greaterThan(self, value) -> list[bool]:
         """返回大于value的boolean列表"""
-        pass
-
-    def generateFigure(self):
-        """生成点图"""
         pass
 
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
@@ -171,8 +168,12 @@ class Line(Sequence):
     def __eq__(self, other):
         pass
 
+    def generateFigure(self):
+        """生成折线图"""
+        pass
 
-class LineList(Line):
+
+class LineList(_Line):
     def __init__(self, data: Sequence):
         super().__init__(data)
 
@@ -258,6 +259,7 @@ class LineList(Line):
             print(f"[{self.data[0]}, {self.data[1]}, {self.data[2]} ... {self.data[-1]}], length = {self.length()}")
         else:
             print(self.data)
+        return self
 
     def printAll(self, column=10):
         print("-------print all elements--------")
@@ -404,12 +406,30 @@ class LineUtil:
         """生成等距list"""
         return [start + i * step for i in range(int((end - start) / step) + 1)]
 
+    @staticmethod
+    def createRandomList(num: int, lowest, highest) -> list:
+        """
+        生成随机list
+        个数为num，最小值为欸lowest，最大值为highest
+        """
+        return list([random.random() * (highest - lowest) + lowest for i in range(num)])
+
+    @staticmethod
+    def replaceRandom(aList: Sequence, proportion: float, new) -> list:
+        """
+        将列表中的元素随机替换成new
+        proportion为占比概率，new为替换的新元素
+        """
+        if (proportion > 1) | (proportion < 0):
+            print('proportion must less than 1')
+        return [new if random.random() < proportion else i for i in aList]
+
 
 if __name__ == '__main__':
     l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
-    l.interpolate(old=0, method='cubic', lowest=0).printAll()
+    # l.interpolate(old=0, method='cubic', lowest=0).printAll()
     # l.generateFigure()
-    print(isinstance(l, Sequence))
+    # print(isinstance(l, Sequence))
     # print(l[[False] * 8 + [True] * 9])
     # l[[0, 3, 5]] = [9, 9, 9]
     # l.printAll()
@@ -419,5 +439,7 @@ if __name__ == '__main__':
     # l.replaceList(-1, [1, 2, ]).printAll()
     # print(LineUtil.equidistantList(1.1, 10, 1))
     # print(l.getType())
-    for i in l:
-        print(i)
+    # for i in l:
+    #     print(i)
+    l.printAll()
+    pass

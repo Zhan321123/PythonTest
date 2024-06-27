@@ -1,8 +1,9 @@
 from copy import copy, deepcopy
-from typing import Sequence, Union
+from typing import Sequence, Union, Any
+from lineList import LineList, LineUtil
 
 
-class Flat(Sequence):
+class _Flat(Sequence):
     """
     二维数组列表
     在执行过程中，请保持每列元素个数相等
@@ -23,6 +24,10 @@ class Flat(Sequence):
 
     def t(self):
         """转置"""
+        pass
+
+    def count(self, value: Any) -> int:
+        """统计元素个数"""
         pass
 
     def print(self):
@@ -65,15 +70,6 @@ class Flat(Sequence):
         """替换一列"""
         pass
 
-    # 前提是元素对象都是数类型，生成图像这里都不进行检查
-    def generateHotMap(self):
-        """生成热图"""
-        pass
-
-    def generateFigure(self):
-        """生成多线折线图"""
-        pass
-
     def __eq__(self, other):
         pass
 
@@ -101,13 +97,23 @@ class Flat(Sequence):
     def __deepcopy__(self):
         pass
 
+    # 前提是元素对象都是数类型，生成图像这里都不进行检查
+    def generateHotMap(self):
+        """生成热图"""
+        pass
 
-class FlatList(Flat):
+    def generateFigure(self):
+        """生成多线折线图"""
+        pass
+
+
+class FlatList(_Flat):
     def __init__(self, data: Sequence[Sequence]):
         super().__init__(data)
 
     def t(self):
         self.data = list(zip(*self.data))
+        self.data = [list(i) for i in self.data]
         return self
 
     def print(self):
@@ -126,20 +132,22 @@ class FlatList(Flat):
         else:
             if len(self.data) < 10:
                 for i in self.data:
-                    print(f'[{i[0]}, {i[1]}, ..., {i[-1]}')
+                    print(f'[{i[0]}, {i[1]}, ..., {i[-1]}]')
             else:
                 for i in (0, 1, 2):
-                    print(f'[{self.data[i][0]}, {self.data[i][1]}, ..., {self.data[i][-1]}')
+                    print(f'[{self.data[i][0]}, {self.data[i][1]}, ..., {self.data[i][-1]}]')
                 print('......')
-                print(f'[{self.data[-1][0]}, {self.data[-1][1]}, ..., {self.data[-1][-1]})')
-        print(f'row = {len(self.data)}, column = {len(self.data[0])})')
+                print(f'[{self.data[-1][0]}, {self.data[-1][1]}, ..., {self.data[-1][-1]}]')
+        print(f'row = {len(self.data)}, column = {len(self.data[0])}')
+        return self
 
     def printAll(self):
         print('----print all element----')
         for index, i in enumerate(self.data):
-            print('row :', index, i)
-        print(f'row = {len(self.data)}, column = {len(self.data[0])})')
+            print('row :', index + 1, ',', i)
+        print(f'row = {len(self.data)}, column = {len(self.data[0])}')
         print('----------end------------')
+        return self
 
     def __str__(self):
         return str(self.data)
@@ -150,9 +158,24 @@ class FlatList(Flat):
     def __deepcopy__(self):
         return deepcopy(self.data)
 
+    def __eq__(self, other):
+        if not isinstance(other, Sequence):
+            return False
+        for i, j in zip(self.data, other):
+            for k, l in zip(i, j):
+                if k != l:
+                    return False
+        return True
+
+    def __iter__(self):
+        return iter(self.data)
+
 
 if __name__ == '__main__':
-    a = FlatList([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18]])
-    print(a.get())
-    print(a.length())
-    print(a.t())
+    a = FlatList([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
+                  [25, 26, 27], [28, 29, 30], [31, 32, 33], [34, 35, 36], [37, 38, 39], [40, 41, 42]])
+    # a.t().print().printAll()
+    b = FlatList(
+        [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
+         (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
+    )

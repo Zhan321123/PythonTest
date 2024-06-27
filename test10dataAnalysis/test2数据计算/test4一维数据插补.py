@@ -26,6 +26,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib
+from lib.lineList import *
 
 matplotlib.use('Qt5Agg')
 matplotlib.rcParams['axes.unicode_minus'] = False
@@ -34,30 +35,15 @@ matplotlib.rcParams['font.sans-serif'] = ['SimHei']
 
 kinds = ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
 
-
-def interpolate0(dt: Sequence[float], kind: str):
-    npData = np.array(dt)
-    x = np.nonzero(npData)[0]
-    y = npData[x]
-    f = interp1d(x, y, kind=kind, bounds_error=False, fill_value=(y[0], y[-1]))
-
-    x = np.arange(len(npData))
-    out = f(x).tolist()
-    # print(kind, out)
-    return out
-
-length = 60
-dt = list(np.random.rand(length)*100+50)
-for i in range(length):
-    if random.random()<0.5:
-        dt[i] = 0
-print(dt)
+dt = LineUtil.createRandomList(100, 100, 250)
+dt = LineUtil.replaceRandom(dt, 0.6, 0)
+l = LineList(dt)
 
 # 绘制2*3个图
 fig,axs = plt.subplots(ncols=3,nrows=2)
 
 for index, kind in enumerate(kinds):
-    out = interpolate0(dt, kind)
+    out = copy(l).interpolate(method=kind,old=0).print().get()
     ax = axs[index // 3, index % 3]
     ax.plot(out, label=kind)
     ax.plot(out, '+')
