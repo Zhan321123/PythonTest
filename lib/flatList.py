@@ -22,10 +22,6 @@ class _Flat(Sequence):
     def length(self) -> int:
         return len(self.data)
 
-    def t(self):
-        """转置"""
-        pass
-
     def count(self, value: Any) -> int:
         """统计元素个数"""
         pass
@@ -107,7 +103,78 @@ class _Flat(Sequence):
         pass
 
 
-class FlatList(_Flat):
+class Matrix:
+    """矩阵相关计算"""
+
+    def getShape(self):
+        """矩阵形状，返回(row, column)"""
+        pass
+
+    def matrixValue(self):
+        """矩阵求值"""
+        pass
+
+    def t(self):
+        """矩阵转置"""
+        pass
+
+    def matrixInverse(self):
+        """矩阵求逆"""
+        pass
+
+    def matrixCofactor(self):
+        """矩阵余子式"""
+        pass
+
+    def matrixAdjoint(self):
+        """伴随矩阵"""
+        pass
+
+    def matrixRank(self):
+        """矩阵的秩"""
+        pass
+
+    def matrixTrace(self):
+        """矩阵的迹"""
+        pass
+
+    def matrixStep(self):
+        """化为阶梯型矩阵"""
+        pass
+
+    def matrixMinimal(self):
+        """化为最简形矩阵"""
+        pass
+
+    def matrixSymmetry(self):
+        """是否是对称矩阵"""
+        pass
+
+    def matrixAntiSymmetry(self):
+        """是否是反对称矩阵"""
+        pass
+
+    def matrixExchangeable(self):
+        """矩阵是否可交换"""
+        pass
+
+    # def matrixMultiplyNum(self):
+    #     """数乘矩阵"""
+    #     pass
+    # def matrixMultiplyMatrix(self):
+    #     """矩阵相乘"""
+    # def matrixAddition(self):
+    #     """矩阵加法"""
+    #     pass
+    # def matrixSubtract(self):
+    #     """矩阵减法"""
+    #     pass
+
+    def matrixSolveLinearEquation(self):
+        """线型方程组求解"""
+
+
+class FlatList(_Flat, Matrix):
     def __init__(self, data: Sequence[Sequence]):
         super().__init__(data)
 

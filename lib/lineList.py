@@ -427,8 +427,8 @@ class LineUtil:
 
 if __name__ == '__main__':
     l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
-    # l.interpolate(old=0, method='cubic', lowest=0).printAll()
-    # l.generateFigure()
+    l.interpolate(old=0, method='cubic', lowest=0).printAll()
+    l.generateFigure()
     # print(isinstance(l, Sequence))
     # print(l[[False] * 8 + [True] * 9])
     # l[[0, 3, 5]] = [9, 9, 9]
