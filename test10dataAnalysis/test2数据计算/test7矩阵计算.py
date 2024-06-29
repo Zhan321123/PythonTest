@@ -1,5 +1,7 @@
 """
 矩阵相关计算
+
+TODO 未完成
 """
 import numpy as np
 
@@ -17,7 +19,10 @@ print(np.linalg.inv(a))  # 矩阵求逆
 
 print('-----------------------------')
 print(np.linalg.det(a))  # 矩阵行列式的值
-print(np.linalg.eig(a))
+print(np.linalg.eig(a))  # 矩阵特征值和特征向量
+print(np.linalg.solve(a, b))  # 矩阵求解
+print(np.linalg.norm(a))  # 矩阵范数
+print(np.linalg.eigvals(a))  # 矩阵特征值
 
 
 print('-----------------------------')

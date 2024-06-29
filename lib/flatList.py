@@ -10,17 +10,27 @@ class _Flat(Sequence):
 
     执行和返回对象全部为list，要执行一维数组列表，请套入LineList
     """
+    data: list[list]
 
     def __init__(self, data: Sequence[Sequence]):
-        self.data = list(data)
+        self.data = list(map(list, data))
         if len(data) == 0:
-            print("data is empty")
+            print("data is empty, subsequent operations may encounter issues")
+
+    def _reformList(self):
+        self.data = list(map(list, self.data))
 
     def get(self):
         return self.data
 
-    def length(self) -> int:
+    def row(self) -> int:
         return len(self.data)
+
+    def col(self) -> int:
+        if len(self.data) == 0:
+            print("data is empty, so column is 0")
+            return 0
+        return len(self.data[0])
 
     def count(self, value: Any) -> int:
         """统计元素个数"""
@@ -38,28 +48,36 @@ class _Flat(Sequence):
         """获取一行"""
         pass
 
-    def getColumn(self, index: int) -> list:
-        """获取一列"""
-        pass
-
     def insertRow(self, index: int, value: Sequence):
         """插入一行"""
         pass
 
-    def insertColumn(self, index: int, value: Sequence):
-        """插入一列"""
+    def appendRow(self, value: Sequence):
+        """末尾添加一行"""
         pass
 
     def removeRow(self, index: int):
         """删除一行"""
         pass
 
+    def replaceRow(self, index: int, value: Sequence):
+        """替换一行"""
+        pass
+
+    def getColumn(self, index: int) -> list:
+        """获取一列"""
+        pass
+
     def removeColumn(self, index: int):
         """删除一列"""
         pass
 
-    def replaceRow(self, index: int, value: Sequence):
-        """替换一行"""
+    def insertColumn(self, index: int, value: Sequence):
+        """插入一列"""
+        pass
+
+    def appendColumn(self, value: Sequence):
+        """末尾添加一列"""
         pass
 
     def replaceColumn(self, index: int, value: Sequence):
@@ -79,10 +97,7 @@ class _Flat(Sequence):
         pass
 
     def __len__(self):
-        return self.length()
-
-    def __add__(self, other):
-        pass
+        return self.row()
 
     def __str__(self):
         pass
@@ -104,9 +119,12 @@ class _Flat(Sequence):
 
 
 class Matrix:
-    """矩阵相关计算"""
+    """
+    矩阵相关计算
+    计算过程中不检查元素是否为数类型
+    """
 
-    def getShape(self):
+    def shape(self):
         """矩阵形状，返回(row, column)"""
         pass
 
@@ -133,6 +151,13 @@ class Matrix:
     def matrixRank(self):
         """矩阵的秩"""
         pass
+
+    def matrixNorm(self):
+        """矩阵范数"""
+        pass
+
+    def matrixEigen(self):
+        """矩阵特征值和特征向量"""
 
     def matrixTrace(self):
         """矩阵的迹"""
@@ -173,15 +198,25 @@ class Matrix:
     def matrixSolveLinearEquation(self):
         """线型方程组求解"""
 
+    def __add__(self, other):
+        pass
+
+    def __sub__(self, other):
+        pass
+
+    def __mul__(self, other):
+        pass
+
 
 class FlatList(_Flat, Matrix):
     def __init__(self, data: Sequence[Sequence]):
         super().__init__(data)
 
-    def t(self):
-        self.data = list(zip(*self.data))
-        self.data = [list(i) for i in self.data]
-        return self
+    def count(self, value: Any) -> int:
+        co = 0
+        for i in self:
+            co += i.count(value)
+        return co
 
     def print(self):
         if len(self.data) == 0:
@@ -216,6 +251,74 @@ class FlatList(_Flat, Matrix):
         print('----------end------------')
         return self
 
+    def __checkRow(self, index: int) -> bool:
+        if index < 0 or index >= self.row():
+            print('index out of range')
+            return False
+        else:
+            return True
+
+    def __checkRowLength(self, value: Sequence):
+        if len(value) != self.col():
+            print('row length not equal, subsequent operations may encounter issues')
+
+    def getRow(self, index: int) -> list:
+        if not self.__checkRow(index):
+            return []
+        return self.data[index]
+
+    def appendRow(self, value: Sequence):
+        self.data.append(list(value))
+        self.__checkRowLength(value)
+        return self
+
+    def insertRow(self, index: int, value: Sequence):
+        if not self.__checkRow(index + 1):
+            return self
+        self.__checkRowLength(value)
+        self.data.insert(index, list(value))
+        return self
+
+    def removeRow(self, index: int):
+        if not self.__checkRow(index):
+            return self
+        self.data.pop(index)
+        return self
+
+    def replaceRow(self, index: int, value: Sequence):
+        if not self.__checkRow(index):
+            return self
+        self.__checkRowLength(value)
+        self.data[index] = list(value)
+        return self
+
+    def __checkCol(self, index: int) -> bool:
+        if index < 0 or index >= self.col():
+            print('index out of range')
+            return False
+        else:
+            return True
+
+    def t(self):
+        self.data = list(zip(*self.data))
+        self._reformList()
+        return self
+
+    def __getitem__(self,
+                    item: Union[int, tuple[int, int], tuple[Sequence[int], Sequence[int]], tuple[int, int, int, int]]):
+        if isinstance(item, int):
+            if self.__checkRow(item):
+                return self.data[item]
+            return []
+        elif isinstance(item, tuple):
+            if isinstance(item[0], int):
+                if self.__checkRow(item[0]) and self.__checkCol(item[1]):
+                    return self.data[item[0]][item[1]]
+            elif isinstance(item[0], Sequence):
+                if all(map(self.__checkRow, item[0])) and all(map(self.__checkCol, item[1])):
+
+                    pass
+
     def __str__(self):
         return str(self.data)
 
@@ -239,10 +342,11 @@ class FlatList(_Flat, Matrix):
 
 
 if __name__ == '__main__':
-    a = FlatList([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
+    a = FlatList([[1, 2, 3], [1, 2, 3], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
                   [25, 26, 27], [28, 29, 30], [31, 32, 33], [34, 35, 36], [37, 38, 39], [40, 41, 42]])
     # a.t().print().printAll()
     b = FlatList(
         [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
          (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
     )
+    print(a.count(1))
