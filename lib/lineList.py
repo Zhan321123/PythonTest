@@ -402,9 +402,14 @@ class LineList(_Line):
 
 class LineUtil:
     @staticmethod
-    def equidistantList(start, end, step) -> list:
-        """生成等距list"""
+    def equidistantList1(start, end, step) -> list:
+        """生成等距list，用步长"""
         return [start + i * step for i in range(int((end - start) / step) + 1)]
+
+    @staticmethod
+    def equidistantList2(start, end, num) -> list:
+        """生成等距list，用数量"""
+        return [start + i * (end - start) / (num - 1) for i in range(num)]
 
     @staticmethod
     def createRandomList(num: int, lowest, highest) -> list:

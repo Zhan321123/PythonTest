@@ -258,9 +258,11 @@ class FlatList(_Flat, Matrix):
         else:
             return True
 
-    def __checkRowLength(self, value: Sequence):
+    def __checkRowLength(self, value: Sequence) -> bool:
         if len(value) != self.col():
             print('row length not equal, subsequent operations may encounter issues')
+            return False
+        return True
 
     def getRow(self, index: int) -> list:
         if not self.__checkRow(index):
@@ -299,24 +301,69 @@ class FlatList(_Flat, Matrix):
         else:
             return True
 
+    def __checkColLength(self, value: Sequence) -> bool:
+        if len(value) != self.row():
+            print('col length not equal')
+            return False
+        return True
+
+    def getColumn(self, index: int) -> list:
+        if not self.__checkCol(index):
+            return []
+        return list([i[index] for i in self.data])
+
+    def removeColumn(self, index: int):
+        if not self.__checkCol(index):
+            return self
+        for i in self.data:
+            i.pop(index)
+        return self
+
+    def appendColumn(self, value: Sequence):
+        if not self.__checkColLength(value):
+            return self
+        for i, v in enumerate(self.data):
+            v.append(value[i])
+        return self
+
+    def insertColumn(self, index: int, value: Sequence):
+        if not self.__checkCol(index + 1):
+            return self
+        if self.__checkColLength(value):
+            for i in range(len(self.data)):
+                self.data[i].insert(index, value[i])
+        return self
+
+    def replaceColumn(self, index: int, value: Sequence):
+        if not self.__checkCol(index):
+            return self
+        if self.__checkColLength(value):
+            for i in range(len(self.data)):
+                self.data[i][index] = value[i]
+        return self
+
     def t(self):
         self.data = list(zip(*self.data))
         self._reformList()
         return self
 
     def __getitem__(self,
-                    item: Union[int, tuple[int, int], tuple[Sequence[int], Sequence[int]], tuple[int, int, int, int]]):
+                    item: Union[int, Sequence[int, int], Sequence[Sequence[int], Sequence[int]], tuple[int, int, int, int]]):
         if isinstance(item, int):
             if self.__checkRow(item):
                 return self.data[item]
             return []
-        elif isinstance(item, tuple):
+        elif isinstance(item, Sequence):
             if isinstance(item[0], int):
-                if self.__checkRow(item[0]) and self.__checkCol(item[1]):
-                    return self.data[item[0]][item[1]]
+                if len(item) == 2:
+                    if self.__checkRow(item[0]) and self.__checkCol(item[1]):
+                        return self.data[item[0]][item[1]]
+                elif len(item) == 4:
+                    # TODO
+                    pass
             elif isinstance(item[0], Sequence):
                 if all(map(self.__checkRow, item[0])) and all(map(self.__checkCol, item[1])):
-
+                    # TODO
                     pass
 
     def __str__(self):
@@ -340,6 +387,16 @@ class FlatList(_Flat, Matrix):
     def __iter__(self):
         return iter(self.data)
 
+    def generateHotMap(self):
+        import matplotlib
+        import matplotlib.pyplot as plt
+        matplotlib.use('TkAgg')
+        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+        matplotlib.rcParams['axes.unicode_minus'] = False
+
+        plt.imshow(self.data)
+        plt.show()
+
 
 if __name__ == '__main__':
     a = FlatList([[1, 2, 3], [1, 2, 3], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
@@ -349,4 +406,4 @@ if __name__ == '__main__':
         [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
          (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
     )
-    print(a.count(1))
+    print(a[0,0])
