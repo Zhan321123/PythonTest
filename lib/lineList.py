@@ -150,6 +150,9 @@ class _Line(Sequence):
         """
         pass
 
+    def __iadd__(self, other):
+        pass
+
     def __str__(self):
         pass
 

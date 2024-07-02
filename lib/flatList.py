@@ -1,6 +1,5 @@
 from copy import copy, deepcopy
 from typing import Sequence, Union, Any
-from lineList import LineList, LineUtil
 
 
 class _Flat(Sequence):
@@ -84,16 +83,26 @@ class _Flat(Sequence):
         """替换一列"""
         pass
 
+    def transpose(self):
+        """转置，转置自身"""
+        pass
+
     def __eq__(self, other):
         pass
 
     def __iter__(self):
         pass
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Union[
+        int, Sequence[Union[Sequence[int], Sequence[int]]], tuple[int, int, int, int]]):
+        """
+        FlatList[int] -> list
+        FlatList[startRow:int, endRow:int, startCol:int. endCol:int] -> list[list]
+        FlatList[chooseRow:Sequence[int], chooseCol:Sequence[int]] -> list[list]
+        """
         pass
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Union[int, Sequence[Union[int, int, int, int]]], value: Union[Sequence, int]):
         pass
 
     def __len__(self):
@@ -113,102 +122,12 @@ class _Flat(Sequence):
         """生成热图"""
         pass
 
-    def generateFigure(self):
+    def generateLineFigure(self):
         """生成多线折线图"""
         pass
 
 
-class Matrix:
-    """
-    矩阵相关计算
-    计算过程中不检查元素是否为数类型
-    """
-
-    def shape(self):
-        """矩阵形状，返回(row, column)"""
-        pass
-
-    def matrixValue(self):
-        """矩阵求值"""
-        pass
-
-    def t(self):
-        """矩阵转置"""
-        pass
-
-    def matrixInverse(self):
-        """矩阵求逆"""
-        pass
-
-    def matrixCofactor(self):
-        """矩阵余子式"""
-        pass
-
-    def matrixAdjoint(self):
-        """伴随矩阵"""
-        pass
-
-    def matrixRank(self):
-        """矩阵的秩"""
-        pass
-
-    def matrixNorm(self):
-        """矩阵范数"""
-        pass
-
-    def matrixEigen(self):
-        """矩阵特征值和特征向量"""
-
-    def matrixTrace(self):
-        """矩阵的迹"""
-        pass
-
-    def matrixStep(self):
-        """化为阶梯型矩阵"""
-        pass
-
-    def matrixMinimal(self):
-        """化为最简形矩阵"""
-        pass
-
-    def matrixSymmetry(self):
-        """是否是对称矩阵"""
-        pass
-
-    def matrixAntiSymmetry(self):
-        """是否是反对称矩阵"""
-        pass
-
-    def matrixExchangeable(self):
-        """矩阵是否可交换"""
-        pass
-
-    # def matrixMultiplyNum(self):
-    #     """数乘矩阵"""
-    #     pass
-    # def matrixMultiplyMatrix(self):
-    #     """矩阵相乘"""
-    # def matrixAddition(self):
-    #     """矩阵加法"""
-    #     pass
-    # def matrixSubtract(self):
-    #     """矩阵减法"""
-    #     pass
-
-    def matrixSolveLinearEquation(self):
-        """线型方程组求解"""
-
-    def __add__(self, other):
-        pass
-
-    def __sub__(self, other):
-        pass
-
-    def __mul__(self, other):
-        pass
-
-
-class FlatList(_Flat, Matrix):
+class FlatList(_Flat):
     def __init__(self, data: Sequence[Sequence]):
         super().__init__(data)
 
@@ -251,7 +170,7 @@ class FlatList(_Flat, Matrix):
         print('----------end------------')
         return self
 
-    def __checkRow(self, index: int) -> bool:
+    def __checkRow(self, index: Union[int, Sequence]) -> bool:
         if index < 0 or index >= self.row():
             print('index out of range')
             return False
@@ -342,29 +261,43 @@ class FlatList(_Flat, Matrix):
                 self.data[i][index] = value[i]
         return self
 
-    def t(self):
+    def transpose(self):
         self.data = list(zip(*self.data))
         self._reformList()
         return self
 
-    def __getitem__(self,
-                    item: Union[int, Sequence[int, int], Sequence[Sequence[int], Sequence[int]], tuple[int, int, int, int]]):
+
+
+    def __getitem__(self, item: Union[
+        int, Sequence[Union[Sequence[int], Sequence[int]]], tuple[int, int, int, int]]):
         if isinstance(item, int):
             if self.__checkRow(item):
                 return self.data[item]
             return []
         elif isinstance(item, Sequence):
             if isinstance(item[0], int):
-                if len(item) == 2:
-                    if self.__checkRow(item[0]) and self.__checkCol(item[1]):
-                        return self.data[item[0]][item[1]]
-                elif len(item) == 4:
-                    # TODO
-                    pass
+                if all(self.__checkRow(item[0]), self.__checkRow(item[1]), self.__checkCol(item[2]),
+                       self.__checkCol(item[3])):
+                    return list(self.data[i][item[2]:item[3]] for i in range(item[0], item[1]))
             elif isinstance(item[0], Sequence):
-                if all(map(self.__checkRow, item[0])) and all(map(self.__checkCol, item[1])):
-                    # TODO
-                    pass
+                if all(*map(self.__checkRow, item[0]), *map(self.__checkCol, item[1])):
+                    return list([list([self.data[i][j] for j in item[1]]) for i in item[0]])
+
+    def __setitem__(self, key: Union[int, Sequence[Union[int, int, int, int]]], value: Sequence):
+        if isinstance(key, int) and self.__checkRow(key):
+            if isinstance(value, Sequence):
+                if self.__checkColLength(value):
+                    self.data[key] = list(value)
+            else:
+                self.data[key] = [value] * self.col()
+        elif isinstance(key, Sequence) and all(*map(self.__checkRow, key[0:1]), *map(self.__checkCol, key[2:3])):
+            if isinstance(value, Sequence):
+                if (len(value) != key[1] - key[0]) | (len(value[0]) != key[3] - key[2]):
+                    print('setitem error, the shape of key not equal to the shape of value')
+                else:
+                    for index,i in enumerate(range(key[0], key[1])):
+                        self.data[i][key[2]:key[3]] = list(value[index])
+
 
     def __str__(self):
         return str(self.data)
@@ -396,6 +329,18 @@ class FlatList(_Flat, Matrix):
 
         plt.imshow(self.data)
         plt.show()
+        return self
+
+    def generateLineFigure(self):
+        import matplotlib
+        import matplotlib.pyplot as plt
+        matplotlib.use('TkAgg')
+        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        for i in range(self.row()):
+            plt.plot(self.data[i])
+        plt.show()
+        return self
 
 
 if __name__ == '__main__':
@@ -406,4 +351,4 @@ if __name__ == '__main__':
         [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
          (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
     )
-    print(a[0,0])
+
