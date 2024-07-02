@@ -7,105 +7,44 @@ import pandas as pd
 from pandas import DataFrame
 
 
-class ExcelReader:
-    """
-    Use pandas to build an Excel Reader
-    """
+class ExcelReaderBase:
+    """excel文件读取类，使用pandas库和openpyxl库辅助完成"""
     file: str
     workbook: dict[str, DataFrame]
 
     def __init__(self, file: str, header=None):
-        self._excelChange(file, header)
-
-    def _excelChange(self, file: str, header=None):
-        if file.endswith('.xlsx'):
+        if not file.endswith('.xlsx'):
+            print('File is probably not an excel file')
+        else:
             self.file = file
             self.workbook = pandas.read_excel(self.file, sheet_name=None, header=header)
             self._sheets = self.workbook.keys()
-        else:
-            print('File is probably not an excel file')
-            self.file = file + '.xlsx'
-
-    def setFile(self, file: str):
-        """
-        Modify the Excel file path
-        """
-        self._excelChange(file)
 
     def getSheetNames(self):
-        """
-        Get this workbook's all sheets' names
-        Return list of sheets' names
-        """
+        """获取excel文件中的所有sheet名称"""
+        pass
+
+    def getSheetData(self, sheet: str):
+        """获取一个表格中的二维列表内容"""
+        pass
+
+
+class ExcelReader(ExcelReaderBase):
+    def __init__(self, file: str, header=None):
+        super().__init__(file, header)
+
+    def getSheetNames(self):
         return list(self.workbook.keys())
 
-    def getSheet(self, sheet: str):
-        """
-        Get a sheet's all cells
-        """
+    def getSheetData(self, sheet: str):
         if sheet not in self._sheets:
             return None
         else:
             return self.workbook[sheet].to_numpy().tolist()
 
-    def getCell(self, sheet: str, row: int, column: int):
-        """
-        Get sheet's the cell value
-        Return the sheet's row and column's value
-        """
-        if sheet not in self._sheets:
-            return None
-        else:
-            return self.workbook[sheet].iloc[row - 1, column - 1]
-
-    def getRowData(self, sheet: str, row: int):
-        """
-        Get sheet's the row data
-        The first row is sheet head
-        So start from the second row
-        """
-        if sheet not in self._sheets:
-            return None
-        else:
-            return self.workbook[sheet].iloc[row - 1].to_list()
-
-    def getColumnData(self, sheet: str, column: int):
-        """
-        Get sheet's the column data
-        """
-        if sheet not in self._sheets:
-            return None
-        else:
-            return self.workbook[sheet].iloc[:, column - 1].to_list()
-
-
-class SingleSheetExcelReader(ExcelReader):
-    """
-    this excel only has one sheet
-    if not,will only read the first sheet
-    """
-
-    def __init__(self, file: str, header=0):
-        super().__init__(file, header)
-        self.sheet = self.getSheetNames()[0]
-
-    def getSheet(self):
-        return super().getSheet(self.sheet)
-
-    def getCell(self, row: int, column: int):
-        return super().getCell(self.sheet, row, column)
-
-    def getRowData(self, row: int):
-        return super().getRowData(self.sheet, row)
-
-    def getColumnData(self, column: int):
-        return super().getColumnData(self.sheet, column)
-
-
-class ExcelWriter:
-    """
-    Use pandas and openpyxl to build an Excel Writer
-    """
+# TODO
+class ExcelWriterBase:
+    """excel文件写入类，使用openpyxl库辅助完成"""
     file: str
     workbook: openpyxl.Workbook
 
@@ -128,6 +67,12 @@ class ExcelWriter:
         append a sheet
         return dose the workbook has this sheet
         """
+        pass
+
+
+class ExcelWriter(ExcelWriterBase):
+
+    def appendSheet(self, sheet: str, data: DataFrame) -> bool:
         if not self._sheetExists(sheet):
             df = pd.DataFrame(data)
             self.workbook.create_sheet(sheet)
@@ -184,31 +129,45 @@ class ExcelWriter:
         self.workbook.close()
 
 
-class CsvWriter:
+class CsvWriterBase:
+    """csv文件写入类，使用pandas库辅助完成"""
+
     def __init__(self, data: list[list]):
         self.data = data
+
+    def write(self, file: str = 'output.csv'):
+        """写入文件"""
+        pass
+
+
+class CsvWriter(CsvWriterBase):
+    def __init__(self, data: list[list]):
+        super().__init__(data)
 
     def write(self, file: str = 'output.csv'):
         pandas.DataFrame(self.data).to_csv(file, header=False, index=False)
 
 
-class CsvReader:
-    def __init__(self, file: str,header=None):
+class CsvReaderBase:
+    """csv文件读取类，使用pandas库辅助完成"""
+
+    def __init__(self, file: str, header=None):
         self.file = file
         self.csv = pandas.read_csv(file, header=header, encoding='gbk', low_memory=False)
         self.rawData = self.csv.to_numpy().tolist()
 
-    def getData(self):
+    def getData(self) -> list[list]:
+        """获取数据"""
+        pass
+
+
+class CsvReader(CsvReaderBase):
+    def __init__(self, file: str, header=None):
+        super().__init__(file, header)
+
+    def getData(self) -> list[list]:
         return self.rawData
-
-    def getColumn(self, column: int):
-        return self.csv.iloc[:, column - 1].to_list()
-
-    def getColumns(self, columns: list[int]):
-        d = [self.csv.iloc[:, i - 1].to_list() for i in columns]
-        return [list(i) for i in zip(*d)]  # 转置
 
 
 if __name__ == '__main__':
-
     pass
