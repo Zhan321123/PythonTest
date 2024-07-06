@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+矩阵相关计算模块
+"""
 from typing import Sequence, Union
 import numpy as np
 

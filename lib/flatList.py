@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+二维数组相关计算
+"""
 from copy import copy, deepcopy
 from typing import Sequence, Union, Any
 

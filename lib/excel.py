@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+excel文件读取与写入
+包含：
+    .xlsx
+    .csv
+
+"""
 import os
 from typing import Sequence
 import openpyxl

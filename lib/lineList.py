@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+一维数组相关计算
+"""
 from copy import copy, deepcopy
 import random
 from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.stats import theilslopes
+
+from lib.functions import Function
 
 
 class _Line(Sequence):
@@ -144,13 +150,15 @@ class _Line(Sequence):
         """
         pass
 
-    def __add__(self, other):
-        """
-        self+other = self.list+list(other)
-        """
+    def __imul__(self, other):
+        """self *= float(other)"""
+
+    def __add__(self, other: Union[Sequence, Any]) -> "LineList":
+        """other2 = self + other"""
         pass
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: Union[Sequence, Any]):
+        """self += list(other)"""
         pass
 
     def __str__(self):
@@ -171,12 +179,60 @@ class _Line(Sequence):
     def __eq__(self, other):
         pass
 
+
+class _LineFigure:
     def generateFigure(self):
         """生成折线图"""
         pass
 
 
-class LineList(_Line):
+class _LineAnalysis:
+
+    def getMode(self) -> tuple:
+        """众数"""
+        pass
+
+    def getMedian(self) -> float:
+        """中位数"""
+        pass
+
+    def getSum(self) -> float:
+        """求和"""
+        pass
+
+    def getMean(self) -> float:
+        """平均数"""
+        pass
+
+    def getVariance(self) -> float:
+        """方差"""
+        pass
+
+    def getStandardDeviation(self) -> float:
+        """标准差"""
+        pass
+
+    def getSkewness(self):
+        """偏度"""
+        pass
+
+    def getKurtosis(self):
+        """峰度"""
+        pass
+
+    def senMedian(self) -> tuple:
+        """
+        Theil-Sen Median斜率估计趋势分析
+        认为每个数的 index为 x，值为 y
+        """
+        pass
+
+    def mannKendall(self):
+        """Mann-Kendall(MK)检验"""
+        pass
+
+
+class LineList(_Line, _LineAnalysis, _LineFigure):
     def __init__(self, data: Sequence):
         super().__init__(data)
 
@@ -238,7 +294,9 @@ class LineList(_Line):
         d = {i: self.data.count(i) for i in set(self.data)}
         if reverse:
             # HACK 效率待优化
-            return {i: self.elementOfCount(i) for i in d.values()}
+            dd = {i: self.elementOfCount(i) for i in d.values()}
+            ks = LineList(dd.keys()).sort(reverse=True)
+            return {i: dd[i] for i in ks}
         else:
             return d
 
@@ -338,16 +396,6 @@ class LineList(_Line):
     def greaterThan(self, value, ) -> list[bool]:
         return [i > value for i in self.data]
 
-    def generateFigure(self):
-        import matplotlib.pyplot as plt
-        import matplotlib
-        matplotlib.use('TkAgg')
-        matplotlib.rcParams['axes.unicode_minus'] = False
-        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
-        plt.plot(list(range(self.length())), self.data, marker='o')
-        plt.grid()
-        plt.show()
-
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         if isinstance(items, int):
             return self.data[items]
@@ -376,7 +424,18 @@ class LineList(_Line):
                 self[key] = [value] * len(key)
                 return
 
-    def __add__(self, other: Union[Sequence, Any]):
+    def __imul__(self, other):
+        for i in range(self.length()):
+            self.data[i] *= other
+        return self
+
+    def __add__(self, other: Union[Sequence, Any]) -> "LineList":
+        if isinstance(other, Sequence):
+            return LineList(self.data + list(other))
+        else:
+            return LineList(self.data + [other])
+
+    def __iadd__(self, other: Union[Sequence, Any]):
         if isinstance(other, Sequence):
             for i in other:
                 self.data.append(i)
@@ -402,6 +461,59 @@ class LineList(_Line):
             return all(i == j for i, j in zip(self.data, other))
         return False
 
+    def generateFigure(self):
+        import matplotlib.pyplot as plt
+        import matplotlib
+        matplotlib.use('TkAgg')
+        matplotlib.rcParams['axes.unicode_minus'] = False
+        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+        plt.plot(list(range(self.length())), self.data, marker='o')
+        plt.grid()
+        plt.show()
+
+    def getMode(self) -> list:
+        c = self.countOfEachElement(reverse=True)
+        return c[list(c.keys())[0]]
+
+    def getMedian(self) -> float:
+        s = self.__deepcopy__().sort()
+        length = s.length()
+        if length % 2 == 0:
+            return (s[length // 2 - 1] + s[length // 2]) / 2
+        else:
+            return s[length // 2]
+
+    def getSum(self) -> float:
+        return sum(self.data)
+
+    def getMean(self) -> float:
+        return self.getSum() / self.length()
+
+    def getVariance(self) -> float:
+        return sum([i ** 2 for i in self]) / self.length() - self.getMean() ** 2
+
+    def getStandardDeviation(self) -> float:
+        return self.getVariance() ** 0.5
+
+    def senMedian(self) -> tuple[float, float, float, float]:
+        x = list(range(self.length()))
+        # s = [(self[j] - self[i]) / (x[j] - x[i]) for i in range(self.length()) for j in range(i + 1, self.length())]
+        # print(LineList(s).getMedian())
+        slope = theilslopes(self.data, x)
+        print(f"slope:{slope[0]}, intercept:{slope[1]}, lowSlope:{slope[2]}, upSlope:{slope[3]}")
+        return *slope,
+
+    def mannKendall(self):
+        length = self.length()
+        s = sum(Function.sign(self[j] - self[i]) for i in range(length) for j in range(i + 1, length))
+        var = length * (length - 1) * (2 * length + 5) / 18
+        if s == 0:
+            z = 0
+        elif s > 0:
+            z = s / (var ** 0.5)
+        else:
+            z = (s + 1) / (var ** 0.5)
+        return z
 
 class LineUtil:
     @staticmethod
@@ -420,7 +532,7 @@ class LineUtil:
         生成随机list
         个数为num，最小值为欸lowest，最大值为highest
         """
-        return list([random.random() * (highest - lowest) + lowest for i in range(num)])
+        return list([random.random() * (highest - lowest) + lowest for _ in range(num)])
 
     @staticmethod
     def replaceRandom(aList: Sequence, proportion: float, new) -> list:
@@ -434,20 +546,13 @@ class LineUtil:
 
 
 if __name__ == '__main__':
-    l = LineList([0, 2, 0, 4, 0, 6, 7, 0, 9, 10, 0, 12, 67, 24, 1, 0, 0])
-    l.interpolate(old=0, method='cubic', lowest=0).printAll()
-    l.generateFigure()
-    # print(isinstance(l, Sequence))
-    # print(l[[False] * 8 + [True] * 9])
-    # l[[0, 3, 5]] = [9, 9, 9]
-    # l.printAll()
-    # print(l.getType())
-    # l[0] = 2
-    # l.print().interpolate().printAll()
-    # l.replaceList(-1, [1, 2, ]).printAll()
-    # print(LineUtil.equidistantList(1.1, 10, 1))
-    # print(l.getType())
-    # for i in l:
-    #     print(i)
-    l.printAll()
+    l = LineList(
+        [0, 2, 1, 1, 1, 1, 1, 0, 4, 0, 6, 1, 1, 0, 7, 0, 9, 4, 10, 0, 25, 0, 25, 16, 25, 89, 82, 34, 76, 89, 90, 16, 81,
+         12, 67, 24, 0])
+    l.interpolate(old=0, method='cubic', lowest=0)
+    print(l.mannKendall())
+    print(l.senMedian())
+    l*=-1
+    print(l.mannKendall())
+    print(l.senMedian())
     pass
