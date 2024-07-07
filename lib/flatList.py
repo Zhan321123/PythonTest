@@ -5,6 +5,8 @@
 from copy import copy, deepcopy
 from typing import Sequence, Union, Any
 
+from lib.importBase import importMatplotlib
+
 
 class _Flat(Sequence):
     """
@@ -325,22 +327,13 @@ class FlatList(_Flat):
         return iter(self.data)
 
     def generateHotMap(self):
-        import matplotlib
-        import matplotlib.pyplot as plt
-        matplotlib.use('TkAgg')
-        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
-        matplotlib.rcParams['axes.unicode_minus'] = False
-
+        plt = importMatplotlib()
         plt.imshow(self.data)
         plt.show()
         return self
 
     def generateLineFigure(self):
-        import matplotlib
-        import matplotlib.pyplot as plt
-        matplotlib.use('TkAgg')
-        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
-        matplotlib.rcParams['axes.unicode_minus'] = False
+        plt = importMatplotlib()
         for i in range(self.row()):
             plt.plot(self.data[i])
         plt.show()

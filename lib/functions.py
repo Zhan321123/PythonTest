@@ -22,16 +22,7 @@ class Function:
 
 class Analysis:
     """数据分析函数"""
-
-    @staticmethod
-    def linear(x: Sequence, y: Sequence) -> tuple[float, float, float]:
-        """线型回归"""
-        if len(x) != len(y):
-            raise ValueError('x and y must have the same length')
-        k, b = np.polyfit(x, y, 1)
-        r = np.corrcoef(x, y)[0][1]
-        print('k:', k, 'b:', b, 'r:', r)
-        return k, b, r
+    pass
 
 
 class Hydrology:

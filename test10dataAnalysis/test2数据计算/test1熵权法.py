@@ -21,8 +21,6 @@ import math
 from copy import deepcopy
 from typing import Sequence
 import numpy as np
-import pandas as pd
-from scipy.stats import entropy
 
 
 def t(l: Sequence[Sequence]):
@@ -96,7 +94,7 @@ def entropyWeight(head: Sequence, distinct: Sequence[bool], data: dict[str, Sequ
 
 # 指标类型
 head = ["Chinese", "Math", "Physics", "Chemistry", "English", "Politics", "Biology", "History", "demerit"]
-# 指标正负之分，正向指标为欸负
+# 指标正负之分，正向指标为True，负向指标为False
 distinct = [True, True, True, True, True, True, True, True, False]
 # 各个模型的参数
 data = {

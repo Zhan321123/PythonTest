@@ -10,6 +10,7 @@ from scipy.interpolate import interp1d
 from scipy.stats import theilslopes
 
 from lib.functions import Function
+from lib.importBase import importMatplotlib
 
 
 class _Line(Sequence):
@@ -181,7 +182,7 @@ class _Line(Sequence):
 
 
 class _LineFigure:
-    def generateFigure(self):
+    def generateLineFigure(self):
         """生成折线图"""
         pass
 
@@ -220,15 +221,8 @@ class _LineAnalysis:
         """峰度"""
         pass
 
-    def senMedian(self) -> tuple:
-        """
-        Theil-Sen Median斜率估计趋势分析
-        认为每个数的 index为 x，值为 y
-        """
-        pass
-
     def mannKendall(self):
-        """Mann-Kendall(MK)检验"""
+        """Mann-Kendall(MK)突变检验"""
         pass
 
 
@@ -461,12 +455,8 @@ class LineList(_Line, _LineAnalysis, _LineFigure):
             return all(i == j for i, j in zip(self.data, other))
         return False
 
-    def generateFigure(self):
-        import matplotlib.pyplot as plt
-        import matplotlib
-        matplotlib.use('TkAgg')
-        matplotlib.rcParams['axes.unicode_minus'] = False
-        matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+    def generateLineFigure(self):
+        plt = importMatplotlib()
         plt.plot(list(range(self.length())), self.data, marker='o')
         plt.grid()
         plt.show()
@@ -495,17 +485,10 @@ class LineList(_Line, _LineAnalysis, _LineFigure):
     def getStandardDeviation(self) -> float:
         return self.getVariance() ** 0.5
 
-    def senMedian(self) -> tuple[float, float, float, float]:
-        x = list(range(self.length()))
-        # s = [(self[j] - self[i]) / (x[j] - x[i]) for i in range(self.length()) for j in range(i + 1, self.length())]
-        # print(LineList(s).getMedian())
-        slope = theilslopes(self.data, x)
-        print(f"slope:{slope[0]}, intercept:{slope[1]}, lowSlope:{slope[2]}, upSlope:{slope[3]}")
-        return *slope,
-
     def mannKendall(self):
         length = self.length()
-        s = sum(Function.sign(self[j] - self[i]) for i in range(length) for j in range(i + 1, length))
+        sign = lambda x: 1 if x > 0 else -1
+        s = sum(sign(self[j] - self[i]) for i in range(length) for j in range(i + 1, length))
         var = length * (length - 1) * (2 * length + 5) / 18
         if s == 0:
             z = 0
@@ -514,6 +497,7 @@ class LineList(_Line, _LineAnalysis, _LineFigure):
         else:
             z = (s + 1) / (var ** 0.5)
         return z
+
 
 class LineUtil:
     @staticmethod
@@ -552,7 +536,7 @@ if __name__ == '__main__':
     l.interpolate(old=0, method='cubic', lowest=0)
     print(l.mannKendall())
     print(l.senMedian())
-    l*=-1
+    l *= -1
     print(l.mannKendall())
     print(l.senMedian())
     pass
