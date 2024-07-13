@@ -28,6 +28,7 @@ solution = root(equation, initial_guess)
 
 # 输出解
 if solution.success:
+    print('success')
     print("方程的解为: ", solution.x)
     print(equation(solution.x))
 else:

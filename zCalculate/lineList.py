@@ -7,10 +7,11 @@ import random
 from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.stats import theilslopes
+from scipy.stats import theilslopes, skew
 
-from lib.functions import Function
-from lib.importBase import importMatplotlib
+from zCalculate.flatList import FlatList
+from zCalculate.functions import Function
+from zCalculate.importBase import importMatplotlib
 
 
 class _Line(Sequence):
@@ -182,12 +183,34 @@ class _Line(Sequence):
 
 
 class _LineFigure:
+    """一维数组生成图像"""
+
     def generateLineFigure(self):
         """生成折线图"""
         pass
 
 
+class _LineToFlat:
+    """一维数组转化为二维数组"""
+
+    def toFlatByCol(self, col: int) -> list[list]:
+        """通过指定列转化为二维数组 list[list]"""
+        pass
+
+    def toFlatByRow(self, row: int, fill=0) -> list[list]:
+        """
+        通过指定行转化为二维数组 list[list]
+        如果最后一列元素不够则用fill填充
+        """
+        pass
+
+    def toColumn(self) -> list[list]:
+        """转换为列数据 list[list[element]]"""
+        pass
+
+
 class _LineAnalysis:
+    """一维数组数据分析"""
 
     def getMode(self) -> tuple:
         """众数"""
@@ -213,12 +236,12 @@ class _LineAnalysis:
         """标准差"""
         pass
 
-    def getSkewness(self):
-        """偏度"""
+    def getCv(self)->float:
+        """变异系数/变差系数"""
         pass
 
-    def getKurtosis(self):
-        """峰度"""
+    def getCs(self)->float:
+        """偏度系数/偏态系数/偏差系数/Skewness"""
         pass
 
     def mannKendall(self):
@@ -226,7 +249,9 @@ class _LineAnalysis:
         pass
 
 
-class LineList(_Line, _LineAnalysis, _LineFigure):
+
+
+class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
     def __init__(self, data: Sequence):
         super().__init__(data)
 
@@ -485,6 +510,12 @@ class LineList(_Line, _LineAnalysis, _LineFigure):
     def getStandardDeviation(self) -> float:
         return self.getVariance() ** 0.5
 
+    def getCv(self) -> float:
+        return self.getStandardDeviation() / self.getMean()
+
+    def getCs(self) -> float:
+        return float(skew(self.data))
+
     def mannKendall(self):
         length = self.length()
         sign = lambda x: 1 if x > 0 else -1
@@ -497,6 +528,22 @@ class LineList(_Line, _LineAnalysis, _LineFigure):
         else:
             z = (s + 1) / (var ** 0.5)
         return z
+
+    def toColumn(self) -> list[list]:
+        return [[i] for i in self]
+
+    def toFlatByRow(self, row: int, fill=None) -> list[list]:
+        if self.length() % row != 0:
+            print('when line change to flat, result will not a rectangle')
+        result = list([self.data[i:i + row] for i in range(0, self.length(), row)])
+        if fill is None:
+            return result
+        else:
+            result[-1] += [fill] * (row - len(result[-1]))
+            return result
+
+    def toFlatByCol(self, col: int, fill=None) -> list[list]:
+        return self.toFlatByRow(self.length() // col, fill)
 
 
 class LineUtil:
@@ -533,10 +580,7 @@ if __name__ == '__main__':
     l = LineList(
         [0, 2, 1, 1, 1, 1, 1, 0, 4, 0, 6, 1, 1, 0, 7, 0, 9, 4, 10, 0, 25, 0, 25, 16, 25, 89, 82, 34, 76, 89, 90, 16, 81,
          12, 67, 24, 0])
-    l.interpolate(old=0, method='cubic', lowest=0)
-    print(l.mannKendall())
-    print(l.senMedian())
-    l *= -1
-    print(l.mannKendall())
-    print(l.senMedian())
+    # f = FlatList(l.toFlatByCol(4, fill=0))
+    print(l.getCv())
+    print(l.getCs())
     pass

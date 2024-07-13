@@ -5,7 +5,7 @@
 from copy import copy, deepcopy
 from typing import Sequence, Union, Any
 
-from lib.importBase import importMatplotlib
+from zCalculate.importBase import importMatplotlib
 
 
 class _Flat(Sequence):

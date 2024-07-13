@@ -6,9 +6,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
-
-from lib.lineList import LineUtil
-
+import zCalculate.lineList as ll
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus'] = False
 matplotlib.use('TkAgg')
@@ -22,7 +20,7 @@ def functionGraph(f, limit: tuple[float, float], fineness=100):
     :param limit: 上下限
     :param fineness: 点数，点越多曲线更平滑
     """
-    x = LineUtil.equidistantList2(limit[0], limit[1], fineness)
+    x = ll.LineUtil.equidistantList2(limit[0], limit[1], fineness)
     print(x)
     y = [f(i) for i in x]
     plt.figure(figsize=(10, 6))

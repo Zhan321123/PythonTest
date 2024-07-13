@@ -11,7 +11,7 @@ from typing import Sequence
 import numpy as np
 from scipy.stats import theilslopes
 
-from lib.importBase import importMatplotlib
+from zCalculate.importBase import importMatplotlib
 
 
 class _DoubleLine:
