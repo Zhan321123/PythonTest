@@ -61,6 +61,10 @@ class _Line(Sequence):
         """去重"""
         pass
 
+    def reverse(self):
+        """颠倒"""
+        pass
+
     def countOfElement(self, value) -> int:
         """统计元素出现的次数"""
         pass
@@ -236,19 +240,17 @@ class _LineAnalysis:
         """标准差"""
         pass
 
-    def getCv(self)->float:
+    def getCv(self) -> float:
         """变异系数/变差系数"""
         pass
 
-    def getCs(self)->float:
+    def getCs(self) -> float:
         """偏度系数/偏态系数/偏差系数/Skewness"""
         pass
 
     def mannKendall(self):
         """Mann-Kendall(MK)突变检验"""
         pass
-
-
 
 
 class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
@@ -299,6 +301,9 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
     def toSet(self):
         self.data = list(set(self.data))
         return self
+
+    def reverse(self):
+        self.data = self.data[::-1]
 
     def countOfElement(self, value) -> int:
         return self.data.count(value)

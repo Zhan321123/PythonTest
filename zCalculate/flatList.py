@@ -23,7 +23,16 @@ class _Flat(Sequence):
             print("data is empty, subsequent operations may encounter issues")
 
     def _reformList(self):
+        """归正数据"""
         self.data = list(map(list, self.data))
+
+    def _isRectangle(self) -> bool:
+        """判断是否为矩形"""
+        for i in self.data:
+            if len(i) != len(self.data[0]):
+                print("data is not rectangle, subsequent operations may encounter issues")
+                return False
+        return True
 
     def get(self):
         return self.data
@@ -89,10 +98,6 @@ class _Flat(Sequence):
         """替换一列"""
         pass
 
-    def transpose(self):
-        """转置，转置自身"""
-        pass
-
     def __eq__(self, other):
         pass
 
@@ -133,7 +138,38 @@ class _Flat(Sequence):
         pass
 
 
-class FlatList(_Flat):
+class _FlatMove:
+
+    def transpose(self):
+        """转置，对称轴为 / """
+        pass
+
+    def transposeSymmetry(self):
+        """反向转置，对称轴为 \ """
+        pass
+
+    def mirrorHorizon(self):
+        """镜像，水平翻转"""
+        pass
+
+    def mirrorVertical(self):
+        """镜像，垂直翻转"""
+        pass
+
+    def rotate90(self):
+        """顺时针旋转90度"""
+        pass
+
+    def rotate180(self):
+        """顺时针旋转180度"""
+        pass
+
+    def rotate270(self):
+        """顺时针旋转270度，逆时针旋转90度"""
+        pass
+
+
+class FlatList(_Flat, _FlatMove):
     def __init__(self, data: Sequence[Sequence]):
         super().__init__(data)
 
@@ -268,11 +304,33 @@ class FlatList(_Flat):
         return self
 
     def transpose(self):
-        self.data = list(zip(*self.data))
-        self._reformList()
+        if self._isRectangle():
+            self.data = list(zip(*self.data))
+            self._reformList()
         return self
 
+    def transposeSymmetry(self):
+        return self.rotate90().mirrorHorizon()
 
+    def mirrorHorizon(self):
+        if self._isRectangle():
+            self.data = list(zip(*self.data[::-1]))
+            self._reformList()
+        return self
+
+    def mirrorVertical(self):
+        if self._isRectangle():
+            self.data = self.data[::-1]
+        return self
+
+    def rotate90(self):
+        return self.transpose().mirrorVertical()
+
+    def rotate180(self):
+        return self.mirrorVertical().mirrorHorizon()
+
+    def rotate270(self):
+        return self.mirrorVertical().transpose()
 
     def __getitem__(self, item: Union[
         int, Sequence[Union[Sequence[int], Sequence[int]]], tuple[int, int, int, int]]):
@@ -301,9 +359,8 @@ class FlatList(_Flat):
                 if (len(value) != key[1] - key[0]) | (len(value[0]) != key[3] - key[2]):
                     print('setitem error, the shape of key not equal to the shape of value')
                 else:
-                    for index,i in enumerate(range(key[0], key[1])):
+                    for index, i in enumerate(range(key[0], key[1])):
                         self.data[i][key[2]:key[3]] = list(value[index])
-
 
     def __str__(self):
         return str(self.data)
@@ -348,4 +405,3 @@ if __name__ == '__main__':
         [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
          (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
     )
-
