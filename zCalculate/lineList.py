@@ -7,10 +7,7 @@ import random
 from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.stats import theilslopes, skew
-
-from zCalculate.flatList import FlatList
-from zCalculate.functions import Function
+from scipy.stats import skew, gamma
 from zCalculate.importBase import importMatplotlib
 
 
@@ -252,8 +249,16 @@ class _LineAnalysis:
         """Mann-Kendall(MK)突变检验"""
         pass
 
-    def occupancy(self)->list:
+    def occupancy(self) -> list:
         """统计自身占总体的比例"""
+        pass
+
+    def guaranteedValue(self, p: float) -> float:
+        """p3型曲线，保证率为p的值"""
+        pass
+
+    def guaranteedRate(self, value: float) -> float:
+        """保证值为value的保证率"""
         pass
 
 
@@ -542,6 +547,20 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         summ = self.getSum()
         return [i / summ for i in self.data]
 
+    def guaranteedValue(self, p: float) -> float:
+        if 0 <= p <= 1:
+            shape, loc, scale = gamma.fit(self.data, floc=0)  # 估计伽玛分布的参数
+            dist = gamma(shape, loc=loc, scale=scale)  # 创建伽玛分布对象
+            return dist.ppf(p)
+        else:
+            print('p must between 0 and 1')
+
+    def guaranteedRate(self, value: float) -> float:
+        m = 0
+        for i in self.data:
+            m += (1 if i >= value else 0)
+        return m / self.length()
+
     def toColumn(self) -> list[list]:
         return [[i] for i in self]
 
@@ -594,7 +613,7 @@ if __name__ == '__main__':
         [0, 2, 1, 1, 1, 1, 1, 0, 4, 0, 6, 1, 1, 0, 7, 0, 9, 4, 10, 0, 25, 0, 25, 16, 25, 89, 82, 34, 76, 89, 90, 16, 81,
          12, 67, 24, 0])
     # f = FlatList(l.toFlatByCol(4, fill=0))
-    l2 = LineList([1,2,3,4,5,6,7,8,9])
+    l2 = LineList([1, 2, 3, 4, 5, 6, 7, 8, 9, 5, 6, 5, 6, 5, 6])
     print(l2.getCv())
     print(l2.getCs())
     pass
