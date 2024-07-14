@@ -252,6 +252,10 @@ class _LineAnalysis:
         """Mann-Kendall(MK)突变检验"""
         pass
 
+    def occupancy(self)->list:
+        """统计自身占总体的比例"""
+        pass
+
 
 class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
     def __init__(self, data: Sequence):
@@ -534,6 +538,10 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
             z = (s + 1) / (var ** 0.5)
         return z
 
+    def occupancy(self) -> list:
+        summ = self.getSum()
+        return [i / summ for i in self.data]
+
     def toColumn(self) -> list[list]:
         return [[i] for i in self]
 
@@ -586,6 +594,7 @@ if __name__ == '__main__':
         [0, 2, 1, 1, 1, 1, 1, 0, 4, 0, 6, 1, 1, 0, 7, 0, 9, 4, 10, 0, 25, 0, 25, 16, 25, 89, 82, 34, 76, 89, 90, 16, 81,
          12, 67, 24, 0])
     # f = FlatList(l.toFlatByCol(4, fill=0))
-    print(l.getCv())
-    print(l.getCs())
+    l2 = LineList([1,2,3,4,5,6,7,8,9])
+    print(l2.getCv())
+    print(l2.getCs())
     pass
