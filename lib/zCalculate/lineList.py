@@ -8,7 +8,7 @@ from typing import Sequence, Union, Any
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.stats import skew, gamma
-from zCalculate.importBase import importMatplotlib
+from lib.zCalculate.importBase import importMatplotlib
 
 
 class _Line(Sequence):
@@ -551,8 +551,9 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         if 0 <= p <= 1:
             shape, loc, scale = gamma.fit(self.data, floc=0)  # 估计伽玛分布的参数
             dist = gamma(shape, loc=loc, scale=scale)  # 创建伽玛分布对象
-            return dist.ppf(p)
+            return dist.ppf(1 - p)
         else:
+
             print('p must between 0 and 1')
 
     def guaranteedRate(self, value: float) -> float:

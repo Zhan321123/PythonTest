@@ -4,9 +4,9 @@
 import math
 
 import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib
-import zCalculate.lineList as ll
+from lib import zCalculate as ll
+
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus'] = False
 matplotlib.use('TkAgg')

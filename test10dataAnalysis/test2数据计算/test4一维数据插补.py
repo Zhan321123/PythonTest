@@ -20,13 +20,8 @@ kind=
 
 
 """
-import random
-from typing import Sequence
-import numpy as np
-from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib
-from zCalculate.lineList import *
 
 matplotlib.use('Qt5Agg')
 matplotlib.rcParams['axes.unicode_minus'] = False
