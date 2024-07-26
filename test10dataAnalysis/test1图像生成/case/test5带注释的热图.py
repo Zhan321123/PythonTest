@@ -1,5 +1,11 @@
 """
 带注释的热图
+    https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html#sphx-glr-gallery-images-contours-and-fields-image-annotated-heatmap-py
+插补方法：
+    'none', 'nearest', 'bilinear', 'bicubic', 'spline16',
+    'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
+    'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos'
+
 
 """
 import matplotlib.pyplot as plt

@@ -64,9 +64,8 @@ def annotate(x, y, text, code):
                path_effects=[withStroke(linewidth=7, foreground='white')])
     ax.add_artist(c)
 
-    # use path_effects as a background for the texts
-    # draw the path_effects and the colored text separately so that the
-    # path_effects cannot clip other texts
+    # 使用path_effects作为文本的背景
+    # 将path_effects和彩色文本分开绘制，使path_effects无法剪辑其他文本
     for path_effects in [[withStroke(linewidth=7, foreground='white')], []]:
         color = 'white' if path_effects else royal_blue
         ax.text(x, y-0.2, text, zorder=100,

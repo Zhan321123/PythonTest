@@ -7,9 +7,11 @@ Hinton图
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+
 matplotlib.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
 
 def hinton(matrix, max_weight=None, ax=None):
     """Draw Hinton diagram for visualizing a weight matrix."""
@@ -35,8 +37,12 @@ def hinton(matrix, max_weight=None, ax=None):
 
 
 if __name__ == '__main__':
-    # Fixing random state for reproducibility
-    np.random.seed(19680801)
-
-    hinton(np.random.rand(20, 20) - 0.5)
+    data = [
+        [2, -5, 1, 7, -9, 2, -7, 3],
+        [4, 1, 6, 8, 1, -3, -6, -2],
+        [3, -2, 7, -9, -3, 7, 6, 1],
+        [3, 5, 1, -7, 2, 5, -4, -1],
+        [3, 7, 1, -7, 1, -7, 8, -9]
+    ]
+    hinton(data)
     plt.show()
