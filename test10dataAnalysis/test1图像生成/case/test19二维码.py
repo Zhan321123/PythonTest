@@ -38,7 +38,7 @@ decodeQR('file/wifiPassword.jpg')
 
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
-img_matplotlib = plt.imread("file/qrCode.png")
+img_matplotlib = plt.imread("../file/qrCode.png")
 plt.imshow(img_matplotlib)
 plt.axis('off')  # 移除坐标轴
 plt.show()

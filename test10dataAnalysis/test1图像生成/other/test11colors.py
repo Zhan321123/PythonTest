@@ -1,8 +1,13 @@
 """
-条形颜色图参照
-https://matplotlib.org/stable/gallery/color/colormap_reference.html#sphx-glr-gallery-color-colormap-reference-py
+条形色带图参照：
+    https://matplotlib.org/stable/gallery/color/colormap_reference.html#sphx-glr-gallery-color-colormap-reference-py
 
-cmaps = [('Perceptually Uniform Sequential', [
+反向色带添加_r：
+    Append _r to the name of any built-in colormap to get the reversed version
+    example:'viridis', 'viridis_r'
+
+cmaps =
+    [('Perceptually Uniform Sequential', [
             'viridis', 'plasma', 'inferno', 'magma', 'cividis']),
          ('Sequential', [
             'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
