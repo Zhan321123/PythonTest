@@ -30,9 +30,17 @@ cmaps =
             'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
             'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
             'gist_ncar'])]
+
+自定义colormap
+    colors = [(int, color)]
+    cmap = LinearSegmentedColormap.from_list('colormap name', colors)
+    int范围0-1，color为 #161616进制颜色
+    colormap name不可直接用
+
 """
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 from objprint import objprint
 
 print(matplotlib.colormaps)
@@ -65,3 +73,9 @@ cmaps = [
     'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
     'gist_ncar'
 ]
+
+# 自定义colormap
+colors = [(0, '#FF0000'),   # 红色
+          (0.8, '#FFFF00'), # 黄色
+          (1, '#00FF00')]   # 绿色
+cmap = LinearSegmentedColormap.from_list('RedGreen', colors)

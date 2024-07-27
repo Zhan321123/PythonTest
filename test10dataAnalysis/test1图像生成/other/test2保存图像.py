@@ -1,9 +1,11 @@
 """
 将测试集的图像保存
 
-command:
-根据x、y、z生成三维散点图
-用代码实现将该图片保存到本地（同级目录文件夹）
+fig.savefig('dir name', dpi=int, bbox_inches='tight')
+     dir name： 路径名
+     dpi： 图片质量
+     bbox_inches='tight'： 去除空白
+
 """
 import random
 from copy import copy
@@ -38,5 +40,5 @@ ax.set_zlabel('Z Label')
 
 # 显示图形
 plt.show()
-
-fig.savefig('new_figure.png')
+# 提升图片质量保存图像，如果重复，会被覆盖
+fig.savefig('test2.png', dpi=600, bbox_inches='tight')

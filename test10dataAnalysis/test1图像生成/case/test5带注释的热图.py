@@ -11,12 +11,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
+from matplotlib.colors import LinearSegmentedColormap
 
 mpl.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
-# 使用viridis色带
-plt.rcParams['image.cmap'] = 'viridis'
+
 
 vegetables = ["黄瓜", "番茄", "生菜", "芦笋",
               "马铃薯", "小麦", "大麦"]
@@ -32,7 +32,12 @@ harvest = np.array([[0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
                     [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3]])
 
 fig, ax = plt.subplots()
-im = ax.imshow(harvest, cmap="PiYG", interpolation="nearest")
+
+colors = [(0, '#FF0000'),   # 红色
+          (0.9, '#FFFF00'), # 黄色
+          (1, '#00FF00')]   # 绿色
+cmap = LinearSegmentedColormap.from_list('custom', colors)
+im = ax.imshow(harvest, cmap=cmap, interpolation="nearest")
 plt.colorbar(im)
 # 显示所有记号并用相应的列表条目标记它们
 ax.set_xticks(np.arange(len(farmers)), labels=farmers)
