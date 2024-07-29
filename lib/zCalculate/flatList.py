@@ -340,9 +340,11 @@ class FlatList(_Flat, _FlatMove):
             return []
         elif isinstance(item, Sequence):
             if isinstance(item[0], int):
-                if all(self.__checkRow(item[0]), self.__checkRow(item[1]), self.__checkCol(item[2]),
-                       self.__checkCol(item[3])):
-                    return list(self.data[i][item[2]:item[3]] for i in range(item[0], item[1]))
+                if all((self.__checkRow(item[0]), self.__checkRow(item[1]), self.__checkCol(item[2]),
+                       self.__checkCol(item[3]))):
+                    return list(self.data[i][item[2]:item[3]+1] for i in range(item[0], item[1]+1))
+                else:
+                    print('getitem error, index out of range')
             elif isinstance(item[0], Sequence):
                 if all(*map(self.__checkRow, item[0]), *map(self.__checkCol, item[1])):
                     return list([list([self.data[i][j] for j in item[1]]) for i in item[0]])
@@ -386,8 +388,7 @@ class FlatList(_Flat, _FlatMove):
     def generateHotMap(self):
         plt = importMatplotlib()
         plt.imshow(self.data)
-        plt.show()
-        return self
+        return plt
 
     def generateLineFigure(self):
         plt = importMatplotlib()
