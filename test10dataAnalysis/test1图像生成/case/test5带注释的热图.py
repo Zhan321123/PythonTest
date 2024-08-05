@@ -6,7 +6,8 @@
     'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
     'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc', 'lanczos'
 
-
+plt.imshow(data, cmap=cmap)
+plt.pcolormesh(data, cmap=cmap,edgecolors='', linewidth=int)
 """
 import matplotlib.pyplot as plt
 import numpy as np
