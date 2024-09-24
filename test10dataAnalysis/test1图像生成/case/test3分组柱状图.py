@@ -19,7 +19,7 @@ width = 0.25  # 条形图的宽度
 groups = 3  # 分组的数量
 
 for i, yy in enumerate(y):
-    plt.bar(ind + i * width, yy, width, label=z[i])
+    plt.bar(ind + i * width, yy, width=width, label=z[i])
 
 plt.xticks(ind + width * groups / 2, x)  # 设置x轴刻度标签的位置和标签内容
 plt.show()

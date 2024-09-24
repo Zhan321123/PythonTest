@@ -51,6 +51,8 @@ class _Line(Sequence):
 
         lowest为最小值，如果插补后含有小于lowest的值，会先清除，然后linear插补
         如果原本有的值就小于lowest，也会替换和插补
+
+        methods in ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
         """
         pass
 
@@ -581,12 +583,12 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
 
 class LineUtil:
     @staticmethod
-    def equidistantList1(start, end, step) -> list:
+    def equidistantListByStep(start, end, step) -> list:
         """生成等距list，用步长"""
         return [start + i * step for i in range(int((end - start) / step) + 1)]
 
     @staticmethod
-    def equidistantList2(start, end, num) -> list:
+    def equidistantListByNum(start, end, num) -> list:
         """生成等距list，用数量"""
         return [start + i * (end - start) / (num - 1) for i in range(num)]
 

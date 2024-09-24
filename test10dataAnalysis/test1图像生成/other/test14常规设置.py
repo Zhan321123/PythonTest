@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-库导入类
+将matplotlib常规设置封装为函数并返回plt
 """
+
+
 def importMatplotlib():
     import matplotlib.pyplot as plt
     import matplotlib
@@ -9,6 +10,8 @@ def importMatplotlib():
     matplotlib.rcParams['axes.unicode_minus'] = False  # 正确显示负号
     plt.rcParams['font.sans-serif'] = ['SimSun']  # 中文使用宋体
     plt.rcParams['font.serif'] = ['Times New Roman']  # 英文使用Times New Roman
+    plt.rcParams['image.cmap'] = 'rainbow'
+    # plt.style.use('Solarize_Light2')
     plt.rcParams.update({
         'axes.titlesize': 18,  # 标题字体大小
         'legend.fontsize': 14,  # 图例字体大小
@@ -24,7 +27,18 @@ def importMatplotlib():
         'grid.color': 'gray',  # 网格颜色
         'grid.linewidth': 0.5,  # 网格线宽度
         'axes.facecolor': 'white',  # 轴背景色
-        'figure.facecolor': 'white'  # 图形背景色
+        'figure.facecolor': 'white',  # 图形背景色
     })
-    # plt.grid()
+    plt.grid()
     return plt
+
+
+plt = importMatplotlib()
+plt.plot([1, 2, 3, 4, 5, 6], [1, 4, 9, 16, 25, 36], label='line', marker='o')
+plt.bar([1, 2, 3, 4, 5, 6], [6, 2, 4, 6, 1, 2], label='bar')
+plt.text(2, 15, 'Text')
+plt.title('Sample Plot')
+plt.xlabel('X 轴')
+plt.ylabel('Y 轴')
+plt.legend()
+plt.show()

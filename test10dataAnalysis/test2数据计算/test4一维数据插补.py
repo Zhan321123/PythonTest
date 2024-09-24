@@ -22,6 +22,8 @@ kind=
 """
 import matplotlib.pyplot as plt
 import matplotlib
+from copy import copy
+from lib.zCalculate.lineList import LineUtil, LineList
 
 matplotlib.use('Qt5Agg')
 matplotlib.rcParams['axes.unicode_minus'] = False
