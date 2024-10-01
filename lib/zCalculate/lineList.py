@@ -26,6 +26,8 @@ class _Line(Sequence):
         """
         获取元素类型
         如果元素类型单一，则返回该类型，否则返回类型列表
+        ['str',1,2,3,'4'].getType() = [str,int]
+        [1,2,3].getType() = int
         """
         pass
 
@@ -38,7 +40,10 @@ class _Line(Sequence):
         pass
 
     def replace(self, old, new):
-        """替换所有"""
+        """
+        替换所有
+        [1,1,2,3].replace(1,10) = [10,10,2,3]
+        """
         pass
 
     _kinds = ['zero', 'next', 'nearest', 'slinear', 'quadratic', 'cubic']
@@ -57,7 +62,10 @@ class _Line(Sequence):
         pass
 
     def toSet(self):
-        """去重"""
+        """
+        去重
+        [1,2,2,3].toSet() = [1,2,3]
+        """
         pass
 
     def reverse(self):
@@ -69,14 +77,19 @@ class _Line(Sequence):
         pass
 
     def elementOfCount(self, count: int) -> list:
-        """获取出现次数为count的元素"""
+        """
+        获取出现次数为count的元素
+        [1,2,3,3,4,4].elementOfCount(2) = [3,4]
+        """
         pass
 
     def countOfEachElement(self, reverse=False) -> dict:
         """
         统计每个元素出现的次数
         非reverse时，返回{element:int}，各元素出现的次数
+        [1,1,1,3,4,4].countOfEachElement() = {1:3,3:1,4:2}
         是reverse时，返回{int:[element]}，出现为n次的元素
+        [1,1,1,3,4,4].countOfEachElement(True) = {3:1,1:3,2:4}
         """
         pass
 
@@ -105,15 +118,25 @@ class _Line(Sequence):
         pass
 
     def has(self, value) -> bool:
-        """判断是否包含"""
+        """
+        判断是否包含
+        [1,2,3].has(1) = true
+        """
         pass
 
     def hasAll(self, value: Sequence) -> bool:
-        """判断是否包含所有"""
+        """
+        判断是否包含所有
+        [1,2,3].hasAll([1,3]) = True
+        [1,2,3].hasAll([1,4]) = False
+        """
         pass
 
     def insertAnElement(self, index, value):
-        """插入元素"""
+        """
+        插入元素
+        [1,2,3].insertAnElement(1,4) = [1,4,2,3]
+        """
         pass
 
     def removeAnElement(self, index):
@@ -125,45 +148,89 @@ class _Line(Sequence):
         pass
 
     def insertList(self, index, value: Sequence):
-        """插入列表"""
+        """
+        插入列表
+        [1,2,3].insertList(1,[4,5]) = [1,4,5,2,3]
+        """
         pass
 
     def replaceList(self, index, value: Sequence):
-        """替换列表部分元素"""
+        """
+        替换列表部分元素
+        [1,2,3].replaceList(0,[10,20]) = [10,20,3]
+        [1,2,3].replaceList(1,[4,5,6]) = [1,4,5,6]
+        """
         pass
 
     def isIt(self, value) -> list[bool]:
-        """返回等于value的boolean列表"""
+        """
+        返回等于value的boolean列表
+        [1,2,3].isIt(2) = [False,True,False]
+        """
         pass
 
     def greaterThan(self, value) -> list[bool]:
-        """返回大于value的boolean列表"""
+        """
+        返回大于等于value的boolean列表
+        [1,2,3].greaterThan(2) = [False,False,True]
+        """
+        pass
+
+    def allAdd(self, value)-> "LineList":
+        """
+        所有值加value
+        [1,2,3].allAdd(-2) = [-1,0,1]
+        """
+        pass
+
+    def allMultiply(self, value)-> "LineList":
+        """
+        所有值乘value
+        [1,2,3].allMultiply(2) = [2,4,6]
+        """
         pass
 
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         """
         lineList[int] -> object
-        lineList[Sequence[int]] -> Sequence[object]
+            [1,2,3][1] = 2
         lineList[Sequence[bool]] -> Sequence[object]
+            [1,2,3][[True,False,True]] = [1,3]
+        lineList[Sequence[int]] -> Sequence[object]
+            [1,2,3,4][[0,1,3]] = [1,2,4]
         """
         pass
 
     def __setitem__(self, key: Union[int, Sequence[int]], value):
         """
         lineList[int] = object
+            [1,2,3][1] = 20 -> [1,20,3]
         lineList[Sequence[int]] = Sequence[object]
+            [1,2,3,4][1,2] = [20,30] -> [1,20,30,4]
+            [1,2,3,4][1,2] = 20 -> [1,20,20,4]
         """
         pass
 
     def __imul__(self, other):
-        """self *= float(other)"""
+        """
+        self *= float(other)
+            [1,2,3] * 2 = [2,4,6]
+        """
 
     def __add__(self, other: Union[Sequence, Any]) -> "LineList":
-        """other2 = self + other"""
+        """
+        other2 = self + other
+            [1,2,3] + [4,5] -> [1,2,3,4,5]
+            [1,2,3] + 4 -> [1,2,3,4]
+        """
         pass
 
     def __iadd__(self, other: Union[Sequence, Any]):
-        """self += list(other)"""
+        """
+        self += list(other)
+            [1,2,3] + [4,5] = [1,2,3,4,5]
+            [1,2,3] + 4 = [1,2,3,4]
+        """
         pass
 
     def __str__(self):
@@ -272,7 +339,7 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         return self.data
 
     def getType(self):
-        types = LineList(type(i) for i in self.data).toSet()
+        types = LineList(list(type(i) for i in self.data)).toSet()
         if types.length() == 1:
             return types[0]
         else:
@@ -429,7 +496,16 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         return [i for i, j in enumerate(bs) if j]
 
     def greaterThan(self, value, ) -> list[bool]:
-        return [i > value for i in self.data]
+        return [i >= value for i in self.data]
+
+    def allAdd(self, value) -> "LineList":
+        self.data = list(i + value for i in self.data)
+        return self
+
+    def allMultiply(self, value) -> "LineList":
+        self.data = list(i * value for i in self.data)
+        return self
+
 
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         if isinstance(items, int):
@@ -550,6 +626,8 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         return [i / summ for i in self.data]
 
     def guaranteedValue(self, p: float) -> float:
+        if not self.greaterThan(0):
+            print('all elements must greater than 0, maybe is 0-')
         if 0 <= p <= 1:
             shape, loc, scale = gamma.fit(self.data, floc=0)  # 估计伽玛分布的参数
             dist = gamma(shape, loc=loc, scale=scale)  # 创建伽玛分布对象
