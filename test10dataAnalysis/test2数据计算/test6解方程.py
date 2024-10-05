@@ -1,35 +1,59 @@
 """
-参考文章:https://blog.csdn.net/nejssd/article/details/104901610
 
-使用的库
-scipy
-
-
-sympy
-
-TODO 未完成
 """
-import numpy as np
-from scipy.optimize import root
 import math
+import matplotlib.pyplot as plt
+import matplotlib
+import numpy as np
+
+matplotlib.use('TkAgg')
+matplotlib.rcParams['axes.unicode_minus'] = False
+matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+
+
+def equationSolving(equation, xl, xr, error=0.0000001):
+    if equation(xl) * equation(xr) > 0:
+        print("此范围可能无解，或请重新设置解的范围，确保范围内仅有一根")
+        return None
+    while abs(xr - xl) > error:
+        xm = (xl + xr) / 2
+        if equation(xl) * equation(xm) < 0:
+            xr = xm
+        else:
+            xl = xm
+    result = (xl + xr) / 2
+    deviation = equation(result)
+    print(f"方程根为{result},偏差为{deviation}")
+    return result
 
 
 # 定义方程
-def equation(vars):
-    x = vars[0]
-    return [x ** 2 + 1 / x - (10 + math.exp(x))]
+def f(x):
+    result = None
+    try:
+        result = x ** 2 + 1 / x - (10 + math.exp(x))
+    except Exception as e:
+        print(e, "超出函数定义域")
+    return result
 
 
-# 初始猜测值，好的初始值可以帮助更快找到解
-initial_guess = [10]
+def fxChart(ax, equation, xl, xr):
+    xs = np.linspace(xl, xr, 100)
+    ys = list(equation(i) for i in xs)
+    ps = []
+    for index, i in enumerate(ys):
+        if i is None:
+            continue
+        else:
+            ps.append((xs[index], i))
+    xs, ys = zip(*ps)
+    ax.plot(xs, ys, '-', color='red', label='f(x)')
+    ax.plot((min(xs), max(xs)), (0, 0), '-')
 
-# 使用scipy的root函数求解
-solution = root(equation, initial_guess)
 
-# 输出解
-if solution.success:
-    print('success')
-    print("方程的解为: ", solution.x)
-    print(equation(solution.x))
-else:
-    print("未能找到解，可能的原因包括无解、初始猜测不合适或算法限制。")
+fig, ax = plt.subplots()
+fxChart(ax, f, 0, 1)
+
+equationSolving(f, 0.0001, 0.2)
+
+plt.show()

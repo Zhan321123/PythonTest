@@ -15,7 +15,6 @@ plt.pcolormesh(data, cmap=cmap,edgecolors='', linewidth=int)
 
 """
 from typing import Sequence
-
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
@@ -33,7 +32,7 @@ def imshowChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence
     """热图，带注释，无格子边框，可插补"""
     if not interpolation in _interpolations:
         interpolation = 'none'
-    colors = [(0, '#FF0000'), (0.9, '#FFFF00'), (1, '#00FF00')]
+    colors = [(0, '#FF0000'), (0.5, '#FFFF00'), (1, '#00FF00')]
     cmap = LinearSegmentedColormap.from_list('custom', colors)
     im = ax.imshow(zss, cmap=cmap, interpolation=interpolation)
     fig.colorbar(im, ax=ax, pad=0.05, shrink=1)  # 给ax添加色带
@@ -73,6 +72,7 @@ def hinton(ax, dss, max_weight=None, ):
         ax.add_patch(rect)
     ax.autoscale_view()
     ax.invert_yaxis()
+    ax.set_title("Hinton diagram")
 
 
 if __name__ == '__main__':
@@ -90,12 +90,15 @@ if __name__ == '__main__':
         [4, 1, 6, 8, 1, -3, -6, -2],
         [3, -2, 7, -9, -3, 7, 6, 1],
         [3, 5, 1, -7, 2, 5, -4, -1],
-        [3, 7, 1, -7, 1, -7, 8, -9]
+        [3, 7, 1, -7, 1, -7, 8, -9],
+        [2, 8, -6, 5, -4, -7, -8, 9],
+        [3, -5, 6, 0, -1, 2, 3, -6]
     ]
 
     fig, axs = plt.subplots(2, 2)
     imshowChart(axs[0][0], x, y, d1)
     pcolormeshChart(axs[0][1], x, y, d1)
     hinton(axs[1][0], d2)
+    axs[1][1].remove()
 
     plt.show()

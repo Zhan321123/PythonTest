@@ -12,7 +12,7 @@ import matplotlib
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-matplotlib.use('Qt5Agg')
+matplotlib.use('TkAgg')
 matplotlib.rcParams['axes.unicode_minus'] = False
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']
 

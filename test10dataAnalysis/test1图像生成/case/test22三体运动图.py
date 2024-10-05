@@ -24,8 +24,8 @@ star1 = mpatches.Circle(starPos[1], starMass[1] / 5, color='green')
 star2 = mpatches.Circle(starPos[2], starMass[2] / 5, color='blue')
 planet = mpatches.Circle(starPos[3], starMass[3] / 5, color='black')
 
-# points = []
-# trace, = ax.plot([], [], '.-', lw=1, ms=2)
+points = []
+trace, = ax.plot([], [], '.-', lw=1, ms=2)
 
 def planetCalculate():
     x1 = starPos[0][0] - starPos[3][0]
