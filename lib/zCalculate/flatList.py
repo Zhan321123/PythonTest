@@ -387,7 +387,7 @@ class FlatList(_Flat, _FlatMove):
 
     def generateHotMap(self):
         plt = importMatplotlib()
-        plt.imshow(self.data)
+        plt.imshowChart(self.data,,
         return plt
 
     def generateLineFigure(self):

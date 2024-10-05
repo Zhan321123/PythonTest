@@ -20,7 +20,7 @@ plt.stem(x, y)
 
 markerline, stemlines, baseline = plt.stem(
     x, y, linefmt='grey', markerfmt='D', bottom=1.1)
-markerline.set_markerfacecolor('none')
+# markerline.set_markerfacecolor('none')
 
 
 plt.show()

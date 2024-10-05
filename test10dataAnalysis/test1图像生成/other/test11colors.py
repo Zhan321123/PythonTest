@@ -41,12 +41,10 @@ cmaps =
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from objprint import objprint
 
 print(matplotlib.colormaps)
 
 print(matplotlib.colormaps["rainbow"])
-objprint(matplotlib.colormaps["rainbow"])
 
 color = matplotlib.colormaps["rainbow"](0.5)
 print(color)

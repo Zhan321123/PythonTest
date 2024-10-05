@@ -16,44 +16,33 @@ matplotlib.use('Qt5Agg')
 matplotlib.rcParams['axes.unicode_minus'] = False
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']
 
-data = {
-    'A': {1: 18, 2: 20, 3: 34, 4: 45, 5: 52, 6: 65, 7: 78, 8: 89, 9: 100, 10: 109, 11: 115, 12: 120, 13: 130, 14: 138,
-          15: 142, 16: 149, 17: 156, 18: 159, 19: 160, 20: 161, 21: 161, 22: 162, 23: 162, 24: 162, },
-    'B': {1: 23, 2: 39, 3: 45, 4: 56, 5: 67, 6: 78, 7: 89, 8: 100, 9: 111, 10: 122, 11: 133, 12: 144, 13: 155, 14: 166,
-          15: 170, 16: 173, 17: 178, 18: 182, 19: 192, 20: 193, 21: 193, 22: 194, 23: 194, 24: 194}
-}
 
 def lineFitting(x: Sequence, y: Sequence):
-    """
-    一元线型回归
-    """
-    if len(x) != len(y):
-        print('x,y长度不一致')
-        return None
+    """一元线型回归"""
     model = LinearRegression()
     xss = tuple(map(lambda x: (x,), x))
     model.fit(xss, y)
     r = model.score(xss, y)
     k = model.coef_[0]
     b = model.intercept_
-    return k, b, r
+    print('斜率：', k, '截距：', b, 'score:', r)
 
-aAge = list(data['A'].keys())
-aHigh =list(data['A'].values())
-akbr = lineFitting(aAge, aHigh)
-print(akbr)
 
-bAge = np.array(list(data['B'].keys()))
-bHigh = np.array(list(data['B'].values()))
-bkbr = lineFitting(bAge, bHigh)
-print(bkbr)
+def linear(ax, xs, ys):
+    """点图、并绘制一元线型回归线"""
+    m, b = np.polyfit(xs, ys, 1)
+    regression_y = list(m * i + b for i in xs)  # 生成回归线
+    ax.scatter(xs, ys, label='Data Points', marker='o')  # 绘制散点图
+    ax.plot(xs, regression_y, '-', color='red', label='Regression Line')  # 绘制回归线
+    ax.legend()
 
-plt.figure()
 
-plt.plot(aAge, aHigh, 'o-', label='A points')
-plt.plot(bAge, bHigh, 'o-', label='B points')
-plt.plot([aAge[0], aAge[-1]], [akbr[0] * aAge[0] + akbr[1], akbr[0] * aAge[-1] + akbr[1]], label='A line')
-plt.plot([bAge[0], bAge[-1]], [bkbr[0] * bAge[0] + bkbr[1], bkbr[0] * bAge[-1] + bkbr[1]], label='B line')
+if __name__ == '__main__':
+    x = list(range(1, 23))
+    y1 = [18, 20, 34, 45, 52, 65, 78, 89, 100, 109, 115, 120, 130, 138, 142, 149, 156, 159, 160, 161, 161, 162, ]
 
-plt.legend()
-# plt.show()
+    fig, axs = plt.subplots(1, 2)
+    lineFitting(x, y1)
+    linear(axs[0], x, y1)
+
+    plt.show()

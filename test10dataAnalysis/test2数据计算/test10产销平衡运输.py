@@ -18,7 +18,7 @@ def ProductionSalesTransport(freight: list[list], product: list, sales: list):
     # 检查数据
     if (len(freight) != len(product)) or (len(freight[0]) != len(sales)): print("长度不一致错误");return
     # 将数据转化为问题，用于手动检查
-    print("问题描述:{")
+    print("问题描述-表格{")
     print(rf"""    产地\销地 | {"  ".join(f"销地{i}" for i in range(len(product)))} | 产量""")
     for i in range(len(product)):
         print(f"""     产地{i} | {"  ".join(f"{freight[i][j]}" for j in range(len(product)))} | {product[i]}""")
@@ -31,16 +31,16 @@ def ProductionSalesTransport(freight: list[list], product: list, sales: list):
               range(len(product)))
     sb = list(([0] * i + [1] + [0] * (len(product) - i)) * (len(sales) - 1) for i in range(len(sales)))
     if sum(product) == sum(sales):
-        status = "产销平衡"
+        status = "产 = 销，启动-产销平衡"
         A, B = [], []
         e = pb + sb
         E = product + sales
     elif sum(product) >= sum(sales):
-        status = "产>销"
+        status = "产 > 销，启动-确保满足销售地"
         A, B = pb, product
         e, E = sb, sales
     else:
-        status = "销>产"
+        status = "销 > 产，启动-尽量满足销售地"
         A, B = sb, sales
         e, E = pb, product
     result = optimize.linprog(c, A, B, e, E, xr, method='highs')
@@ -52,7 +52,7 @@ def ProductionSalesTransport(freight: list[list], product: list, sales: list):
     if result.success:
         x = list(map(float, result.x))
         x = list(list(x[i + j * len(product)] for i in range(len(sales))) for j in range(len(product)))
-        print("    运输规划：{")
+        print("    运输规划-表格{")
         print(fr"""        产地\销地 | {"  ".join(f"销地{i}" for i in range(len(product)))}""")
         for i in range(len(product)):
             print(f"""        产地{i} | {"  ".join(map(str, x[i]))}""")

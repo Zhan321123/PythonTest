@@ -1,62 +1,46 @@
 """
 折线图
 
-data的key为日期，value为数量
-要求图上标上数据
-由于日期字符太长，斜着写
 """
-import pyarrow
+from typing import Sequence
+
 import matplotlib.pyplot as plt
 import matplotlib
-import matplotlib.dates as mdates
-import numpy as np
-import pandas as pd
+
 matplotlib.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-data = {
-    "2019-01-01": 156,
-    "2019-01-02": 167,
-    "2019-01-03": 156,
-    "2019-01-04": 189,
-    "2019-01-05": 167,
-    "2019-01-06": 189,
-    "2019-01-07": 200,
-    "2019-01-08": 189,
-    "2019-01-09": 156,
-    "2019-01-10": 124,
-    "2019-01-11": 180,
-    "2019-01-12": 249
-}
+
+def simpleLine(ax: plt.Axes, xs: Sequence, ys: Sequence):
+    """绘制简单的折线图"""
+    ax.plot(xs, ys, marker='+', linewidth=1, )
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.grid()
+    ax.set_title("simple line chart")
 
 
-# 将数据转换为pandas DataFrame以方便处理日期
-df = pd.DataFrame.from_dict(data, orient='index').reset_index()
-df.columns = ['date', 'quantity']
+def multipleLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
+    markers = ['o', '+', 'x', '*', 's', 'd']
+    for index, ys in enumerate(yss):
+        ax.plot(xs, ys, linewidth=1, marker=markers[index], label=f'line-{index}')
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.grid()
+    ax.legend(title="legend")
+    ax.set_title("multiple line chart")
 
-# 转换日期字符串为datetime对象
-df['date'] = pd.to_datetime(df['date'])
 
-# 创建图形
-fig, ax = plt.subplots(figsize=(12, 6))
+if __name__ == '__main__':
+    x = [1, 2, 3, 4, 5]
+    y1 = [3, 5, 4, 8, 10]
+    y2 = [[1, 2, 3, 4, 5],
+          [2, 4, 6, 8, 10],
+          [3, 6, 9, 12, 15]]
 
-ax.plot(df['date'], df['quantity'], marker='o', linestyle='-')
+    fig, axs = plt.subplots(2, 2)
+    simpleLine(axs[0][0], x, y1)
+    multipleLine(axs[0][1], x, y2)
 
-# 在每个点上标注数值
-for x, y in zip(df['date'], df['quantity']):
-    ax.annotate(f'{y}', xy=(x, y), xytext=(-3, 3), textcoords='offset points', ha='right', va='bottom')
-
-# 设置x轴为日期格式
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
-
-# 添加标题和坐标轴标签
-plt.title("Daily Quantity Over Time")
-plt.xlabel("Date")
-plt.ylabel("Quantity")
-
-plt.xticks(rotation=45)
-
-# 显示图形
-plt.show()
+    plt.show()

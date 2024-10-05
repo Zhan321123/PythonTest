@@ -54,8 +54,7 @@ U = np.ma.array(U, mask=mask)
 axs[4].streamplot(X, Y, U, V, color='r')
 axs[4].set_title('Streamplot with Masking')
 
-axs[4].imshow(~mask, extent=(-w, w, -w, w), alpha=0.5, cmap='gray',
-              aspect='auto')
+axs[4].imshowChart(~mask)
 axs[4].set_aspect('equal')
 
 axs[5].streamplot(X, Y, U, V, broken_streamlines=False)
