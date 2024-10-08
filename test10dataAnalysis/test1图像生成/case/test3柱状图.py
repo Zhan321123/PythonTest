@@ -12,7 +12,6 @@ matplotlib.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-
 def simpleBar(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单柱状图"""
     bars = ax.bar(xs, ys, color='green', edgecolor='red', hatch='/', label='bar')
@@ -80,7 +79,7 @@ def bar3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence, z
     top = [i for yss in zss for i in yss]
     bottom = [0] * len(top)
     ax = fig.add_subplot(*position, projection='3d', elev=30, azim=45, )
-    ax.bar3d(x, y, bottom, 1, 1, top, shade=True, color='pink',alpha=0.8)
+    ax.bar3d(x, y, bottom, 1, 1, top, shade=True, color='pink', alpha=0.8)
     ax.set_xticks(range(len(xs)), xs)
     ax.set_yticks(range(len(ys)), ys)
     ax.set_xlabel('x')
@@ -91,6 +90,7 @@ def bar3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence, z
 
 if __name__ == '__main__':
     fig, axs = plt.subplots(2, 3)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5) # 调整子图间距
 
     x1 = ['A', 'B', 'C', 'D', 'E']
     x2 = ['a', 'b', 'c', 'd']

@@ -26,7 +26,7 @@ class _Flat(Sequence):
         """归正数据"""
         self.data = list(map(list, self.data))
 
-    def _isRectangle(self) -> bool:
+    def isRectangle(self) -> bool:
         """判断是否为矩形"""
         for i in self.data:
             if len(i) != len(self.data[0]):
@@ -48,55 +48,51 @@ class _Flat(Sequence):
 
     def count(self, value: Any) -> int:
         """统计元素个数"""
-        pass
 
     def print(self):
         """简洁打印"""
-        pass
 
     def printAll(self):
         """全部打印"""
-        pass
 
     def getRow(self, index: int) -> list:
         """获取一行"""
-        pass
 
     def insertRow(self, index: int, value: Sequence):
         """插入一行"""
-        pass
 
     def appendRow(self, value: Sequence):
         """末尾添加一行"""
-        pass
 
     def removeRow(self, index: int):
         """删除一行"""
-        pass
 
     def replaceRow(self, index: int, value: Sequence):
         """替换一行"""
-        pass
 
     def getColumn(self, index: int) -> list:
         """获取一列"""
-        pass
 
     def removeColumn(self, index: int):
         """删除一列"""
-        pass
 
     def insertColumn(self, index: int, value: Sequence):
         """插入一列"""
-        pass
 
     def appendColumn(self, value: Sequence):
         """末尾添加一列"""
-        pass
 
     def replaceColumn(self, index: int, value: Sequence):
         """替换一列"""
-        pass
+
+    def verticalSelfAdd(self) -> list:
+        """竖直方向上自加"""
+
+    def horizontalSelfAdd(self) -> list:
+        """水平方向上自加"""
+
+    def toLine(self) -> list:
+        """转化为一维数组"""
 
     def __eq__(self, other):
         pass
@@ -110,6 +106,7 @@ class _Flat(Sequence):
         FlatList[int] -> list
         FlatList[startRow:int, endRow:int, startCol:int. endCol:int] -> list[list]
         FlatList[chooseRow:Sequence[int], chooseCol:Sequence[int]] -> list[list]
+        FlatList[row,col] -> Element
         """
         pass
 
@@ -125,8 +122,14 @@ class _Flat(Sequence):
     def __copy__(self):
         pass
 
-    def __deepcopy__(self):
+    def __deepcopy__(self) -> "FlatList":
         pass
+
+    def allAdd(self, value) -> "FlatList":
+        """所有元素加value"""
+
+    def allMul(self, value) -> "FlatList":
+        """所有元素乘value"""
 
     # 前提是元素对象都是数类型，生成图像这里都不进行检查
     def generateHotMap(self):
@@ -303,8 +306,20 @@ class FlatList(_Flat, _FlatMove):
                 self.data[i][index] = value[i]
         return self
 
+    def verticalSelfAdd(self) -> list:
+        return list(sum(i) for i in zip(*self.data))
+
+    def horizontalSelfAdd(self) -> list:
+        return list(sum(i) for i in self.data)
+
+    def toLine(self) -> list:
+        result = []
+        for i in self.data:
+            result.extend(i)
+        return result
+
     def transpose(self):
-        if self._isRectangle():
+        if self.isRectangle():
             self.data = list(zip(*self.data))
             self._reformList()
         return self
@@ -313,13 +328,13 @@ class FlatList(_Flat, _FlatMove):
         return self.rotate90().mirrorHorizon()
 
     def mirrorHorizon(self):
-        if self._isRectangle():
+        if self.isRectangle():
             self.data = list(zip(*self.data[::-1]))
             self._reformList()
         return self
 
     def mirrorVertical(self):
-        if self._isRectangle():
+        if self.isRectangle():
             self.data = self.data[::-1]
         return self
 
@@ -333,36 +348,52 @@ class FlatList(_Flat, _FlatMove):
         return self.mirrorVertical().transpose()
 
     def __getitem__(self, item: Union[
-        int, Sequence[Union[Sequence[int], Sequence[int]]], tuple[int, int, int, int]]):
+        int,
+        Sequence[Union[Sequence[int], Sequence[int]]],
+        Sequence[Union[int, int, int, int]],
+        Sequence[Union[int, int]]]):
         if isinstance(item, int):
             if self.__checkRow(item):
                 return self.data[item]
             return []
         elif isinstance(item, Sequence):
             if isinstance(item[0], int):
-                if all((self.__checkRow(item[0]), self.__checkRow(item[1]), self.__checkCol(item[2]),
-                       self.__checkCol(item[3]))):
-                    return list(self.data[i][item[2]:item[3]+1] for i in range(item[0], item[1]+1))
-                else:
-                    print('getitem error, index out of range')
+                if len(item) == 4:
+                    if all((self.__checkRow(item[0]), self.__checkRow(item[1]), self.__checkCol(item[2]),
+                            self.__checkCol(item[3]))):
+                        return list(self.data[i][item[2]:item[3] + 1] for i in range(item[0], item[1] + 1))
+                    else:
+                        print('getitem error, index out of range')
+                elif len(item) == 2:
+                    if all((self.__checkRow(item[0]), self.__checkCol(item[1]))):
+                        return self.data[item[0]][item[1]]
             elif isinstance(item[0], Sequence):
                 if all(*map(self.__checkRow, item[0]), *map(self.__checkCol, item[1])):
                     return list([list([self.data[i][j] for j in item[1]]) for i in item[0]])
 
-    def __setitem__(self, key: Union[int, Sequence[Union[int, int, int, int]]], value: Sequence):
+    def __setitem__(self, key: Union[
+        int,
+        Sequence[Union[int, int, int, int]],
+        Sequence[Union[int, int]]],
+                    value: Sequence):
         if isinstance(key, int) and self.__checkRow(key):
             if isinstance(value, Sequence):
                 if self.__checkColLength(value):
                     self.data[key] = list(value)
             else:
                 self.data[key] = [value] * self.col()
-        elif isinstance(key, Sequence) and all(*map(self.__checkRow, key[0:1]), *map(self.__checkCol, key[2:3])):
-            if isinstance(value, Sequence):
-                if (len(value) != key[1] - key[0]) | (len(value[0]) != key[3] - key[2]):
-                    print('setitem error, the shape of key not equal to the shape of value')
-                else:
-                    for index, i in enumerate(range(key[0], key[1])):
-                        self.data[i][key[2]:key[3]] = list(value[index])
+        elif isinstance(key, Sequence):
+            if len(key) == 4:
+                if all((*map(self.__checkRow, key[0:1]), *map(self.__checkCol, key[2:3]))):
+                    if isinstance(value, Sequence):
+                        if (len(value) != key[1] - key[0]) | (len(value[0]) != key[3] - key[2]):
+                            print('setitem error, the shape of key not equal to the shape of value')
+                        else:
+                            for index, i in enumerate(range(key[0], key[1])):
+                                self.data[i][key[2]:key[3]] = list(value[index])
+            elif len(key) == 2:
+                if all((self.__checkRow(key[0]), self.__checkCol(key[1]))):
+                    self.data[key[0]][key[1]] = value
 
     def __str__(self):
         return str(self.data)
@@ -370,8 +401,20 @@ class FlatList(_Flat, _FlatMove):
     def __copy__(self):
         return copy(self.data)
 
-    def __deepcopy__(self):
-        return deepcopy(self.data)
+    def __deepcopy__(self) -> "FlatList":
+        return FlatList(deepcopy(self.data))
+
+    def allMul(self, value) -> "FlatList":
+        for i in self.data:
+            for j in range(len(i)):
+                i[j] *= value
+        return self
+
+    def allAdd(self, value) -> "FlatList":
+        for i in self.data:
+            for j in range(len(i)):
+                i[j] += value
+        return self
 
     def __eq__(self, other):
         if not isinstance(other, Sequence):
@@ -387,7 +430,7 @@ class FlatList(_Flat, _FlatMove):
 
     def generateHotMap(self):
         plt = importMatplotlib()
-        plt.imshowChart(self.data,,
+        plt.imshowChart(self.data)
         return plt
 
     def generateLineFigure(self):
@@ -402,7 +445,7 @@ if __name__ == '__main__':
     a = FlatList([[1, 2, 3], [1, 2, 3], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
                   [25, 26, 27], [28, 29, 30], [31, 32, 33], [34, 35, 36], [37, 38, 39], [40, 41, 42]])
     # a.t().print().printAll()
-    b = FlatList(
-        [(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40), (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
-         (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)]
-    )
+    b = FlatList([(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40),
+                  (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
+                  (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)])
+    print(b[2, 3])

@@ -176,19 +176,25 @@ class _Line(Sequence):
         """
         pass
 
-    def allAdd(self, value)-> "LineList":
+    def allAdd(self, value) -> "LineList":
         """
         所有值加value
         [1,2,3].allAdd(-2) = [-1,0,1]
         """
         pass
 
-    def allMultiply(self, value)-> "LineList":
+    def allMul(self, value) -> "LineList":
         """
         所有值乘value
         [1,2,3].allMultiply(2) = [2,4,6]
         """
         pass
+
+    def seqMerge(self, value) -> "LineList":
+        """
+        将序列value完全拆解并入
+        [].seqMerge([1,[2,[3,4],5],[6,7]] = [1,2,3,4,5,6,7]
+        """
 
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         """
@@ -251,6 +257,9 @@ class _Line(Sequence):
     def __eq__(self, other):
         pass
 
+    def __int__(self) -> "LineList":
+        pass
+
 
 class _LineFigure:
     """一维数组生成图像"""
@@ -290,7 +299,7 @@ class _LineAnalysis:
         """中位数"""
         pass
 
-    def getSum(self) -> float:
+    def sum(self) -> float:
         """求和"""
         pass
 
@@ -502,10 +511,21 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         self.data = list(i + value for i in self.data)
         return self
 
-    def allMultiply(self, value) -> "LineList":
+    def allMul(self, value) -> "LineList":
         self.data = list(i * value for i in self.data)
         return self
 
+    def seqMerge(self, value) -> "LineList":
+        if not isinstance(value, list):
+            self.data.append(value)
+        mid = []
+        for item in value:
+            if isinstance(item, list):
+                mid.extend(LineList([]).seqMerge(item).get())
+            else:
+                mid.append(item)
+        self.data.extend(mid)
+        return self
 
     def __getitem__(self, items: Union[int, Sequence[int], Sequence[bool]]):
         if isinstance(items, int):
@@ -572,6 +592,14 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
             return all(i == j for i, j in zip(self.data, other))
         return False
 
+    def __int__(self) -> "LineList":
+        self.data = list(map(int, self.data))
+        return self
+
+    def int(self) -> "LineList":
+        self.__int__()
+        return self
+
     def generateLineFigure(self):
         plt = importMatplotlib()
         plt.plot(list(range(self.length())), self.data, marker='o')
@@ -590,11 +618,11 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         else:
             return s[length // 2]
 
-    def getSum(self) -> float:
+    def sum(self) -> float:
         return sum(self.data)
 
     def getMean(self) -> float:
-        return self.getSum() / self.length()
+        return self.sum() / self.length()
 
     def getVariance(self) -> float:
         return sum([i ** 2 for i in self]) / self.length() - self.getMean() ** 2
@@ -622,7 +650,7 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         return z
 
     def occupancy(self) -> list:
-        summ = self.getSum()
+        summ = self.sum()
         return [i / summ for i in self.data]
 
     def guaranteedValue(self, p: float) -> float:
@@ -694,7 +722,8 @@ if __name__ == '__main__':
         [0, 2, 1, 1, 1, 1, 1, 0, 4, 0, 6, 1, 1, 0, 7, 0, 9, 4, 10, 0, 25, 0, 25, 16, 25, 89, 82, 34, 76, 89, 90, 16, 81,
          12, 67, 24, 0])
     # f = FlatList(l.toFlatByCol(4, fill=0))
-    l2 = LineList([1, 2, 3, 4, 5, 6, 7, 8, 9, 5, 6, 5, 6, 5, 6])
-    print(l2.getCv())
-    print(l2.getCs())
+    # l2 = LineList([1, 2, 3, 4, 5, 6, 7, 8, 9, 5, 6, 5, 6, 5, 6])
+    # print(l2.getCv())
+    # print(l2.getCs())
+    LineList([]).seqMerge([1, [2, [3, 4], 5], [6, 7]]).printAll()
     pass

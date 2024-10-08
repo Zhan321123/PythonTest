@@ -44,11 +44,13 @@ def stackLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
 
 def stemLine(ax: plt.Axes, xs: Sequence, ys: Sequence, bottom):
     """茎图"""
+    ax.stem(xs, ys)
     ax.stem(xs, ys, bottom=bottom, markerfmt='D', linefmt='blue')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.grid()
     ax.set_title('stem line chart')
+
 
 def polarLine(ax: plt.Axes, position: (int, int, int), thetas: Sequence, rs: Sequence):
     """极坐标折线图"""
@@ -59,6 +61,7 @@ def polarLine(ax: plt.Axes, position: (int, int, int), thetas: Sequence, rs: Seq
     ax.set_ylabel('r')
     ax.set_title('polar line chart')
 
+
 if __name__ == '__main__':
     x = [1, 2, 3, 4, 5, 6, 7, 8]
     y1 = [3, 5, 4, 8, 10, 12, 11, 14]
@@ -67,6 +70,8 @@ if __name__ == '__main__':
           [3, 6, 8, 14, 17, 19, 22, 20]]
 
     fig, axs = plt.subplots(2, 3)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5) # 调整子图间距
+
     simpleLine(axs[0][0], x, y1)
     multipleLine(axs[0][1], x, y2)
     stackLine(axs[1][0], x, y2)

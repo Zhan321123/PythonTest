@@ -96,6 +96,8 @@ if __name__ == '__main__':
     ]
 
     fig, axs = plt.subplots(2, 2)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5) # 调整子图间距
+
     imshowChart(axs[0][0], x, y, d1)
     pcolormeshChart(axs[0][1], x, y, d1)
     hinton(axs[1][0], d2)

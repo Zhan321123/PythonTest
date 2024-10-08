@@ -13,6 +13,14 @@ style = ['Solarize_Light2', '_classic_test_patch', '_mpl-gallery', '_mpl-gallery
 styles = plt.style.available
 print(styles)
 
-plt.style.use('Solarize_Light2')
-plt.plot([1, 2, 3, 4], [1, 4, 2, 3], marker='o')
+fig, (ax1, ax2) = plt.subplots(1, 2)
+
+with plt.style.context('_classic_test_patch'):
+    ax2.plot([1, 2, 3, 4], [1, 4, 2, 3])
+    ax2.set_title('_classic_test_patch')
+with plt.style.context('Solarize_Light2'):
+    ax1.plot([1, 2, 3, 4], [1, 4, 2, 3])
+    ax1.set_title('Solarize_Light2')
+
+
 plt.show()

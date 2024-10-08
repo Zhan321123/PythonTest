@@ -59,6 +59,8 @@ if __name__ == '__main__':
     random.shuffle(z)
 
     fig, axs = plt.subplots(2, 2)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5) # 调整子图间距
+
     simplePoint(axs[0][0], x, y)
     point3d(axs[0][1], (2, 2, 2), x, y, z)  # position:(2,3,4)，表示在2×3网格中的第4个位置
     sizePoint(axs[1][0], x, y, z)

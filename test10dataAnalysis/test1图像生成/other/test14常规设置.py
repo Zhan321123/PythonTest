@@ -6,12 +6,12 @@
 def importMatplotlib():
     import matplotlib.pyplot as plt
     import matplotlib
-    matplotlib.use('TkAgg')
+    matplotlib.use('TkAgg') # 在不兼容的终端上使用python自带的窗口展示
     matplotlib.rcParams['axes.unicode_minus'] = False  # 正确显示负号
-    plt.rcParams['font.sans-serif'] = ['SimSun']  # 中文使用宋体
-    plt.rcParams['font.serif'] = ['Times New Roman']  # 英文使用Times New Roman
-    plt.rcParams['image.cmap'] = 'rainbow'
-    # plt.style.use('Solarize_Light2')
+    plt.rcParams['font.sans-serif'] = ['SimSun']  # 中文使用 宋体
+    plt.rcParams['font.serif'] = ['Times New Roman']  # 英文使用 Times New Roman
+    plt.rcParams['image.cmap'] = 'rainbow' # 默认颜色方案为 rainbow
+    plt.style.use('Solarize_Light2') # 根据需要使用图像风格
     plt.rcParams.update({
         'axes.titlesize': 18,  # 标题字体大小
         'legend.fontsize': 14,  # 图例字体大小
@@ -26,10 +26,9 @@ def importMatplotlib():
         'font.size': 15,  # 默认字体大小，通常为text()方法中的字体大小
         'grid.color': 'gray',  # 网格颜色
         'grid.linewidth': 0.5,  # 网格线宽度
-        'axes.facecolor': 'white',  # 轴背景色
-        'figure.facecolor': 'white',  # 图形背景色
+        # 'axes.facecolor': 'white',  # 轴背景色
+        # 'figure.facecolor': 'white',  # 图形背景色
     })
-    plt.grid()
     return plt
 
 
