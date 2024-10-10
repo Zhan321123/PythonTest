@@ -2,34 +2,11 @@
 条形色带图参照：
     https://matplotlib.org/stable/gallery/color/colormap_reference.html#sphx-glr-gallery-color-colormap-reference-py
 
+matplotlib.colormaps所有官方色带
+
 反向色带添加_r：
     Append _r to the name of any built-in colormap to get the reversed version
     example:'viridis', 'viridis_r'
-
-cmaps =
-    [('Perceptually Uniform Sequential', [
-            'viridis', 'plasma', 'inferno', 'magma', 'cividis']),
-         ('Sequential', [
-            'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-            'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-            'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn']),
-         ('Sequential (2)', [
-            'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
-            'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
-            'hot', 'afmhot', 'gist_heat', 'copper']),
-         ('Diverging', [
-            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']),
-         ('Cyclic', ['twilight', 'twilight_shifted', 'hsv']),
-         ('Qualitative', [
-            'Pastel1', 'Pastel2', 'Paired', 'Accent',
-            'Dark2', 'Set1', 'Set2', 'Set3',
-            'tab10', 'tab20', 'tab20b', 'tab20c']),
-         ('Miscellaneous', [
-            'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
-            'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-            'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
-            'gist_ncar'])]
 
 自定义colormap
     colors = [(int, color)]
@@ -37,43 +14,88 @@ cmaps =
     int范围0-1，color为 #161616进制颜色
     colormap name不可直接用
 
+获取单个颜色
+    cmap(0~1)，注意这里是()不是[]
+
+使用方法：
+    1、定义colormap，自定义cmap = cmap 或 matplotlib.colormaps["色带名"]
+    2、c=colors(index / len(ys)) 或 colors(ys / ys.max())
+    3、ax.图(*args, color=c)
 """
-import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
-print(matplotlib.colormaps)
+import matplotlib
 
-print(matplotlib.colormaps["rainbow"])
+matplotlib.use("TkAgg")
 
-color = matplotlib.colormaps["rainbow"](0.5)
-print(color)
+print("-----------获取所有颜色表colormaps----------")
+print(matplotlib.colormaps)  # 所有官方色带
+rainbow = matplotlib.colormaps["rainbow"]
 
-color2 = matplotlib.colormaps["rainbow"](258)
-print(color2)
+print("-----------自定义colormap-----------")
+colors1 = [(0, '#FF0000'),  # 红色
+           (0.5, '#FFFF00'),  # 黄色
+           (1, '#00FF00')]  # 绿色
+colors2 = [(0, '#000000'), (1, '#FFFFFF')]  # 白色、黑色
+c1 = LinearSegmentedColormap.from_list('name', colors1)
+c2 = LinearSegmentedColormap.from_list('name', colors2)
 
-cmaps = [
-    'viridis', 'plasma', 'inferno', 'magma', 'cividis',
-    'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
-    'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
-    'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
-    'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
-    'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
-    'hot', 'afmhot', 'gist_heat', 'copper',
-    'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-    'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
-    'twilight', 'twilight_shifted', 'hsv',
-    'Pastel1', 'Pastel2', 'Paired', 'Accent',
-    'Dark2', 'Set1', 'Set2', 'Set3',
-    'tab10', 'tab20', 'tab20b', 'tab20c',
-    'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
-    'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
-    'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
-    'gist_ncar'
-]
+print("-----------获取单个颜色----------")
+# 0<x<1
+print(0, ' \t', c2(0))  # 0是最左颜色，1是最右颜色
+print(0.5, '\t', c2(0.5))
+print(1, ' \t', c2(1))
+# 0<x<255
+print(200.0, '\t', c2(200.0))  # x/255对应到0-1之间
+print(255, '\t', c2(255))
+# x<0 || x>255
+print(-1, ' \t', c2(-1))  # 低于0，显示0
+print(100000, '\t', c2(100000))  # 超过255，显示255
 
-# 自定义colormap
-colors = [(0, '#FF0000'),   # 红色
-          (0.8, '#FFFF00'), # 黄色
-          (1, '#00FF00')]   # 绿色
-cmap = LinearSegmentedColormap.from_list('RedGreen', colors)
+print("-----------获取多颜色colors-----------")
+cs1 = c2([0, 0.5, 1])  # 对于数据在0-1之间的可以直接作为参数
+print(cs1)
+d = np.arange(3)
+print(c2(d))
+print(c2(d / d.max()))  # d/d.max()，归一化
+
+
+def line(ax: plt.Axes, xs, yss):
+    colors = matplotlib.colormaps["rainbow"]
+    for index, ys in enumerate(yss):
+        ax.plot(xs, ys, linewidth=1, color=colors(index / len(yss)))
+
+
+def bar1(ax: plt.Axes, xs, ys):
+    c = c2(ys)
+    ax.bar(xs, ys, color=c)
+
+
+def bar2(ax: plt.Axes, xs, ys):
+    c = c2(ys / ys.max())
+    ax.bar(xs, ys, color=c)
+
+
+def hotmap(ax: plt.Axes, yss):
+    ax.imshow(yss, cmap=c1)
+
+
+if __name__ == '__main__':
+    x1 = np.arange(5)
+    y1 = np.arange(1, 101).reshape(20, 5)  # 生成一个20行5列的递增数列
+    x2 = np.arange(-100, 500)
+    y2 = [[0, 1, 3, 6],
+          [2, 4, 7, 10],
+          [5, 8, 11, 13],
+          [9, 12, 14, 15]]
+
+    fig, axs = plt.subplots(2, 2)
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距
+
+    line(axs[0, 0], x1, y1)
+    bar1(axs[1, 0], x2, x2)
+    bar2(axs[1, 1], x2, x2)
+    hotmap(axs[0, 1], y2)
+    plt.show()

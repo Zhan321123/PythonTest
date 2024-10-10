@@ -12,17 +12,17 @@ matplotlib.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-with cbook.get_sample_data(r'D:\code\pythonProject\Test\test10dataAnalysis\file\logo.png') as file:
+# file = r"../file/logo.png"
+
+with cbook.get_sample_data(r"D:\code\pythonProject\PythonTest\test10dataAnalysis\test1图像生成\file\logo.png") as file:
     im = image.imread(file)
 
 fig, ax = plt.subplots()
 
-np.random.seed(19680801)
 x = np.arange(30)
-y = x + np.random.randn(30)
-ax.bar(x, y, color='#6bbc6b')
+ax.bar(x, x)
 ax.grid()
 
-fig.figimage(im, 25, 25, zorder=3, alpha=.7)
+fig.figimage(im,200,20,zorder=3, alpha=.3)
 
 plt.show()

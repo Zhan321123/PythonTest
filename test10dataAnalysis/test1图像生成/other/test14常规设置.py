@@ -31,13 +31,13 @@ def importMatplotlib():
     })
     return plt
 
-
-plt = importMatplotlib()
-plt.plot([1, 2, 3, 4, 5, 6], [1, 4, 9, 16, 25, 36], label='line', marker='o')
-plt.bar([1, 2, 3, 4, 5, 6], [6, 2, 4, 6, 1, 2], label='bar')
-plt.text(2, 15, 'Text')
-plt.title('Sample Plot')
-plt.xlabel('X 轴')
-plt.ylabel('Y 轴')
-plt.legend()
-plt.show()
+if __name__ == '__main__':
+    plt = importMatplotlib()
+    plt.plot([1, 2, 3, 4, 5, 6], [1, 4, 9, 16, 25, 36], label='line', marker='o')
+    plt.bar([1, 2, 3, 4, 5, 6], [6, 2, 4, 6, 1, 2], label='bar')
+    plt.text(2, 15, 'Text')
+    plt.title('Sample Plot')
+    plt.xlabel('X 轴')
+    plt.ylabel('Y 轴')
+    plt.legend()
+    plt.show()
