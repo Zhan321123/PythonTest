@@ -12,7 +12,6 @@
 """
 import math
 from scipy.integrate import quad
-from sympy import symbols, integrate
 
 # 定积分
 def function1(x: float) -> float:# 标准正态分布函数
@@ -21,7 +20,7 @@ result, error = quad(function1, -3, 3)  # 积分(-3,3)
 print(f"积分结果: {result}, 积分误差: {error}")
 
 # 不定积分
-x = symbols('x')
-y = x**2
-integral = integrate(y, x)
-print(integral)
+# x = symbols('x')
+# y = x**2
+# integral = integrate(y, x)
+# print(integral)
