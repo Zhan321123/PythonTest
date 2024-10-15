@@ -29,9 +29,16 @@ x = norm.ppf() 累积分布函数的反函数
     Cv =
 
 """
+from typing import Sequence
 
+import matplotlib
 import numpy as np
+from matplotlib import pyplot as plt
 from scipy.stats import norm, gamma, t, skew
+
+matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+matplotlib.rcParams['axes.unicode_minus'] = False
+matplotlib.use('TkAgg')
 
 print(norm.pdf(0, 0, 1))
 print(norm.pdf(0))
@@ -45,17 +52,3 @@ print(norm.cdf(1) - norm.cdf(-1))
 
 # 累积分布函数的反函数
 print(norm.ppf(0.5))
-
-print("---------------PⅢ曲线在水文学中的使用案例----------------")
-"""有100年该河流的水位（年平均水位），求20年一遇的洪水水位、10年一遇的枯水水位"""
-n = 100
-d = np.random.rand(n) * 10  # 100年该河流的年平均水位
-
-cv = np.std(d) / d.mean()
-cs = skew(d)
-alpha = 4 / cs ** 2
-beta = 2 / d.mean() / cv / cs
-a0 = d.mean() * (1 - 2 * cv / cs)
-
-h20 = gamma.pdf(0.05, alpha, beta, a0)
-print(h20)
