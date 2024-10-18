@@ -20,7 +20,10 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def simpleBar(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单柱状图"""
-    bars = ax.bar(xs, ys, color='green', edgecolor='red', hatch='/', label='bar')
+    bars = ax.bar(xs, ys, color='green', # 填充颜色
+                  edgecolor='red', # 边框颜色
+                  hatch='/', # 填充线条，有/,x,+,|,*,-
+                  label='bar',)
     ax.bar_label(bars, fmt='%.1f')  # 在每个柱子上方添加数值标注
     # 设置图表标题和坐标轴标签
     ax.set_title('simple bar')

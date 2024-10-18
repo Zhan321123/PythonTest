@@ -52,8 +52,10 @@ if __name__ == '__main__':
 
     fig, axs = plt.subplots(2, 2)
     plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距
-    boxChart(axs[0][0], x, y1)
-    boxChart2(axs[0][1], x, y1)
-    violinChart(axs[1][0], x, y1)
+    axs = axs.flatten()
+
+    boxChart(axs[0], x, y1)
+    boxChart2(axs[1], x, y1)
+    violinChart(axs[2], x, y1)
 
     plt.show()

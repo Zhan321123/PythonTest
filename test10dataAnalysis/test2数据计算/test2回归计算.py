@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 from sklearn.linear_model import LinearRegression
+from matplotlib.patches import Ellipse
+import matplotlib.transforms as transforms
 
 matplotlib.use('TkAgg')
 matplotlib.rcParams['axes.unicode_minus'] = False
@@ -37,12 +39,36 @@ def linear(ax, xs, ys):
     ax.legend()
 
 
+def ellipse(ax: plt.Axes, xs, ys, nStd=3):
+    """绘制置信椭圆"""
+    ax.scatter(xs, ys,color='none', edgecolor='black')
+
+    cov = np.cov(xs, ys)
+    pearson = cov[0, 1] / np.sqrt(cov[0, 0] * cov[1, 1])
+
+    xR = np.sqrt(1 + pearson)
+    yR = np.sqrt(1 - pearson)
+    xScale = np.sqrt(cov[0, 0]) * nStd
+    yScale = np.sqrt(cov[1, 1]) * nStd
+    xMean = np.mean(xs)
+    yMean = np.mean(ys)
+
+    ellipse = Ellipse((0, 0), width=xR * 2, height=yR * 2, alpha=0.5)
+    transf = transforms.Affine2D().rotate_deg(45).scale(xScale, yScale).translate(xMean, yMean)
+    ellipse.set_transform(transf + ax.transData)
+    ax.add_patch(ellipse)
+    ax.set_title('Confidence Ellipse')
+
+
 if __name__ == '__main__':
-    x = list(range(1, 23))
-    y1 = [18, 20, 34, 45, 52, 65, 78, 89, 100, 109, 115, 120, 130, 138, 142, 149, 156, 159, 160, 161, 161, 162, ]
+    x = list(range(0, 23))
+    y1 = np.random.rand(23)
+    y1.sort()
 
     fig, axs = plt.subplots(1, 2)
+    axs = axs.flatten()
     lineFitting(x, y1)
     linear(axs[0], x, y1)
+    ellipse(axs[1], x, y1)
 
     plt.show()

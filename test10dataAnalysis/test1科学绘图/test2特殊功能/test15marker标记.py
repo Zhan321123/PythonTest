@@ -29,11 +29,14 @@ def showSpecialMarkers(ax: plt.Axes):
     """展示特殊标记"""
     xs = [1, 2, 3, 4]
     # 空心标记，手动的方法
-    ax.plot(xs, [1, 2, 3, 4], label='空心标记', marker='o',  # 标记样式
+    ax.plot(xs, [1, 2, 3, 4], label='plot空心标记', marker='o',  # 标记样式
             markerfacecolor='none',  # 标记内部颜色
             markeredgecolor='r',  # 标记边框的颜色
             markeredgewidth=1,  # 标记边框的宽度
             markersize=10)  # 标记的大小
+    ax.scatter(xs, [3, 4, 5, 6], label='scatter空心标记',
+               color='none', # 填充颜色为空
+               edgecolors='r') # 边框颜色
     # 官方提供的填充样式
     fs = mlines.Line2D.fillStyles
     for i, f in enumerate(fs):

@@ -2,14 +2,16 @@
 """
 库导入类
 """
+
+
 def importMatplotlib():
     import matplotlib.pyplot as plt
     import matplotlib
     matplotlib.use('TkAgg')
-    matplotlib.rcParams['axes.unicode_minus'] = False  # 正确显示负号
-    plt.rcParams['font.sans-serif'] = ['SimSun']  # 中文使用宋体
-    plt.rcParams['font.serif'] = ['Times New Roman']  # 英文使用Times New Roman
     plt.rcParams.update({
+        'axes.unicode_minus': False,  # 正确显示负号
+        'font.sans-serif': 'SimSun',  # 中文使用宋体
+        'font.serif': 'Times New Roman',  # 英文使用Times New Roman
         'axes.titlesize': 18,  # 标题字体大小
         'legend.fontsize': 14,  # 图例字体大小
         'xtick.labelsize': 14,  # X轴刻度字体大小

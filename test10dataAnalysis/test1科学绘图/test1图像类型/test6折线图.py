@@ -25,9 +25,11 @@ def simpleLine(ax: plt.Axes, xs: Sequence, ys: Sequence):
 
 def multipleLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """多条折线图"""
-    markers = ['o', '+', 'x', '*', 's', 'd']
+    markers = ['o', 's', 'd', 'v']
+    linestyles = ['-', '--', '-.', ':'] # 实线、虚线、点划线、点线
     for index, ys in enumerate(yss):
-        ax.plot(xs, ys, linewidth=1, marker=markers[index], label=f'line-{index}')
+        ax.plot(xs, ys, linewidth=1, marker=markers[index], label=f'line-{index}',
+                linestyle=linestyles[index]) # 线型
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid()
@@ -71,7 +73,8 @@ if __name__ == '__main__':
     y1 = [3, 5, 4, 8, 10, 12, 11, 14]
     y2 = [[1, 2, 4, 4, 5, 6, 8, 10],
           [2, 4, 5, 9, 10, 12, 15, 11],
-          [3, 6, 8, 14, 17, 19, 22, 20]]
+          [3, 6, 8, 14, 17, 19, 22, 20],
+          [4, 8, 12, 20, 25, 28, 30, 26]]
 
     fig, axs = plt.subplots(2, 3)
     plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距

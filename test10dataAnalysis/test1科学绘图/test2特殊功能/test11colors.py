@@ -21,6 +21,13 @@ matplotlib.colormaps所有官方色带
     1、定义colormap，自定义cmap = cmap 或 matplotlib.colormaps["色带名"]
     2、c=colors(index / len(ys)) 或 colors(ys / ys.max())
     3、ax.图(*args, color=c)
+
+顶级配色
+    [(0, '#F7B7D2'),(1 / 4, '#EEC186'),(2 / 4, '#EEF0A7'),(3 / 4, '#B8E5FA'),(1, '#B2DBB9')]
+    [(0, '#EECA40'),(1 / 2, '#FD763F'),(1, '#23BAC5')]
+    [(0, '#ECE70F'),(1 / 2, '#688CC8'),(1, '#00A14E')]
+    [(0, '#d83f31'),(1 / 4, '#fabe7c'),(2 / 4, '#fafebf'),(3 / 4, '#b7d8e6'),(1, '#517db5')]
+
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -87,7 +94,7 @@ def showAllCmap(ax: plt.Axes):
     xs = np.linspace(0,256,6)
     for i, colormap in enumerate(colormaps):
         colors = matplotlib.colormaps[colormap](xs)
-        ax.bar(xs,[i]*len(xs),bottom=i,width=30, color=colors)
+        ax.bar(xs,[i]*len(xs),bottom=i,width=40, color=colors)
     ax.set_title("all colormaps")
 
 

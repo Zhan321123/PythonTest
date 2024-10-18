@@ -21,13 +21,13 @@ _interpolations = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16', 'spline
 
 
 def imshowChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence], interpolation: str = 'none'):
-    """热图，带注释，无格子边框，可插补"""
+    """热图，带注释，无格子边框，可插补interpolation"""
     if not interpolation in _interpolations:
         interpolation = 'none'
     colors = [(0, '#FF0000'), (0.5, '#FFFF00'), (1, '#00FF00')]
     cmap = LinearSegmentedColormap.from_list('custom', colors)
     im = ax.imshow(zss, cmap=cmap, interpolation=interpolation)
-    fig.colorbar(im, ax=ax, pad=0.05, shrink=1)  # 给ax添加色带
+    fig.colorbar(im, ax=ax, pad=0.05, shrink=1)  # 给ax添加色带，偏移0.05倍宽，大小缩放1倍
     # 循环数据标注并创建文本注释。
     for i in range(len(xs)):
         for j in range(len(ys)):
@@ -40,7 +40,10 @@ def imshowChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence
 def pcolormeshChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
     """热图，不带注释，有格子边框，不可插补"""
     cmap = LinearSegmentedColormap.from_list('blue', [(0, '#e1eef7'), (1, '#026db3')])
-    pc = ax.pcolormesh(zss, cmap=cmap, linewidth=0.5, edgecolors='k')
+    zss = np.array(zss)
+    pc = ax.pcolormesh(zss, cmap=cmap, linewidth=0.5,  # 格子边框宽度
+                       edgecolors='k',  # 格子边框颜色
+                       vmin=zss.min(), vmax=zss.max())  # 色值范围，大于使用max的颜色，小于使用min
     fig.colorbar(pc, ax=ax, pad=0.05, shrink=1)  # 给ax添加色带
     ax.set_aspect(1)  # 让每一格宽高一致
     ax.set_xticks(np.arange(len(xs)) + 0.5, labels=xs)
@@ -48,13 +51,13 @@ def pcolormeshChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequ
     ax.set_title("pcolormesh chart")
 
 
-def hinton(ax, dss, max_weight=None, ):
+def hinton(ax: plt.Axes, dss: Sequence[Sequence], max_weight=None, ):
     """Hinton图"""
     if not max_weight:
         max_weight = 2 ** np.ceil(np.log2(np.abs(dss).max()))
-    ax.patch.set_facecolor('gray')
-    ax.set_aspect('equal', 'box')
-    ax.xaxis.set_major_locator(plt.NullLocator())
+    ax.patch.set_facecolor('gray') # 设置背景色
+    ax.set_aspect('equal', 'box')  # 设置格子长宽相等
+    ax.xaxis.set_major_locator(plt.NullLocator())  # 不显示xy轴刻度
     ax.yaxis.set_major_locator(plt.NullLocator())
     for (x, y), w in np.ndenumerate(dss):
         color = 'white' if w > 0 else 'black'
@@ -62,8 +65,8 @@ def hinton(ax, dss, max_weight=None, ):
         rect = plt.Rectangle([x - size / 2, y - size / 2], size, size,
                              facecolor=color, edgecolor=color)
         ax.add_patch(rect)
-    ax.autoscale_view()
-    ax.invert_yaxis()
+    ax.autoscale_view() # 自动调整，显示整个图像
+    ax.invert_yaxis() # 翻转y轴
     ax.set_title("Hinton diagram")
 
 
