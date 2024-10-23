@@ -10,6 +10,10 @@
     # XXX 警告
     # NOTE 提示
 
+添加方法 in
+    pycharm：文件 -> 设置 -> 编辑器 -> TOD0
+    idea：
+
 方法相关的文档注释
     :param 参数名: 参数的注释
     :return: 返回值的注释

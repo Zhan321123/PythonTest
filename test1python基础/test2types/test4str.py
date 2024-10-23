@@ -1,4 +1,4 @@
-"""
+r"""
 str.
     replace(str,new str)，替换字符
     split()->list[str]，分割字符，返回字符串列表，以空格为分割
@@ -47,9 +47,10 @@ ord编码
     ord(str)->int返回字符的unicode编码
 
 表示str类型：
-    '' / ""
-    ''' / \"\"\"\"\"\"
-
+    'str'
+    "str"
+    '''str'''
+    \"""str\"""
 """
 import io
 

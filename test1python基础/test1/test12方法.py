@@ -1,7 +1,7 @@
 """
 方法
 function.
-    __doc__->str，返回解释文档
+    __doc__() -> str，返回解释文档
 
 locals()->dict,返回当前作用域下的变量
 globals()->dict,返回全局作用域下的变量

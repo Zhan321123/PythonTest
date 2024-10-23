@@ -5,6 +5,7 @@
 - 第三方库清华源 https://pypi.tuna.tsinghua.edu.cn/simple
 - 官方库阿里云源 https://mirrors.aliyun.com/pypi/simple
 - 官方库豆瓣源 https://pypi.douban.com/simple
+- 官方库腾讯云源 https://mirrors.cloud.tencent.com/pypi/simple
 
 #### 使用方法（拿清华源举例）
 
@@ -29,7 +30,7 @@
    在激活虚拟环境后，使用pip安装你需要的第三方库，
    只会安装在当前虚拟环境中，而不会影响到全局Python环境
    ```shell```{
-   ```pip install 库名```
+   ```pip install [库名]```
    }
 1. 退出虚拟环境：
    当完成项目开发并希望回到全局Python环境时，可以执行如下命令退出虚拟环境：
@@ -38,7 +39,7 @@
    }
 1. 直接在特定venv目录安装库，以该项目所在venv环境为例
    ```shell```{
-   ```pip install --target=D:\code\pythonProject\PythonTest\venv\Lib\site-packages 库名```
+   ```pip install --target=D:\code\pythonProject\PythonTest\venv\Lib\site-packages [库名]```
    }
 
 #### conda环境

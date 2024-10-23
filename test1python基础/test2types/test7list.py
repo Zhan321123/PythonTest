@@ -1,8 +1,9 @@
-import random
 """
 列表list的测试
 可删减的列表
 """
+import random
+
 a = list()
 print(a)
 b = []

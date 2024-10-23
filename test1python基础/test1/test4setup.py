@@ -12,4 +12,5 @@
 执行python setup.py sdist创建出dist文件夹，包含'name'-'version'.tar.gz
 """
 from distutils.core import setup
-setup(name='自定义压缩包1',version='1.0',author='zhan',py_modules=['test3module.test3package',])
+file = './test3package'
+setup(name='自定义压缩包1',version='1.0',author='zhan',py_modules=[file,])
