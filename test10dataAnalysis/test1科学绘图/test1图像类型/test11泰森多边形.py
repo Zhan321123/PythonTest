@@ -20,6 +20,7 @@ def voronoiChart(ax: plt.Axes, xs: Sequence, ys: Sequence):
     # 绘制泰森多边形
     voronoi_plot_2d(vor, ax=ax)
     ax.scatter(xs, ys, color='red', s=50, zorder=10, label='Points')  # 绘制原始点
+    ax.set_aspect('equal')
     ax.set_title('泰森多边形')
     ax.set_xlabel('x')
     ax.set_ylabel('y')
