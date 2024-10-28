@@ -26,18 +26,18 @@
     - 激活虚拟环境：
       ```.\venv\Scripts\activate```
       }
-1. 在虚拟环境中安装第三方库
+2. 在虚拟环境中安装第三方库
    在激活虚拟环境后，使用pip安装你需要的第三方库，
    只会安装在当前虚拟环境中，而不会影响到全局Python环境
    ```shell```{
    ```pip install [库名]```
    }
-1. 退出虚拟环境：
+3. 退出虚拟环境：
    当完成项目开发并希望回到全局Python环境时，可以执行如下命令退出虚拟环境：
    ```shell```{
    ```deactivate```
    }
-1. 直接在特定venv目录安装库，以该项目所在venv环境为例
+4. 直接在特定venv目录安装库，以该项目所在venv环境为例
    ```shell```{
    ```pip install --target=D:\code\pythonProject\PythonTest\venv\Lib\site-packages [库名]```
    }

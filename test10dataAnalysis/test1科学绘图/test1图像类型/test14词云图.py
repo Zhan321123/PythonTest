@@ -1,5 +1,6 @@
 """
-
+wordcloud库绘制词云图
+FIXME 中文编码问题
 """
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud

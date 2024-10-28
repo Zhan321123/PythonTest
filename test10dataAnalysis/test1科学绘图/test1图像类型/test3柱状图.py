@@ -6,6 +6,7 @@
 三维柱状图
 极轴柱状图
 直方图
+阶梯图
 """
 from typing import Sequence
 import matplotlib.pyplot as plt
@@ -20,10 +21,10 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def simpleBar(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单柱状图"""
-    bars = ax.bar(xs, ys, color='green', # 填充颜色
-                  edgecolor='red', # 边框颜色
-                  hatch='/', # 填充线条，有/,x,+,|,*,-
-                  label='bar',)
+    bars = ax.bar(xs, ys, color='green',  # 填充颜色
+                  edgecolor='red',  # 边框颜色
+                  hatch='/',  # 填充线条，有/,x,+,|,*,-
+                  label='bar', )
     ax.bar_label(bars, fmt='%.1f')  # 在每个柱子上方添加数值标注
     # 设置图表标题和坐标轴标签
     ax.set_title('simple bar')
@@ -103,6 +104,14 @@ def histChart(ax: plt.Axes, n: int, ys: Sequence):
     ax.set_title('hist chart')
 
 
+def stairChart(ax: plt.Axes, xs: Sequence, ys: Sequence):
+    """绘制阶梯图"""
+    ax.step(xs, ys, where='post')
+    ax.set_xlim(0, len(xs) - 1)
+    ax.grid()
+    ax.set_title('stair chart')
+
+
 if __name__ == '__main__':
     fig, axs = plt.subplots(3, 3)
     plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距
@@ -126,5 +135,6 @@ if __name__ == '__main__':
     polarBar(axs[1][1], (3, 3, 5), ts, y1, ws)  # position:(2,3,4)，表示在2×3网格中的第4个位置
     bar3d(axs[1][2], (3, 3, 6), x1, x2, y2)
     histChart(axs[2][0], 10, y3)
+    stairChart(axs[2][1], x1, y1)
 
     plt.show()

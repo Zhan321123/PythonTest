@@ -55,7 +55,7 @@ def hinton(ax: plt.Axes, dss: Sequence[Sequence], max_weight=None, ):
     """Hinton图"""
     if not max_weight:
         max_weight = 2 ** np.ceil(np.log2(np.abs(dss).max()))
-    ax.patch.set_facecolor('gray') # 设置背景色
+    ax.patch.set_facecolor('gray')  # 设置背景色
     ax.set_aspect('equal', 'box')  # 设置格子长宽相等
     ax.xaxis.set_major_locator(plt.NullLocator())  # 不显示xy轴刻度
     ax.yaxis.set_major_locator(plt.NullLocator())
@@ -65,14 +65,14 @@ def hinton(ax: plt.Axes, dss: Sequence[Sequence], max_weight=None, ):
         rect = plt.Rectangle([x - size / 2, y - size / 2], size, size,
                              facecolor=color, edgecolor=color)
         ax.add_patch(rect)
-    ax.autoscale_view() # 自动调整，显示整个图像
-    ax.invert_yaxis() # 翻转y轴
+    ax.autoscale_view()  # 自动调整，显示整个图像
+    ax.invert_yaxis()  # 翻转y轴
     ax.set_title("Hinton diagram")
 
 
 if __name__ == '__main__':
-    x = ["A", "B", "C", "D", "E", "F", "G"]
-    y = ["aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg"]
+    x1 = ["A", "B", "C", "D", "E", "F", "G"]
+    y1 = ["aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg"]
     d1 = [[0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
           [2.4, 7.0, 4.0, 1.0, 2.7, 0.0, 0.0],
           [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
@@ -90,12 +90,11 @@ if __name__ == '__main__':
         [3, -5, 6, 0, -1, 2, 3, -6]
     ]
 
-    fig, axs = plt.subplots(2, 2)
+    fig, axs = plt.subplots(2, 3)
     plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距
 
-    imshowChart(axs[0][0], x, y, d1)
-    pcolormeshChart(axs[0][1], x, y, d1)
-    hinton(axs[1][0], d2)
-    axs[1][1].remove()
+    imshowChart(axs[0][0], x1, y1, d1)
+    pcolormeshChart(axs[0][1], x1, y1, d1)
+    hinton(axs[0][2], d2)
 
     plt.show()
