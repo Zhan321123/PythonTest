@@ -8,9 +8,9 @@ from PIL import Image
 import numpy as np
 
 
-def imgsToGif(files: Sequence[str], savePath: str, duration: Union[int, Sequence[int]]):
+def filesToGif(files: Sequence[str], savePath: str, duration: Union[int, Sequence[int]]):
     """
-    将多张图片拼接为gif
+    将多张图片文件拼接为gif
     gif的宽高与第一张一致
     """
     if isinstance(duration, (Sequence, np.ndarray)):
@@ -31,6 +31,14 @@ def imgsToGif(files: Sequence[str], savePath: str, duration: Union[int, Sequence
     except Exception as e:
         print("发生其他错误", e)
 
+def imgsToGif(images: Sequence[Image], savePath: str, duration: Union[int, Sequence[int]]):
+    """多张Image拼接为gif"""
+    if isinstance(duration, (Sequence, np.ndarray)):
+        duration = list(duration)
+        if len(duration) != len(images):
+            print("duration序列长度与图片数量不一致")
+            return
+    images[0].save(savePath, save_all=True, append_images=images[1:], duration=duration, loop=0)
 
 if __name__ == '__main__':
     path = r'D:\code\pythonProject\PythonTest\test10dataAnalysis\test1科学绘图\file'
@@ -38,4 +46,4 @@ if __name__ == '__main__':
     fs = [fr"{path}\{i}.png" for i in range(1, 25)]
     ds = np.arange(10, 10 + len(fs)) * 10
     print(len(ds), len(fs))
-    imgsToGif(fs, sp, ds)
+    filesToGif(fs, sp, ds)
