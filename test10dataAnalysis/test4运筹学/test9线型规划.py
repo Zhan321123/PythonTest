@@ -1,5 +1,5 @@
 """
-线型规划问题
+运筹学-线型规划
 """
 from scipy import optimize
 
