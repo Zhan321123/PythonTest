@@ -41,6 +41,8 @@
    ```shell```{
    ```pip install --target=D:\code\pythonProject\PythonTest\venv\Lib\site-packages [库名]```
    }
+5. 显示安装的所有库
+    ```pip list```
 
 #### conda环境
 
@@ -54,6 +56,10 @@
   ```conda activate [环境名称]```
 - 激活其他目录的环境
   ```conda activate [目录+环境名称]```
+- 查看所有环境
+  ```conda env list```
+- 安装第三方库
+  ```conda install [库名]```
 
 ### pyinstaller将项目打包为exe文件
 

@@ -1,5 +1,7 @@
 """
-
+1. y = f(x)
+2. f(x, y) = 0
+3. int^n_y(f(x))dx = 0
 """
 import math
 import matplotlib.pyplot as plt
