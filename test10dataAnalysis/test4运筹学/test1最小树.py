@@ -25,10 +25,14 @@ def minTree(lines: dict):
     print(f'\t{len(points)}个点，{len(lines)}条线路')
     print("}")
     # 计算
-    liness = list(itertools.permutations(list(lines)))
     hasRoad = []
     road = dict()
-    for i in liness:
+    iss = itertools.permutations(list(lines))
+    while True:
+        try:
+            i = next(iss)
+        except StopIteration:
+            break
         passPoints = []
         passRoads = []
         length = 0
