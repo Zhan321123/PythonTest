@@ -1,9 +1,6 @@
 """
 回归计算
     一元线型回归
-    TODO 多元线型回归
-    TODO 一元非线性回归
-
 """
 from typing import Sequence
 

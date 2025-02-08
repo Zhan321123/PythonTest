@@ -17,9 +17,6 @@
         quadratic: 二次插值
         cubic: 三次插值
 
-多维数据插补
-    TODO
-
 """
 import matplotlib.pyplot as plt
 import matplotlib

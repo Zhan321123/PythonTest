@@ -72,7 +72,6 @@ class SubBezier:
         return [i / quantity for i in range(quantity + 1)]
 
     def getCoordinate(self, quantity: int = 100) -> [[]]:
-        print([self.curve(i) for i in self._rang(quantity)])
         return [self.curve(i) for i in self._rang(quantity)]
 
     def draw(self, ax: plt.Axes):
