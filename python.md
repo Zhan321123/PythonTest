@@ -1,3 +1,6 @@
+![logo](zhan_logo.png)
+
+![python](https://img.shields.io/badge/python-3.9-blue)
 ### python国内库源
 
 #### 库源
@@ -57,7 +60,7 @@
 - 激活其他目录的环境
   ```conda activate [目录+环境名称]```
 - 查看所有环境
-  ```conda env list```
+  ```conda en[test3modules](test1python%E5%9F%BA%E7%A1%80%2Ftest3modules)v list```
 - 安装第三方库
   ```conda install [库名]```
 

@@ -1,3 +1,10 @@
+"""
+使用百度翻译平台api
+网址：https://fanyi-api.baidu.com/api/trans/product/desktop?req=detail&login_type=weixin
+前往平台开启翻译
+"""
+import time
+
 import requests
 import hashlib
 import random
@@ -11,9 +18,15 @@ class BaiduTranslator:
              'fin', 'cs', 'rom', 'slo', 'swe', 'hu', 'cht', 'vie']
     headers = {'Content-Type': "application/x-www-form-urlencoded"}
 
-    def __init__(self, appId, secretKey):
+    def __init__(self, appId, secretKey,rate):
+        """
+        :param appId: id
+        :param secretKey: key
+        :param rate: 翻译速度，rate个/s
+        """
         self.appId = appId
         self.secretKey = secretKey
+        self.rate = rate
 
     def _detectLang(self, lang) -> bool:
         """检查lang的合法性"""
@@ -52,10 +65,13 @@ class BaiduTranslator:
         except Exception as e:
             print(f"请求错误: {e}")
             raise ValueError("因网络或账户问题翻译失败")
+        finally:
+            time.sleep(1/self.rate)
 
 
 if __name__ == '__main__':
-    appId = '20240508002045378'
-    secretKey = 'nDWuwx0XqnEZuiGfIgEW'
-    translator = BaiduTranslator(appId, secretKey)
+    aid = '20240508002045378'
+    key = 'nDWuwx0XqnEZuiGfIgEW'
+    r = 1
+    translator = BaiduTranslator(aid, key,r)
     print(translator.translate(r"XVIII", "zh"))

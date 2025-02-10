@@ -169,6 +169,9 @@ print(s2.format(age='18', name='zhan', dd=''))
 print(f"{io} hello")
 # {参数:填充字符+居中^或居左<或居右>+字符数}
 print('your name is {0:*^8},your age is {1: >10}'.format('zhan', 12))
+print('{0:o^8}'.format(1))
+print('1'.center(8, 'o'))
+
 
 print("-----------格式-------------")
 print('{0:.3f}'.format(123.456789))

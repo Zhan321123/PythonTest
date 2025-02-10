@@ -12,7 +12,7 @@ matplotlib.use('TkAgg')
 
 def showResizeImage():
     """展示几种缩放图像的区别"""
-    image = Image.open(r'D:\code\pythonProject\PythonTest\test6媒体\file\small.png')
+    image = Image.open(r'../file/small.png')
     newSize = (600, 600)
 
     titles = ('NEAREST', 'BILINEAR', 'BICUBIC', 'LANCZOS')
@@ -30,7 +30,7 @@ def showResizeImage():
 
 def resizeImageBySize(filePath:str, savePath:str,newSize:tuple[int,int], method:int=Image.NEAREST):
     """
-    缩放图像
+    以新的尺寸缩放图像
     目前在nearest中存在一些问题，放大之后像素边缘出现摩尔纹
     :param filePath: 文件路径
     :param savePath: 保存路径
@@ -57,7 +57,9 @@ def resizeImageByRatio(filePath:str, savePath:str, ratio:float, method:int=Image
 
 if __name__ == '__main__':
     # showResizeImage()
-    fp = r'D:\code\pythonProject\PythonTest\test6媒体\file\small.png'
-    sp = rf"{os.environ['USERPROFILE']}\Desktop\output.jpg"  # 桌面路径
+    # fp = r'D:\code\pythonProject\PythonTest\test6媒体\file\small.png'
+    # sp = rf"{os.environ['USERPROFILE']}\Desktop\output.jpg"  # 桌面路径
     # resizeImageBySize(fp, sp, (640, 640))
     # resizeImageByRatio(fp, sp, 10)
+    logo = '../file/zhan_logo.png'
+    resizeImageByRatio(logo, '../file/zhan_logo4.png', 1/16,method=Image.LANCZOS)
