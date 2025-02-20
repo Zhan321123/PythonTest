@@ -11,12 +11,13 @@ def writeCsv(file: str, dss: list[list]) -> bool:
     :param dss: 二维数据
     :return: 是否成功
     """
-    if os.path.exists(os.path.dirname(file)):
+    if not os.path.exists(os.path.dirname(file)):
         raise Exception(f"文件目录{os.path.dirname(file)}不存在")
     if os.path.exists(file):
         raise Exception(f"文件{file}已存在，不替换")
     try:
         pandas.DataFrame(dss).to_csv(file, header=False, index=False)
+        print(f"写入文件{file}成功")
     except Exception as e:
         raise Exception(e)
 

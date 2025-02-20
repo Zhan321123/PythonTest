@@ -34,13 +34,12 @@ def boxChart2(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]) -> None:
 def violinChart(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]) -> None:
     """小提琴图"""
     part = ax.violinplot(yss, showmeans=False, showmedians=True)
-    xs = np.arange(len(xs))
-    cs = matplotlib.colormaps["rainbow"](xs / max(xs))
+    cs = matplotlib.colormaps["rainbow"](np.arange(len(xs)) / max(np.arange(len(xs))))
     for index, pc in enumerate(part['bodies']):
         pc.set_facecolor(cs[index])  # 修改填充颜色
         pc.set_edgecolor('black')
         pc.set_alpha(0.6)
-    ax.set_xticks(range(1, len(xs) + 1), x)
+    ax.set_xticks(range(1, len(xs) + 1), xs)
     ax.set_title('Violin plot')
 
 

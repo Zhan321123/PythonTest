@@ -7,12 +7,12 @@ def importMatplotlib():
     import matplotlib.pyplot as plt
     import matplotlib
     matplotlib.use('TkAgg')  # 在不兼容的终端上使用python自带的窗口展示
-    plt.style.use('Solarize_Light2')  # 根据需要使用图像风格
+    # plt.style.use('Solarize_Light2')  # 根据需要使用图像风格
     plt.rcParams.update({
         'axes.unicode_minus': False,  # 正确显示负号
         'font.serif': ['Times New Roman'],  # 优先使用新罗马Times New Roman字体
-        'font.sans-serif': ['SimSun'],  # 再使用宋体SimSun，等待官方解决该问题
-        'mathtext.fontset': "stix",  # 数学字体
+        'font.sans-serif': ['Microsoft YaHei'],  # 再使用宋体SimSun，等待官方解决该问题
+        'mathtext.fontset': "custom",  # 数学字体
         'image.cmap': 'rainbow',  # 默认颜色方案为 rainbow
         'axes.titlesize': 18,  # 标题字体大小
         'legend.fontsize': 14,  # 图例字体大小

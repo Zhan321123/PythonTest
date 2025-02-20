@@ -103,7 +103,7 @@ def writeSheet(file: str, sheet: str, data: list[list]) -> bool:
         for i in data:
             sheet.append(i)
         workbook.save(file)
-        print(f"写入{file}成功")
+        print(f"写入'{file}'文件的{sheet}'表格'成功")
         workbook.close()
     except Exception as e:
         raise Exception(f"写入{file}失败：{e}")
