@@ -1,17 +1,22 @@
 """
 方中拟圆
 """
-import math
-
 import matplotlib
 import matplotlib.pyplot as plt
 from typing import Sequence
 
+import numpy as np
+
 matplotlib.use('TkAgg')
 
 
-def drawBlock(ax: plt.Axes, points: Sequence[Sequence[int]]):
-    """根据点绘制方格，方格的锚点为左下角"""
+def drawSquare(ax: plt.Axes, points: Sequence[Sequence[int]]):
+    """
+    绘制二维方形，锚点为方形左下角
+
+    :param ax: plt.Axes
+    :param points: 平面整数点集
+    """
     for x, y in points:
         ax.add_patch(plt.Rectangle((x, y), 1, 1, fill='black', edgecolor='red'))
     ax.set_aspect('equal', adjustable='box')
@@ -22,33 +27,29 @@ def drawBlock(ax: plt.Axes, points: Sequence[Sequence[int]]):
     ax.grid(True)
 
 
-def calcCircle(radius: float) -> Sequence[Sequence[int]]:
+def drawBlock(ax: plt.Axes, points: Sequence[Sequence[int]]):
     """
-    以方块顶点为圆心计算方块位置
+    绘制三维方块
+
+    :param ax: plt.Axes
+    :param points: 空间整数点集
     """
-    # 计算第一象限内的点
-    x, y = (0, int(radius))
-    points = [(x, y)]
-    while True:
-        x += 1
-        if not math.sqrt(x ** 2 + y ** 2) <= radius < math.sqrt((x + 1) ** 2 + (y + 1) ** 2):
-            y -= 1
-            x -= 1
-        points.append((x, y))
-        if x == int(radius) and y == 0:
-            break
-    # 对称其他象限的点
-    points2 = []
-    for x, y in points:
-        points2.extend([
-            (x, -y - 1), (-x - 1, y), (-x - 1, -y - 1)
-        ])
-    points.extend(points2)
-    points = list(set(points))
-    return points
+    ax.remove()
+    ax = fig.add_subplot(ax.get_subplotspec(), projection='3d', elev=30, azim=45, )
+    X, Y, Z = list(zip(*points))
+    ax.bar3d(X, Y, Z, dx=1, dy=1, dz=1, shade=True,
+             color='pink', )
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    # 设置xyz刻度间距为1
+    ax.xaxis.set_major_locator(plt.MultipleLocator(1))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(1))
+    ax.zaxis.set_major_locator(plt.MultipleLocator(1))
 
 
-def calcCircle2(radius: int):
+def calcCircle(radius: int):
     """
     中心圆算法
 
@@ -79,28 +80,68 @@ def calcCircle2(radius: int):
     points = list(set(points))
     return points
 
-def calcEq(eq:callable,rang:[float,float],)
 
-def equation(x: float) -> float:
-    return x**2
+def calcSphere(radius: int)-> Sequence[Sequence[int]]:
+    """
+    栅格化球体表面
+    引用自：https://stackoverflow.com/questions/41656006/how-to-rasterize-a-sphere/41666156#41666156
+
+    :param radius: 整数球体半径radius
+    :return: 坐标列表
+    """
+    radius += 0.5
+
+    def mirror(x, y, z, bs):
+        """镜像卦限"""
+        positions = [
+            (x, y, z), (-x, y, z),
+            (x, -y, z), (-x, -y, z),
+            (x, y, -z), (-x, y, -z),
+            (x, -y, -z), (-x, -y, -z)
+        ]
+        bs.extend(positions)
+
+    blocks = []
+    maxR2 = int(np.floor(radius * radius))
+    zMax = int(np.floor(radius))
+    x = 0
+    while True:
+        # 当 x^2 + zMax^2 大于 maxR2 且 zMax 大于等于 x 时，减小 zMax
+        while x * x + zMax * zMax > maxR2 and zMax >= x:
+            zMax -= 1
+        # 如果 zMax 小于 x，说明当前 x 下 z 无法成为最大值，跳出循环
+        if zMax < x:
+            break
+        z = zMax
+        y = 0
+        while True:
+            # 当 x^2 + y^2 + z^2 大于 maxR2 且 z 大于等于 x 和 y 时，减小 z
+            while x * x + y * y + z * z > maxR2 and z >= x and z >= y:
+                z -= 1
+            # 如果 z 小于 x 或 z 小于 y，说明当前 x 和 y 下 z 无法成为最大值，跳出循环
+            if z < x or z < y:
+                break
+            # 旋转和镜像其他卦限坐标
+            mirror(x, y, z, blocks)
+            mirror(y, z, x, blocks)
+            mirror(z, x, y, blocks)
+            y += 1
+        x += 1
+
+    return blocks
 
 
 if __name__ == '__main__':
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1, 1)
 
-    # r = 40
+    # r=20
     # ps1 = calcCircle(r)
-    # ps2 = calcCircle2(r)
-    # print(len(ps1), len(ps2))
     # print(ps1)
-    # print(ps2)
-    # drawBlock(axs[0], ps1)
-    # drawBlock(axs[1], ps2)
-    # axs[0].add_patch(plt.Circle((0, 0), r, fill=False))
-    # axs[1].add_patch(plt.Circle((0.5, 0.5), r, fill=False))
-    # axs[0].add_patch(plt.Circle((0, 0), r / 60, fill='yellow'))
-    # axs[1].add_patch(plt.Circle((0.5, 0.5), r / 60, fill='yellow'))
+    # drawSquare(axs, ps1)
+    # axs.add_patch(plt.Circle((0.5, 0.5), r, fill=False))
+    # axs.add_patch(plt.Circle((0.5, 0.5), r / 60, fill='yellow'))
 
-
+    points = calcSphere(12)
+    drawBlock(axs, points)
 
     plt.show()

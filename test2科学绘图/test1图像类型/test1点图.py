@@ -18,15 +18,17 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def simplePoint(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单的散点图"""
+    xs, ys = np.array(xs), np.array(ys)
     ax.scatter(xs, ys, marker='+', color='red')
     ax.set_title('simple point chart')
 
 
-def point3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence, zs: Sequence):
+def point3d(ax: plt.Axes, xs: Sequence, ys: Sequence, zs: Sequence):
     """绘制三维散点图"""
+    xs, ys, zs = np.array(xs), np.array(ys), np.array(zs)
     ax.remove()
-    # projection='3d' 代表三维图像, elev=30 仰角, azim=45 方位角
-    ax = fig.add_subplot(*position, projection='3d', elev=30, azim=45, )
+    # projection='3d' 三维图像, elev=30 仰角, azim=45 方位角
+    ax = fig.add_subplot(ax.get_subplotspec(), projection='3d', elev=30, azim=45, )
     ax.scatter(xs, ys, zs)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
@@ -36,6 +38,7 @@ def point3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence,
 
 def sizePoint(ax: plt.Axes, xs: Sequence, ys: Sequence, sizes: Sequence):
     """绘制带尺寸的散点图"""
+    xs, ys, sizes = np.array(xs), np.array(ys), np.array(sizes)
     cmap = LinearSegmentedColormap.from_list('my_cmap', ['red', 'yellow', 'green'])
     colors = cmap(np.arange(cmap.N))[::int(256 / len(xs))][0:len(xs)]
     ax.scatter(xs, ys, s=sizes, c=colors, alpha=0.5)
@@ -43,12 +46,14 @@ def sizePoint(ax: plt.Axes, xs: Sequence, ys: Sequence, sizes: Sequence):
     ax.grid()
 
 
-def polarPoint(ax: plt.Axes, position: (int, int, int), thetas: Sequence, rs: Sequence, sizes: Sequence):
+def polarPoint(ax: plt.Axes, thetas: Sequence, rs: Sequence, sizes: Sequence):
     """极坐标带尺寸的散点图"""
+    thetas, rs, sizes = np.array(thetas), np.array(rs), np.array(sizes)
     ax.remove()
-    ax = fig.add_subplot(*position, polar=True)
+    ax = fig.add_subplot(ax.get_subplotspec(), polar=True)
     cmap = LinearSegmentedColormap.from_list('my_cmap', ['red', 'yellow', 'green'])
     colors = cmap(np.arange(cmap.N))[::int(256 / len(thetas))][0:len(thetas)]
+    # s标记大小，c标记颜色，alpha透明度
     ax.scatter(thetas, rs, s=sizes, c=colors, alpha=0.5)
     ax.set_title('polar size point chart')
 
@@ -62,11 +67,11 @@ if __name__ == '__main__':
     random.shuffle(z)
 
     fig, axs = plt.subplots(2, 2)
-    plt.subplots_adjust(wspace=0.5, hspace=0.5) # 调整子图间距
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)  # 调整子图间距
 
     simplePoint(axs[0][0], x, y)
-    point3d(axs[0][1], (2, 2, 2), x, y, z)  # position:(2,3,4)，表示在2×3网格中的第4个位置
+    point3d(axs[0][1], x, y, z)
     sizePoint(axs[1][0], x, y, z)
-    polarPoint(axs[1][1], (2, 2, 4), x, y, z)
+    polarPoint(axs[1][1], x, y, z)
 
     plt.show()

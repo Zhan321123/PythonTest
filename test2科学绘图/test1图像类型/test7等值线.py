@@ -13,10 +13,20 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 def contour(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
-    """等值线图"""
-    zss = np.array(zss)
+    """
+    等值线图
+    :param ax: plt.Axes
+    :param xs: x轴值
+    :param ys: y轴值
+    :param zss: (x, y)点的值
+    :return:
+    """
+    xs,ys,zss = np.array(xs), np.array(ys), np.array(zss)
     c = ax.contour(xs, ys, zss, MaxNLocator().tick_values(zss.min(), zss.max()))
-    im = ax.imshow(zss, origin='lower',interpolation='bilinear',cmap=matplotlib.colormaps['terrain'],)
+    im = ax.imshow(zss,
+                   origin='lower',
+                   interpolation='bilinear',
+                   cmap=matplotlib.colormaps['terrain'],)
     c.clabel(fmt='%1.1f') # 显示等值线的值
 
     fig.colorbar(im, orientation='horizontal',)
@@ -25,14 +35,16 @@ def contour(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
     ax.set_title("contour chart")
 
 if __name__ == '__main__':
-    x, y = np.arange(0, 10, 1), np.arange(0, 10, 1)
-    z = np.arange(100).reshape(10, 10)
-    for i in range(5):
-        z[i:10 - i, i:10 - i] = z[i:10 - i, i:10 - i] * 1.4
+    x = np.linspace(-10, 10, 500)
+    y = np.linspace(-10, 10, 500)
+    x, y = np.meshgrid(np.array(x), np.array(y))
+    zss = -20 * np.exp(-0.2 * np.sqrt(1 / 2 * (x ** 2 + y ** 2))) - np.exp(
+        1 / 2 * (np.cos(2 * np.pi * x) + np.cos(2 * np.pi * y)))
+
 
     fig, axs = plt.subplots(1,2)
     axs = axs.flatten()
-    contour(axs[0], x, y, z)
+    contour(axs[0], x, y, zss)
 
     plt.show()
 

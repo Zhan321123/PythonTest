@@ -1,6 +1,6 @@
 """
 绘制三维函数图 z = f(x, y)
-并在底部绘制等值线
+底部绘制等值线
 
 
 """
@@ -18,6 +18,12 @@ def drawSurface(ax: plt.Axes, xs: Sequence[float], ys: Sequence[float], zss: Seq
     """
     绘制三维函数图 z = f(x, y)
     并在底部绘制等值线
+
+    :param ax:
+    :param xs: (x,)
+    :param ys: (,y)
+    :param zss: f(x,y)
+    :return:
     """
     xs, ys, zss = np.array(xs), np.array(ys), np.array(zss)
     X, Y = np.meshgrid(np.array(xs), np.array(ys))
@@ -26,11 +32,19 @@ def drawSurface(ax: plt.Axes, xs: Sequence[float], ys: Sequence[float], zss: Seq
     norm = Normalize(vmin=zss.min(), vmax=zss.max())
     contour = ax.contour(xs, ys, zss, zdir='z', offset=np.min(zss), cmap='rainbow_r', norm=norm, zorder=0)
     ax.clabel(contour, inline=True, fontsize=8)
-    ax.set_title('f(x, y)')
+    ax.xaxis.set_major_locator(plt.MultipleLocator(2))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(2))
+    ax.zaxis.set_major_locator(plt.MultipleLocator(2))
+    ax.set_title('$f(x, y)$')
 
 
 def fxy(xs: Sequence[float], ys: Sequence[float]) -> Sequence[Sequence[float]]:
-    """r'$f(x)=-20\exp\left(-0.2\sqrt{\frac{1}{n}\sum_{i = 1}^{n}x_{i}^{2}}\right)-\exp\left(\frac{1}{n}\sum_{i = 1}^{n}\cos 2\pi x_{i}\right)$'"""
+    """
+    三维函数 :math:`f (x, y)`
+    :param xs: (x,)
+    :param ys: (,y)
+    :return: f(x,y)序列
+    """
     xs, ys = np.meshgrid(np.array(xs), np.array(ys))
     zss = -20 * np.exp(-0.2 * np.sqrt(1 / 2 * (xs ** 2 + ys ** 2))) - np.exp(
         1 / 2 * (np.cos(2 * np.pi * xs) + np.cos(2 * np.pi * ys)))
@@ -38,11 +52,8 @@ def fxy(xs: Sequence[float], ys: Sequence[float]) -> Sequence[Sequence[float]]:
 
 
 if __name__ == '__main__':
-    x_min, x_max = -10, 10
-    y_min, y_max = -10, 10
-    resolution = 800
-    x = np.linspace(x_min, x_max, resolution)
-    y = np.linspace(y_min, y_max, resolution)
+    x = np.linspace(-10, 10, 500)
+    y = np.linspace(-10, 10, 500)
     z = fxy(x, y)
 
     fig = plt.figure()

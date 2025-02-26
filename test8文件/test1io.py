@@ -35,7 +35,7 @@ os.path.
 import os
 import shutil
 import time
-import os.path as op
+import os.path
 
 
 def getHomeDir():
@@ -55,7 +55,7 @@ def getDirPathsInDir(dirPath: str)->list:
     if not os.path.exists(dirPath):
         print(f'{dirPath}不存在')
         return []
-    return [op.join(dirPath, i) for i in os.listdir(dirPath)]
+    return [os.path.join(dirPath, i) for i in os.listdir(dirPath)]
 
 def createDir(dirName: str):
     """创建文件夹，如果存在则不创建"""
@@ -80,7 +80,7 @@ def getAllFiles(dirPath: str)->[str]:
     """
     result = []
     for dirs, dirlist, filelist in os.walk(dirPath):
-        result.extend([op.join(dirs, i) for i in filelist])
+        result.extend([os.path.join(dirs, i) for i in filelist])
     return result
 
 def fileAttribute(file: str):
@@ -101,16 +101,16 @@ def copyFile(filePath: str, newDirPath: str, newName: str = None) -> bool:
     :param newDirPath: 目标文件夹
     :param newName: 目标文件名，None就是原名
     """
-    if not op.exists(filePath):
+    if not os.path.exists(filePath):
         raise Exception(f'源文件{filePath}不存在')
-    if not op.exists(newDirPath):
+    if not os.path.exists(newDirPath):
         os.makedirs(newDirPath)
         print(f'目标目录{newDirPath}不存在，创建目录')
     if newName:
-        newFilePath = op.join(newDirPath, newName)
+        newFilePath = os.path.join(newDirPath, newName)
     else:
-        newFilePath = op.join(newDirPath, op.basename(filePath))
-    if op.exists(newFilePath):
+        newFilePath = os.path.join(newDirPath, os.path.basename(filePath))
+    if os.path.exists(newFilePath):
         print(f'{newFilePath}已存在，跳过该文件')
         return False
     else:
@@ -120,37 +120,12 @@ def copyFile(filePath: str, newDirPath: str, newName: str = None) -> bool:
         print(f'复制文件{filePath}到{newDirPath}成功')
         return True
 
-
-def readTxtList(filePath: str) -> list:
-    """读取txt文件，每行的数据放到list，清除两端空格"""
-    if not op.exists(filePath):
-        print(f'{filePath}不存在')
-        return []
-    # 既然作为字符对象，那就应该是utf-8编码，不是就去掉
-    with open(filePath, 'r', encoding='utf-8') as file:
-        result = file.readlines()
-        result = [i.strip() for i in result]
-        return result
-
-
-def writeTxtList(filePath: str, data: list):
-    """将list写入txt文件，一行写一个元素，最后不要换行"""
-    if op.exists(filePath):
-        print(f'{filePath}已存在')
-        return
-    with open(filePath, 'w', encoding='utf-8') as file:
-        for i in data[:-1]:
-            file.write(i + '\n')
-        file.write(data[-1])
-    print(f'list写入文件{filePath}成功')
-
-
 def renameFile(oldFilePath: str, newFileName: str) -> bool:
     """重命名文件"""
-    if not op.exists(oldFilePath):
+    if not os.path.exists(oldFilePath):
         print(f'{oldFilePath}不存在')
         return False
-    os.rename(oldFilePath, op.join(op.dirname(oldFilePath), newFileName))
+    os.rename(oldFilePath, os.path.join(os.path.dirname(oldFilePath), newFileName))
     print(f'重命名文件{oldFilePath}为{newFileName}成功')
     return True
 
@@ -163,10 +138,10 @@ def copyDir(oldDirPath: str, newDirPath: str) -> bool:
     :param newDirPath: 目标目录
     :return: 复制文件夹是否成功
     """
-    if not op.exists(oldDirPath):
+    if not os.path.exists(oldDirPath):
         print(f'源目录{oldDirPath}不存在')
         return False
-    if not op.exists(newDirPath):
+    if not os.path.exists(newDirPath):
         print(f'{newDirPath}不存在，将会创建目录')
     try:
         shutil.copytree(oldDirPath, newDirPath)

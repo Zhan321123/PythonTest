@@ -18,6 +18,7 @@ def writeCsv(file: str, dss: list[list]) -> bool:
     try:
         pandas.DataFrame(dss).to_csv(file, header=False, index=False)
         print(f"写入文件{file}成功")
+        return True
     except Exception as e:
         raise Exception(e)
 

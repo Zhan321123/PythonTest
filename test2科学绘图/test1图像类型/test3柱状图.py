@@ -21,21 +21,22 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def simpleBar(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单柱状图"""
+    xs, ys = np.array(xs), np.array(ys)
     bars = ax.bar(xs, ys, color='green',  # 填充颜色
                   edgecolor='red',  # 边框颜色
                   hatch='/',  # 填充线条，有/,x,+,|,*,-
                   label='bar', )
     ax.bar_label(bars, fmt='%.1f')  # 在每个柱子上方添加数值标注
-    # 设置图表标题和坐标轴标签
-    ax.set_title('simple bar')
-    ax.tick_params(axis='both', colors='blue')
-    ax.set_xlabel('x')
+    ax.set_title('simple bar')  # 图表标题
+    ax.tick_params(axis='both', colors='blue')  # 设置坐标轴颜色
+    ax.set_xlabel('x')  # 坐标轴标签
     ax.set_ylabel('y')
     ax.legend()
 
 
 def groupBar(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """绘制分组柱状图"""
+    xs, yss = np.array(xs), np.array(yss)
     width = 0.2
     ind = np.arange(len(xs))
     for i, ys in enumerate(yss):
@@ -50,6 +51,7 @@ def groupBar(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
 
 def horizontalBar(ax, xs, ys):
     """绘制水平柱状图"""
+    xs, ys = np.array(xs), np.array(ys)
     hbars = ax.barh(xs, ys, label='bar', alpha=0.5)
     ax.bar_label(hbars, padding=8, color='b', fontsize=14)  # 在每个柱子上方添加数值标注
     ax.set_title('simple bar')
@@ -58,40 +60,55 @@ def horizontalBar(ax, xs, ys):
     ax.legend()
 
 
-def stackedBar(ax, xs, yss):
+def stackedBar(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """绘制堆叠柱状图"""
+    xs, yss = np.array(xs), np.array(yss)
     for i, ys in enumerate(yss):
         b = ax.bar(xs, ys, bottom=np.sum(yss[:i], axis=0), label=f'group{i}')
-        ax.bar_label(b, label_type='center')
+        ax.bar_label(b, label_type='center')  # 在每个柱子中间添加数值标注
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.legend()
     ax.set_title('stacked bar')
 
 
-def polarBar(ax, position, thetas, rs, widths):
-    """绘制极坐标柱状图"""
+def polarBar(ax: plt.Axes, thetas: Sequence, rs: Sequence, widths: Sequence):
+    """
+    绘制极坐标柱状图
+    :param ax: plt.Axes
+    :param thetas: 扇形起始角度，弧度制，锚点为扇形中心
+    :param rs: 扇形高度
+    :param widths: 扇形宽度范围，弧度制
+    """
+    thetas, rs, widths = np.array(thetas), np.array(rs), np.array(widths)
     ax.remove()  # 移除直方ax
+    ax2 = fig.add_subplot(ax.get_subplotspec(), polar=True)  # 添加极坐标ax
     cmap = LinearSegmentedColormap.from_list('my_cmap', ['red', 'yellow', 'green'])
     colors = cmap(np.arange(cmap.N))[::int(256 / len(thetas))][0:len(thetas)]
-    ax2 = fig.add_subplot(*position, polar=True)  # 添加极坐标ax
     ax2.bar(thetas, rs, widths, bottom=100, alpha=0.5, color=colors)
     ax2.set_title('polar bar')
     ax2.set_xlabel('theta')
     ax2.set_ylabel('r')
 
 
-def bar3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
-    """绘制三维柱状图"""
+def bar3d(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
+    """
+    绘制三维柱状图
+
+    :param ax: plt.Axes
+    :param xs: x轴标签
+    :param ys: y轴标签
+    :param zss: [x][y]二维数据
+    """
+    xs, ys, zss = np.array(xs), np.array(ys), np.array(zss)
     ax.remove()
-    x = list(range(len(xs))) * len(ys)
-    y = list(range(len(ys))) * len(xs)
-    top = [i for yss in zss for i in yss]
-    bottom = [0] * len(top)
-    ax = fig.add_subplot(*position, projection='3d', elev=30, azim=45, )
-    ax.bar3d(x, y, bottom, 1, 1, top, shade=True, color='pink', alpha=0.8)
-    ax.set_xticks(range(len(xs)), xs)
-    ax.set_yticks(range(len(ys)), ys)
+    ax = fig.add_subplot(ax.get_subplotspec(), projection='3d', elev=30, azim=45, )
+    xrange, yrange = np.arange(len(xs)), np.arange(len(ys))
+    X, Y = np.meshgrid(xrange, yrange)
+    ax.bar3d(X.flatten(), Y.flatten(), np.zeros_like(X.flatten()), dx=1, dy=1, dz=zss.flatten(), shade=True,
+             color='pink', alpha=0.8)
+    ax.set_xticks(xrange, xs)
+    ax.set_yticks(yrange, ys)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
@@ -100,12 +117,14 @@ def bar3d(ax: plt.Axes, position: (int, int, int), xs: Sequence, ys: Sequence, z
 
 def histChart(ax: plt.Axes, n: int, ys: Sequence):
     """绘制直方图"""
+    ys = np.array(ys)
     ax.hist(ys, bins=n, histtype='step', facecolor='green')  # histtype='step'表示直方图边缘为直线，不填充
     ax.set_title('hist chart')
 
 
 def stairChart(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制阶梯图"""
+    xs, ys = np.array(xs), np.array(ys)
     ax.step(xs, ys, where='post')
     ax.set_xlim(0, len(xs) - 1)
     ax.grid()
@@ -132,8 +151,8 @@ if __name__ == '__main__':
 
     ts = [0, 1, 2, 3, 3.14]
     ws = [0.4, 0.8, 0.3, 1, 2]
-    polarBar(axs[1][1], (3, 3, 5), ts, y1, ws)  # position:(2,3,4)，表示在2×3网格中的第4个位置
-    bar3d(axs[1][2], (3, 3, 6), x1, x2, y2)
+    polarBar(axs[1][1], ts, y1, ws)  # position:(2,3,4)，表示在2×3网格中的第4个位置
+    bar3d(axs[1][2], x1, x2, y2)
     histChart(axs[2][0], 10, y3)
     stairChart(axs[2][1], x1, y1)
 

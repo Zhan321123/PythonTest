@@ -16,6 +16,7 @@ matplotlib.use('TkAgg')
 
 def pieChart(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制普通饼图"""
+    xs,ys = np.array(xs), np.array(ys)
     explode = [0] * (len(ys) - 1) + [0.2]
     # 给了labels参数，就会直接显示再图形上，使用labeldistance控制位置
     # 如果legend()，就不显示再图形上，显示再legend上
@@ -30,25 +31,25 @@ def pieChart(ax: plt.Axes, xs: Sequence, ys: Sequence):
 
 def stackPieChart(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """绘制堆叠饼图"""
+    xs, yss = np.array(xs), np.array(yss)
     width = 0.3
     radius = 0.7 + width * len(yss)
     for index, i in enumerate(yss):
         ax.pie(i, radius=radius,  # 设置饼图的半径
                autopct='%1.1f%%',  # 设置百分比注释
-               pctdistance=1 - width / radius / 2,  # 设置注释的位置
-               )
+               pctdistance=1 - width / radius / 2, )  # 设置注释的位置
         radius -= width
     ax.add_artist(plt.Circle((0, 0), 0.70, fc='white'))  # 设置饼图的中心为空缺
     ax.axis('equal')
-    # ax.legend(xs, title='legend')
+    ax.legend(xs, title='legend')
     ax.set_title('stack pie chart')
 
 
 def nestedPie(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """绘制嵌套饼图"""
+    xs, yss = np.array(xs), np.array(yss)
     width = 0.4
     radius = 1.2
-    yss = np.array(yss)
     cmap = plt.colormaps["Wistia"]
     # 这样生成的outer和inner颜色大致相对应
     innerColors = cmap(np.linspace(0, 1, len(yss.flatten())))

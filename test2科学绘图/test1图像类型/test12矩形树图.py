@@ -14,10 +14,17 @@ plt.rcParams['axes.unicode_minus'] = False
 
 
 def rectTree(ax: plt.Axes, sizes: Sequence, labels: Sequence):
-    """矩形树图"""
-    sizes = np.array(sizes)
+    """
+    矩形树图
+    :param ax: plt.Axes
+    :param sizes: 元素大小列表
+    :param labels: 元素标签列表
+    :return:
+    """
+    sizes, labels = np.array(sizes), np.array(labels)
     squarify.plot(ax=ax, sizes=sizes, label=labels, alpha=0.7,
-                  color=matplotlib.colormaps['rainbow'](sizes / sizes.max()), pad=True)
+                  color=matplotlib.colormaps['rainbow'](sizes / sizes.max()),
+                  pad=True) # 间距
     ax.axis('off')  # 关闭坐标轴
     ax.set_title('矩形树图')
 

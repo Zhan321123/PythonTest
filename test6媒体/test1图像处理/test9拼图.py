@@ -3,6 +3,7 @@
 
 将多张长宽一致的图像拼接为一张长图
 """
+import os
 from enum import Enum
 
 import matplotlib
@@ -55,7 +56,7 @@ class StitchImages:
     def getSizes(self):
         return [image.size for image in self.images]
 
-    def stitch(self, outputDir: str, method: StitchMethod = 'standard', width: int = None):
+    def stitch(self, outputFile: str, method: StitchMethod = 'standard', width: int = None):
         """
         standard模式，拼接为长图，要求图像宽度宽度一致
         average模式，拼接为长图，按照图像平均宽度
@@ -84,7 +85,7 @@ class StitchImages:
         else:
             raise ValueError('method参数错误')
         img = self.stitchImages(images, width)
-        self._display(img, outputDir)
+        self._display(img, outputFile)
 
     def stitchImages(self, images: list[Image.Image], width: int) -> Image.Image:
         img = Image.new('RGB', (width, sum(self._getWHs(images)[1])))
@@ -116,16 +117,15 @@ class StitchImages:
 
 
 if __name__ == '__main__':
-    f1 = '../file/1.jpeg'
-    f2 = '../file/3.jpeg'
-    f3 = '../file/4.jpeg'
-    f4 = '../file/skin.png'
-    f5 = '../file/small.png'
-    out = '../file/splicing.jpeg'
-    si = StitchImages([f1, f2, f3, f4, f5])
-    si.openShow(True)
-    si.stitch(out, StitchMethod.standard)
+    f1 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-16-37.png"
+    f2 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-17-14.png"
+    f3 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-18-48.png"
+    f4 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-19-16.png"
+    out = rf"{os.environ['USERPROFILE']}\Desktop\img.png"
+    si = StitchImages([f1, f2, f3, f4])
+    # si.openShow(True)
+    # si.stitch(out, StitchMethod.standard)
     si.stitch(out, StitchMethod.average)
-    si.stitch(out, StitchMethod.max)
-    si.stitch(out, StitchMethod.specific, 100)
-    si.stitch(out, StitchMethod.lazy)
+    # si.stitch(out, StitchMethod.max)
+    # si.stitch(out, StitchMethod.specific, 100)
+    # si.stitch(out, StitchMethod.lazy)

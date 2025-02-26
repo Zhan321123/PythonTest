@@ -21,7 +21,19 @@ _interpolations = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16', 'spline
 
 
 def imshowChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence], interpolation: str = 'none'):
-    """热图，带注释，无格子边框，可插补interpolation"""
+    """
+    热图，带注释，无格子边框，可插补interpolation
+    :param ax:
+    :param xs:
+    :param ys:
+    :param zss:
+    :param interpolation: 插补方法，有['none', 'nearest', 'bilinear', 'bicubic',
+                                     'spline16', 'spline36', 'hanning', 'hamming',
+                                     'hermite','kaiser', 'quadric', 'catrom',
+                                     'gaussian', 'bessel', 'mitchell', 'sinc',
+                                     'lanczos']
+    :return:
+    """
     if not interpolation in _interpolations:
         interpolation = 'none'
     colors = [(0, '#FF0000'), (0.5, '#FFFF00'), (1, '#00FF00')]
@@ -38,7 +50,14 @@ def imshowChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence
 
 
 def pcolormeshChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
-    """热图，不带注释，有格子边框，不可插补"""
+    """
+    热图，不带注释，有格子边框，不可插补
+    :param ax:
+    :param xs:
+    :param ys:
+    :param zss:
+    :return:
+    """
     cmap = LinearSegmentedColormap.from_list('blue', [(0, '#e1eef7'), (1, '#026db3')])
     zss = np.array(zss)
     pc = ax.pcolormesh(zss, cmap=cmap, linewidth=0.5,  # 格子边框宽度
@@ -52,7 +71,13 @@ def pcolormeshChart(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequ
 
 
 def hinton(ax: plt.Axes, dss: Sequence[Sequence], max_weight=None, ):
-    """Hinton图"""
+    """
+    Hinton图
+    :param ax: plt.Axes
+    :param dss: (x, y)点的值
+    :param max_weight: 颜色最大值
+    :return:
+    """
     if not max_weight:
         max_weight = 2 ** np.ceil(np.log2(np.abs(dss).max()))
     ax.patch.set_facecolor('gray')  # 设置背景色

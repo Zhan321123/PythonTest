@@ -42,12 +42,13 @@ def getSheetNames(file: str) -> list:
         raise Exception(f"读取{file}失败：{e}")
 
 
-def readSheet(file: str, sheetName: str) -> [[str]]:
+def readSheet(file: str, sheetName: str=None,onlyStr:bool=False) -> [[str]]:
     """
     读取xlsx文件的sheet表格，返回二维列表，元素都转化为str类型
 
     :param file: xlsx文件路径
-    :param sheetName: 文件内的表格名
+    :param sheetName: 文件内的表格名，没有则读取第一个
+    :param onlyStr: 是否将结果转化为str类型
     :return: 表格数据list[list[]]
     """
     if not os.path.exists(file):
@@ -56,27 +57,28 @@ def readSheet(file: str, sheetName: str) -> [[str]]:
         workbook = openpyxl.load_workbook(file, read_only=False, data_only=True)
         sheetNames = list(workbook.sheetnames)
         if sheetName not in sheetNames:
-            raise ValueError(f"{file}文件中没有{sheetNames}表格")
-        else:
-            sheet = workbook[sheetName]
-            data = []
-            # 遍历工作表的每一行
-            for row in sheet.iter_rows(values_only=True):
-                row_data = []
-                for cell_value in row:
-                    # 将单元格值转换为字符串，若为 None 则转换为空字符串
-                    cell_str = str(cell_value) if cell_value is not None else ""
-                    row_data.append(cell_str)
-                data.append(row_data)
-            workbook.close()
-            print(f"读取{file}的{sheetName}成功")
-            workbook.close()
-            return data
+            print(f"{file}文件中没有{sheetName}表格，将读取第一个表格: {sheetNames[0]}")
+            sheetName = sheetNames[0]
+        sheet = workbook[sheetName]
+        data = []
+        # 遍历工作表的每一行
+        for row in sheet.iter_rows(values_only=True):
+            row_data = []
+            for cell_value in row:
+                # 将单元格值转换为字符串，若为 None 则转换为空字符串
+                if onlyStr:
+                    cell_value = str(cell_value) if cell_value is not None else ""
+                row_data.append(cell_value)
+            data.append(row_data)
+        workbook.close()
+        print(f"读取{file}的{sheetName}成功")
+        workbook.close()
+        return data
     except Exception as e:
         raise Exception(f"读取{file}失败：{e}")
 
 
-def writeSheet(file: str, sheet: str, data: list[list]) -> bool:
+def appendSheet(file: str, sheet: str, data: list[list]) -> bool:
     """
     将data写入xlsx文件的sheet表格
     如果不存在file，则会创建，有则追加sheet
@@ -95,8 +97,7 @@ def writeSheet(file: str, sheet: str, data: list[list]) -> bool:
         workbook = openpyxl.load_workbook(file, read_only=False, data_only=True)
         sheets = list(workbook.sheetnames)
         if sheet not in sheets:
-            # 新建表格
-            sheet = workbook.create_sheet(sheet)
+            sheet = workbook.create_sheet(sheet)# 新建表格
         else:
             raise ValueError(f"{file}文件中已经存在{sheet}表格")
     try:
@@ -105,6 +106,7 @@ def writeSheet(file: str, sheet: str, data: list[list]) -> bool:
         workbook.save(file)
         print(f"写入'{file}'文件的{sheet}'表格'成功")
         workbook.close()
+        return True
     except Exception as e:
         raise Exception(f"写入{file}失败：{e}")
 

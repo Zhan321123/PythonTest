@@ -8,6 +8,7 @@
 from typing import Sequence
 import matplotlib.pyplot as plt
 import matplotlib
+import numpy as np
 
 matplotlib.use('TkAgg')
 plt.rcParams['font.sans-serif'] = ['SimHei']
@@ -16,7 +17,8 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def simpleLine(ax: plt.Axes, xs: Sequence, ys: Sequence):
     """绘制简单的折线图"""
-    ax.plot(xs, ys, marker='+', linewidth=1, )
+    xs,ys = np.array(xs), np.array(ys)
+    ax.plot(xs, ys, marker='+', linewidth=1)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid()
@@ -25,11 +27,12 @@ def simpleLine(ax: plt.Axes, xs: Sequence, ys: Sequence):
 
 def multipleLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """多条折线图"""
+    xs,yss = np.array(xs), np.array(yss)
     markers = ['o', 's', 'd', 'v']
-    linestyles = ['-', '--', '-.', ':'] # 实线、虚线、点划线、点线
+    linestyles = ['-', '--', '-.', ':']  # 实线、虚线、点划线、点线
     for index, ys in enumerate(yss):
         ax.plot(xs, ys, linewidth=1, marker=markers[index], label=f'line-{index}',
-                linestyle=linestyles[index]) # 线型
+                linestyle=linestyles[index])  # 线型
     ax.set_xlabel("x")
     ax.set_ylabel("y")
     ax.grid()
@@ -39,6 +42,7 @@ def multipleLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
 
 def stackLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     """堆栈折线图"""
+    xs, ys = np.array(xs), np.array(yss)
     labels = list(f"line-{i}" for i in range(len(yss)))
     ax.stackplot(xs, yss, labels=labels, alpha=0.8)
     ax.legend(reverse=True)
@@ -48,8 +52,16 @@ def stackLine(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]):
     ax.set_title('stack line chart')
 
 
-def stemLine(ax: plt.Axes, xs: Sequence, ys: Sequence, bottom):
-    """茎图"""
+def stemLine(ax: plt.Axes, xs: Sequence, ys: Sequence, bottom: float):
+    """
+    茎图
+
+    :param ax: plt.Axes
+    :param xs: x轴标签
+    :param ys: y轴值
+    :param bottom: 底
+    """
+    xs, ys = np.array(xs), np.array(ys)
     ax.stem(xs, ys)
     ax.stem(xs, ys, bottom=bottom, markerfmt='D', linefmt='blue')
     ax.set_xlabel('x')
@@ -58,10 +70,11 @@ def stemLine(ax: plt.Axes, xs: Sequence, ys: Sequence, bottom):
     ax.set_title('stem line chart')
 
 
-def polarLine(ax: plt.Axes, position: (int, int, int), thetas: Sequence, rs: Sequence):
+def polarLine(ax: plt.Axes, thetas: Sequence, rs: Sequence):
     """极坐标折线图"""
+    thetas, rs = np.array(thetas), np.array(rs)
     ax.remove()
-    ax = fig.add_subplot(*position, polar=True)
+    ax = fig.add_subplot(ax.get_subplotspec(), polar=True)
     ax.plot(thetas, rs, marker='o', linewidth=1)
     ax.set_xlabel('theta')
     ax.set_ylabel('r')
@@ -83,6 +96,6 @@ if __name__ == '__main__':
     multipleLine(axs[0][1], x, y2)
     stackLine(axs[1][0], x, y2)
     stemLine(axs[1][1], x, y1, 6)
-    polarLine(axs[0][2], (2, 3, 3), x, y1)
+    polarLine(axs[0][2], x, y1)
 
     plt.show()

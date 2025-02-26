@@ -8,17 +8,10 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
 
 
-# def Amn(over: int, under: int) -> int:
-#     """:math:`A_under^over`"""
-#     return math.factorial(under) // math.factorial(under - over)
-#
-#
-# def Cmn(over: int, under: int) -> int:
-#     """:math:`C_under^over`"""
-#     return Amn(over, under) // math.factorial(over)
-
-
 class Bezier:
+    """
+    单条贝塞尔曲线
+    """
     def __init__(self, points: [[]]):
         self.points = points
         self.n = len(points) - 1
@@ -53,6 +46,9 @@ class Bezier:
 
 
 class SubBezier:
+    """
+    多条三阶贝塞尔曲线
+    """
     def __init__(self, pointss: [[[]]]):
         self.pointss = pointss
         self.ns = list(len(points) - 1 for points in self.pointss)

@@ -18,14 +18,31 @@ plt.rcParams['axes.unicode_minus'] = False
 
 
 def error(ax: plt.Axes, xs: Sequence, ys: Sequence, xerrs: Sequence, yerrs: Sequence):
-    """误差图，误差线为直线"""
+    """
+    误差图，误差线为直线
+
+    :param ax: plt.Axes
+    :param xs: x轴标签
+    :param ys: y轴值
+    :param xerrs: x序列的误差，左右相等
+    :param yerrs: y序列的误差，上下相等
+    :return:
+    """
     ax.errorbar(xs, ys, xerr=xerrs, yerr=yerrs, marker='o')
     ax.grid()
     ax.set_title('error chart')
 
 
 def errorArrow(ax: plt.Axes, xs: Sequence, ys: Sequence, xerrs: Sequence, yerrs: Sequence):
-    """误差图，误差线为箭头"""
+    """
+    误差图，误差线为箭头
+    :param ax: plt.Axes
+    :param xs: x轴标签
+    :param ys: y轴值
+    :param xerrs: x序列误差，仅为正
+    :param yerrs: y序列误差，仅为正
+    :return:
+    """
     # uplims=True、lolims=True、xuplims=True、xlolims=True，上面、下面、x轴正方向、x轴负方向的误差线去掉，并且另一端设置为箭头
     ax.errorbar(xs, ys, xerr=xerrs, yerr=yerrs, lolims=True, xlolims=True,
                 marker='o', linewidth=1, linestyle='dotted')
@@ -34,7 +51,15 @@ def errorArrow(ax: plt.Axes, xs: Sequence, ys: Sequence, xerrs: Sequence, yerrs:
 
 
 def errorBox(ax: plt.Axes, xs: Sequence, ys: Sequence, xerrs: Sequence, yerrs: Sequence):
-    """误差图，误差线为方块"""
+    """
+    误差图，误差线为方块
+    :param ax: plt.Axes
+    :param xs: x轴标签
+    :param ys: y轴值
+    :param xerrs: x序列的误差，左右相等
+    :param yerrs: y序列的误差，上下相等
+    :return:
+    """
     xs, ys, xerrs, yerrs = np.asarray(xs), np.asarray(ys), np.asarray(xerrs), np.asarray(yerrs)
     errorboxes = [Rectangle((x - xe, y - ye), 2 * xe, 2 * ye)
                   for x, y, xe, ye in zip(xs, ys, xerrs.T, yerrs.T)]
