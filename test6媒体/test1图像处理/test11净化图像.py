@@ -48,7 +48,7 @@ def purifyImage(image, num_colors):
 
 
 if __name__ == '__main__':
-    dirty = r"../file/zhan_logo4.png"
+    dirty = r"D:\code\pythonProject\PythonTest\logo.jpg"
     img = Image.open(dirty)
-    new_image = purifyImage(img, 16)
-    new_image.save(r"../file/zhan_logo41.png")
+    new_image = purifyImage(img, 8)
+    new_image.save(r"D:\code\pythonProject\PythonTest\logo.png")

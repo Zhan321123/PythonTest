@@ -1,6 +1,6 @@
 # pyqt5
 
-### 配置external tools：
+## 配置external tools：
 
 - pyqt5-designer.exe
 

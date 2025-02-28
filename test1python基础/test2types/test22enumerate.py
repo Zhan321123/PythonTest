@@ -1,10 +1,11 @@
 """
 enumerate函数
     用于序列遍历时的数字索引
+    enumerate(list) = ((0, e1), (1, e2), ...)
+    for index, e in Sequence:
 
-for e1 in list:
-for index,e2 in enumerate(list):
-    e1 == e2
+
+
 """
 
 a = 'abcd'

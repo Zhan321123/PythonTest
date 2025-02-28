@@ -1,4 +1,4 @@
-![logo](zhan_logo.png)
+![logo](./logo.png)
 
 ![python](https://img.shields.io/badge/python-3.9-blue)
 ### python国内库源

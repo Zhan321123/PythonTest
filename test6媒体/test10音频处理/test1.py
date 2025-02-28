@@ -1,3 +1,9 @@
+"""
+对于 .wav 和 .ogg 格式的音频文件，大多数库都能很好地支持。
+对于 .mp3 格式的音频文件，pygame 需要额外配置才能支持，而 pyglet 和 vlc 则通常可以直接支持。
+对于其他格式 如 .flac, .aac 等，vlc 库提供了最广泛的支持。
+如果你需要支持多种格式并且确保兼容性，建议使用 vlc 库。如果只需要支持特定的几种格式，可以根据具体需求选择合适的库
+"""
 import numpy as np
 import sounddevice as sd
 
