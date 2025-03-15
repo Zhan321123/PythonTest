@@ -10,7 +10,6 @@ def rgba1ToHex(rgba: Sequence):
     return rgba255ToHex(rgba)
 
 
-
 def rgba255ToHex(rgba: Sequence):
     """
     rgba(0~255) to hex(#0-f)
@@ -26,7 +25,7 @@ def rgba255ToHex(rgba: Sequence):
         raise ValueError("颜色序列必须为[R,G,B,A] or [R,G,B]")
 
 
-def hexToRgba255(hexc: str)->Sequence:
+def hexToRgba255(hexc: str) -> Sequence:
     """
     hex(#0-f) to rgba(0~255)
     """
@@ -45,12 +44,13 @@ def hexToRgba255(hexc: str)->Sequence:
 
 
 if __name__ == '__main__':
-    l = [[65, 90, 155],
-         [223, 191, 117],
-         [113, 180, 144],
-         [144, 5, 61],
-         [164, 105, 189],
-         [198, 95, 16],
-         [36, 153, 16], ]
+    l = [
+        [69, 42, 61],
+        [68, 117, 122],
+        [183, 181, 160],
+        [238, 213, 183],
+        [212, 76, 60],
+        [133, 19, 33]
+    ]
     for i in l:
         print(f'"{rgba255ToHex(i)}"')

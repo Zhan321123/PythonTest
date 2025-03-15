@@ -49,7 +49,7 @@ def graph2(ax: plt.Axes, xss: Sequence[Sequence], yss: Sequence[Sequence], zss: 
     ax.grid()
 
 
-def explicitFunctionalEquations(x: Union[float, np.ndarray]) -> Union[float, float, np.ndarray]:
+def explicitFunctionalEquation(x: Union[float, np.ndarray]) -> Union[float, float, np.ndarray]:
     """
     显函数方程，y = f(x)
     """
@@ -65,7 +65,7 @@ def parametricEquation(t: Union[float, np.ndarray]) -> Union[tuple[float, float]
     return x, y
 
 
-def implicitEquations(x: Union[float, np.ndarray], y: Union[float, np.ndarray]) -> Union[float, float, np.ndarray]:
+def implicitEquation(x: Union[float, np.ndarray], y: Union[float, np.ndarray]) -> Union[float, float, np.ndarray]:
     """
     隐函数方程
     f(x, y) = 0
@@ -83,11 +83,11 @@ if __name__ == '__main__':
     graph(axs[0], xs, ys)
 
     xss, yss = np.meshgrid(np.linspace(-2, 2, 200), np.linspace(-2, 2, 200))
-    zss = implicitEquations(xss, yss)
+    zss = implicitEquation(xss, yss)
     graph2(axs[1], xss, yss, zss)
 
     xs = np.linspace(-10, 10, 200)
-    ys = explicitFunctionalEquations(xs)
+    ys = explicitFunctionalEquation(xs)
     graph(axs[2], xs, ys)
 
 

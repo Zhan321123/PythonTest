@@ -39,6 +39,6 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 1)
     ps1 = circleBresenham(20)
     print(ps1)
-    drawSquare(axs, ps1, (0.5, 0.5))
+    drawSquare(axs, ps1, )
 
     plt.show()

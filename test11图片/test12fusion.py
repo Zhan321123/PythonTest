@@ -1,20 +1,7 @@
 """
-Texture Connection Mapping Based on Fusion and CTM Mod
+基于fusion模组的贴图绘制
 """
-import numpy as np
-from PIL import Image
-
-
-def drawPixel(pixels: np.ndarray) -> Image.Image:
-    image = Image.fromarray(pixels)
-    return image
-
-
-def getPixelData(image: Image.Image) -> np.ndarray[tuple]:
-    if image.mode != 'RGBA':
-        image = image.convert('RGBA')
-    pixels = np.array(image)
-    return pixels
+from test1ImageInfo import *
 
 
 def matrixCover(bottomMatrix: np.ndarray, topMatrix: np.ndarray, startPosition: tuple[int, int]) -> np.ndarray:
@@ -32,10 +19,10 @@ def matrixTile(matrix: np.ndarray, repeat: tuple[int, int]) -> np.ndarray:
 
 def getCenter(texture: np.ndarray, pad: int) -> np.ndarray:
     """
-    Take the middle pixel, tile it and take 2 * 2, take the middle 16 * 16
-    :param texture:  16 * 16 pixels
-    :param pad:  Number of border pixels
-    :return:  16 * 16 middle pixel
+    取得中间像素，平铺并2*2取中间16*16
+    :param texture: 16*16像素
+    :param pad: 边框像素数
+    :return: 16*16中间像素
     """
     tex1 = texture[pad:16 - pad, pad:16 - pad]
     tex4 = matrixTile(tex1, (2, 2))
@@ -44,9 +31,9 @@ def getCenter(texture: np.ndarray, pad: int) -> np.ndarray:
 
 def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     """
-    Obtain four pixels, tile 1 * 2 and take the middle padding * 16 pixels
-    :param texture:  16 * 16 pixels
-    :param pad:  Number of border pixels
+    取得四边像素，平铺1*2取中间padding*16像素
+    :param texture: 16*16像素
+    :param pad: 边框像素数
     :return: (right padding*16, top 16*padding, left padding*16, bottom 16*padding)
     """
     tr = texture[pad:16 - pad, 16 - pad:16]
@@ -63,11 +50,11 @@ def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarr
 
 def replaceBlock(texture: np.ndarray, top: tuple[int, int], bottom: tuple[int, int]) -> np.ndarray:
     """
-    Replace block with the same image
-    :param texture:  Big picture
-    :param top:  Replace block coordinates * 16, [y, x]
-    :param bottom:  Replaced block coordinates * 16, [y, x]
-    :return:  Modified large image
+    同图替换块
+    :param texture: 大图
+    :param top: 替换方块坐标*16, [y, x]
+    :param bottom: 被替换方块坐标*16, [y, x]
+    :return: 修改后的大图
     """
     top = texture[top[0] * 16:top[0] * 16 + 16, top[1] * 16:top[1] * 16 + 16]
     matrixCover(texture, top, (bottom[0] * 16, bottom[1] * 16))
@@ -76,24 +63,24 @@ def replaceBlock(texture: np.ndarray, top: tuple[int, int], bottom: tuple[int, i
 
 def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     """
-    Generate texture connected images
-    :param texture:  Maps
-    :param pad:  frame
-    :Param mode: the mode corresponding to fusion
-    :return:  Generate a good pixel image
+    生成图像
+    :param texture: 贴图
+    :param pad: 边框
+    :param mode: fusion对应的模式
+    :return: 生成好的像素图
     """
 
     center = getCenter(texture, pad)
     centerHor, centerVer = center[pad:16 - pad, :], center[:, pad:16 - pad]
     rig, top, lef, bot = get4side(texture, pad)
-    # first block
+    # 第一个block
     first = matrixCover(texture, center[pad:16 - pad, pad:16 - pad], (pad, pad))  # 1A
-    # Array out all blocks
+    # 阵列出全部块
     result = matrixTile(first, (8, 6))
-    # Clear the blank space on the bottom left and right sides
+    # 清除左下角右边为空白
     transparent = np.zeros((16, 16, 4), dtype=np.uint8)
     matrixCover(result, transparent, (80, 16))
-    # other blocks
+    # 替换其他方块
     matrixCover(result, center[pad:16 - pad, pad:], (pad, 16 + pad))  # 2A
     matrixCover(result, top[:, pad:], (0, 16 + pad))
     matrixCover(result, bot[:, pad:], (16 - pad, 16 + pad))
@@ -197,11 +184,11 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(result, center[pad:, pad:], (80 + pad, pad))
     matrixCover(result, center[:16 - pad, :], (80, 32))  # 3F
     matrixCover(result, centerVer, (80, 32 + pad))
-    matrixCover(result, center[:, :16 - pad], (80, 48))  # 4F
+    matrixCover(result, center[:, :16-pad], (80, 48))  # 4F
     matrixCover(result, centerHor, (80 + pad, 48))
-    replaceBlock(result, (4, 2), (5, 4))  # 5F
+    replaceBlock(result, (4,2), (5,4))  # 5F
     matrixCover(result, first[16 - pad:, 16 - pad:], (96 - pad, 80 - pad))
-    replaceBlock(result, (5, 2), (5, 5))  # 6F
+    replaceBlock(result, (5,2), (5,5))  # 6F
     matrixCover(result, first[:pad, 16 - pad:], (80, 96 - pad))
     replaceBlock(result, (2, 2), (5, 6))  # 7F
     matrixCover(result, first[:pad, 16 - pad:], (80, 112 - pad))
@@ -211,17 +198,21 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     return result
 
 
-def start(file: str, pad: int) -> Image.Image:
+if __name__ == '__main__':
+    file = r"C:\Users\刘高瞻\Desktop\fusion\fusion-createBlock\industrial_iron_block.png"
     image = Image.open(file)
+    getInfo(image)
     pixels = getPixelData(image)
-    result = generate(pixels, pad)
+    result = generate(pixels, 3)
     last = drawPixel(result)
     last.convert('P')
-    return last
+    # last.save(r"C:\Users\刘高瞻\Desktop\industrial_iron_block.png")
 
 
-if __name__ == '__main__':
-    file = "./fusion/fusion-createBlock/industrial_iron_block.png"
-    border = 3  # border width, please try 1, 2, 3 or 4.
-    last = start(file, border)
-    last.save("./fusion/fusion-createBlock/industrial_iron_block_full.png")
+    fig, ax = plt.subplots()
+    ax.xaxis.set_major_locator(plt.MultipleLocator(16))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(16))
+    show(last, ax)
+    plt.show()
+
+

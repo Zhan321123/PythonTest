@@ -11,6 +11,17 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
+class ZRandom:
+    @staticmethod
+    def inverse(n, size=1000):
+        def fx(n, y):
+            result = n / (y + n)
+            return result
+
+        y = np.random.random(size) * 20
+        return fx(n, y)
+
+
 def displayRandom(ax: plt.Axes, size=1000):
     data = {
         '正态分布': np.random.normal(0, 3, size),
@@ -33,12 +44,24 @@ def displayRandom(ax: plt.Axes, size=1000):
     violinChart(ax, list(data.keys()), list(data.values()))
 
 
+def boxChart(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]) -> None:
+    bplot = ax.boxplot(yss, notch=True, vert=True, patch_artist=True, tick_labels=xs)
+    xs = np.arange(len(xs))
+    for patch, color in zip(bplot['boxes'], matplotlib.colormaps["rainbow"](xs / max(xs))):
+        patch.set_facecolor(color)
+    ax.set_title('Notched box plot')
+
+
+def histChart(ax: plt.Axes, n: int, yss: Sequence):
+    for ys in yss:
+        ax.hist(ys, bins=n, histtype='step')
+
+
 def violinChart(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]) -> None:
-    """小提琴图"""
     part = ax.violinplot(yss, showmeans=False, showmedians=True)
     cs = matplotlib.colormaps["rainbow"](np.arange(len(xs)) / max(np.arange(len(xs))))
     for index, pc in enumerate(part['bodies']):
-        pc.set_facecolor(cs[index])  # 修改填充颜色
+        pc.set_facecolor(cs[index])
         pc.set_edgecolor('black')
         pc.set_alpha(0.6)
     ax.set_xticks(range(1, len(xs) + 1), xs)
@@ -46,6 +69,12 @@ def violinChart(ax: plt.Axes, xs: Sequence, yss: Sequence[Sequence]) -> None:
 
 
 if __name__ == '__main__':
-    fig, ax = plt.subplots()
-    displayRandom(ax)
+    fig, axs = plt.subplots(1, 3)
+    # displayRandom(ax)
+    zr = ZRandom()
+    r1 = np.random.random(size=1000) * np.random.random(size=1000)
+    violinChart(axs[0], range(1), [r1])
+    boxChart(axs[1], range(1), [r1])
+    histChart(axs[2], 10, [r1])
     plt.show()
+    exit()

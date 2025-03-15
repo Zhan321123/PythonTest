@@ -26,6 +26,9 @@ def drawSurface(ax: plt.Axes, xss: Sequence[Sequence[float]], yss: Sequence[Sequ
     :param zss: zss = f(xss, yss)
     :return:
     """
+    fig = ax.figure
+    ax.remove()
+    ax = fig.add_subplot(ax.get_subplotspec(), projection='3d')
     xss, yss, zss = np.array(xss), np.array(yss), np.array(zss)
     surf = ax.plot_surface(xss, yss, zss, cmap='rainbow_r', )
     bar = plt.colorbar(surf, shrink=0.5, aspect=8)
@@ -38,27 +41,46 @@ def drawSurface(ax: plt.Axes, xss: Sequence[Sequence[float]], yss: Sequence[Sequ
     ax.set_title('$f(x, y)$')
 
 
+def graph(ax: plt.Axes, xss, yss, zss):
+    """绘制"""
+    fig = ax.figure
+    ax.remove()
+    ax = fig.add_subplot(ax.get_subplotspec(), projection='3d')
+    ax.plot_surface(xss, yss, zss, cmap='rainbow')
+    ax.xaxis.set_major_locator(plt.MultipleLocator(5))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(5))
+    ax.zaxis.set_major_locator(plt.MultipleLocator(5))
+    ax.set_aspect('equal')
+
+
 def fxy(x: Union[float, np.ndarray], y: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-    """
-    三维函数 :math:`f (x, y)`
-    :param x: x or np's array
-    :param y: y, len(y) must be equal to len(x)
-    :return: f(x, y), length is equal to len(x)
-    """
+    """显函数方程"""
     # z = -20 * np.exp(-0.2 * np.sqrt(1 / 2 * (x ** 2 + y ** 2))) - np.exp(
     #     1 / 2 * (np.cos(2 * np.pi * x) + np.cos(2 * np.pi * y)))
     z = x ** 2 * y ** 3 - (x ** 2 + y ** 2 - 1) ** 3
     return z
 
 
+def parametricEquation(u: Union[float, np.ndarray], v: Union[float, np.ndarray]) -> Union[
+    tuple[float, float, float], tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    """
+    参数方程
+    """
+
+
+def explicitFunctionalEquation(x, y):
+    """显函数方程"""
+
+
 if __name__ == '__main__':
+    fig = plt.figure()
+
     xs = np.linspace(-2, 2, 200)
     ys = np.linspace(-2, 2, 200)
     X, Y = np.meshgrid(xs, ys)
     Z = fxy(X, Y)
-
-    fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     drawSurface(ax, X, Y, Z)
+
 
     plt.show()

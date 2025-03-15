@@ -52,7 +52,7 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 1)
 
 
-    points = calcSphere(12)
+    points = calcSphere(16)
     drawBlock(axs, points)
 
     plt.show()

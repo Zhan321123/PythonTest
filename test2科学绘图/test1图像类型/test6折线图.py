@@ -73,6 +73,7 @@ def stemLine(ax: plt.Axes, xs: Sequence, ys: Sequence, bottom: float):
 def polarLine(ax: plt.Axes, thetas: Sequence, rs: Sequence):
     """极坐标折线图"""
     thetas, rs = np.array(thetas), np.array(rs)
+    fig = ax.figure
     ax.remove()
     ax = fig.add_subplot(ax.get_subplotspec(), polar=True)
     ax.plot(thetas, rs, marker='o', linewidth=1)

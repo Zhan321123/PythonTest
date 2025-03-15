@@ -26,6 +26,7 @@ def simplePoint(ax: plt.Axes, xs: Sequence, ys: Sequence):
 def point3d(ax: plt.Axes, xs: Sequence, ys: Sequence, zs: Sequence):
     """绘制三维散点图"""
     xs, ys, zs = np.array(xs), np.array(ys), np.array(zs)
+    fig = ax.figure
     ax.remove()
     # projection='3d' 三维图像, elev=30 仰角, azim=45 方位角
     ax = fig.add_subplot(ax.get_subplotspec(), projection='3d', elev=30, azim=45, )
@@ -49,6 +50,7 @@ def sizePoint(ax: plt.Axes, xs: Sequence, ys: Sequence, sizes: Sequence):
 def polarPoint(ax: plt.Axes, thetas: Sequence, rs: Sequence, sizes: Sequence):
     """极坐标带尺寸的散点图"""
     thetas, rs, sizes = np.array(thetas), np.array(rs), np.array(sizes)
+    fig = ax.figure
     ax.remove()
     ax = fig.add_subplot(ax.get_subplotspec(), polar=True)
     cmap = LinearSegmentedColormap.from_list('my_cmap', ['red', 'yellow', 'green'])

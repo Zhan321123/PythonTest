@@ -81,7 +81,8 @@ def polarBar(ax: plt.Axes, thetas: Sequence, rs: Sequence, widths: Sequence):
     :param widths: 扇形宽度范围，弧度制
     """
     thetas, rs, widths = np.array(thetas), np.array(rs), np.array(widths)
-    ax.remove()  # 移除直方ax
+    fig = ax.figure
+    ax.remove()
     ax2 = fig.add_subplot(ax.get_subplotspec(), polar=True)  # 添加极坐标ax
     cmap = LinearSegmentedColormap.from_list('my_cmap', ['red', 'yellow', 'green'])
     colors = cmap(np.arange(cmap.N))[::int(256 / len(thetas))][0:len(thetas)]
@@ -101,6 +102,7 @@ def bar3d(ax: plt.Axes, xs: Sequence, ys: Sequence, zss: Sequence[Sequence]):
     :param zss: [x][y]二维数据
     """
     xs, ys, zss = np.array(xs), np.array(ys), np.array(zss)
+    fig = ax.figure
     ax.remove()
     ax = fig.add_subplot(ax.get_subplotspec(), projection='3d', elev=30, azim=45, )
     xrange, yrange = np.arange(len(xs)), np.arange(len(ys))

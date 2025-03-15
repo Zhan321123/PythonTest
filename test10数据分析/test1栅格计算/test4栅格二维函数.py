@@ -1,10 +1,12 @@
 """
-栅格函数
+栅格二维函数
+
+条件：该函数及其反函数都是显函数
 """
 from test1drawBlocks import *
 
 
-def rasterize(fxs: callable, fys: callable, xRange: tuple[float, float], yRange: tuple[float, float]) -> planarPoints:
+def rasterize(fxs: callable, fys: callable, xRange: tuple[int, int], yRange: tuple[int, int]) -> planarPoints:
     """
     栅格二维函数
     :param fxs: y = f(x) -> y value[]
@@ -14,11 +16,11 @@ def rasterize(fxs: callable, fys: callable, xRange: tuple[float, float], yRange:
     :return:
     """
     points = set()
-    for x in range(*map(np.round, xRange)):
+    for x in range(*xRange):
         ys = set(fxs(x))
         ys = map(np.round, ys)
         points.update([(x, y) for y in ys])
-    for y in range(*map(np.round, yRange)):
+    for y in range(*yRange):
         xs = set(fys(y))
         xs = map(np.round, xs)
         points.update([(x, y) for x in xs])
@@ -26,11 +28,11 @@ def rasterize(fxs: callable, fys: callable, xRange: tuple[float, float], yRange:
 
 
 def _f(f: callable):
-    def func(x):
+    def func(p):
         try:
-            return f(x)
+            return f(p)
         except Exception as e:
-            return (np.nan,)
+            return np.nan,
 
     return func
 
@@ -90,9 +92,9 @@ def trigonometric(a: float) -> (callable, callable):
 if __name__ == '__main__':
     fig, axs = plt.subplots(1, 1)
 
-    # ps = rasterize(*oval(40, 30), (-40, 40), (-40, 40))
+    ps = rasterize(*oval(40, 30), (-40, 40), (-40, 40))
     # ps = rasterize(*inverseProportion(100), (-60, 60), (-60, 60))
-    ps = rasterize(*trigonometric(10), (-90, 90), (-10, 10))
+    # ps = rasterize(*trigonometric(10), (-90, 90), (-10, 10))
     drawSquare(axs, ps, )
 
     plt.show()
