@@ -22,6 +22,9 @@ def graph(ax: plt.Axes, xs: Sequence, ys: Sequence):
     绘制图像
     """
     xs, ys = np.array(xs), np.array(ys)
+    if len(ys.shape) > 1:
+        xs = np.tile(xs, len(ys))
+        ys = ys.flatten()
     ax.plot(xs, ys)
     ax.set_aspect('equal', adjustable='box')
     ax.axhline(0, color='black')
@@ -49,11 +52,12 @@ def graph2(ax: plt.Axes, xss: Sequence[Sequence], yss: Sequence[Sequence], zss: 
     ax.grid()
 
 
-def explicitFunctionalEquation(x: Union[float, np.ndarray]) -> Union[float, float, np.ndarray]:
+def explicitFunctionalEquation(x: Union[float, np.ndarray]) -> Union[float, tuple]:
     """
     显函数方程，y = f(x)
     """
-    return x ** 2/5 - x + 1
+    # return x ** 2 / 5 - x + 1
+    return np.sqrt(9 - x ** 2), -np.sqrt(9 - x ** 2)
 
 
 def parametricEquation(t: Union[float, np.ndarray]) -> Union[tuple[float, float], tuple[np.ndarray, np.ndarray]]:
@@ -78,17 +82,17 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 3)
     axs = axs.flatten()
 
-    ts = np.linspace(0, 2 * math.pi, 1000)
+    ts = np.linspace(0, 2 * math.pi, 100)
     xs, ys = parametricEquation(ts)
     graph(axs[0], xs, ys)
 
-    xss, yss = np.meshgrid(np.linspace(-2, 2, 200), np.linspace(-2, 2, 200))
+    xss, yss = np.meshgrid(np.linspace(-2, 2, 200), np.linspace(-2, 2, 100))
     zss = implicitEquation(xss, yss)
     graph2(axs[1], xss, yss, zss)
 
     xs = np.linspace(-10, 10, 200)
     ys = explicitFunctionalEquation(xs)
+    print(xs, ys)
     graph(axs[2], xs, ys)
-
 
     plt.show()

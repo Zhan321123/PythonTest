@@ -89,9 +89,43 @@ def ball(r):
     return _f(xf), _f(yf), _f(zf),
 
 
+def tours(R=30, r=10):
+    """
+    圆环体 (sqrt(x^2 + y^2) - R)^2 + y^2 = r^2
+    R>r
+    :param R:
+    :param r:
+    :return:
+    """
+
+    def xf(y, z):
+        return (
+            np.sqrt((np.sqrt(r ** 2 - z ** 2) + R) ** 2 - y ** 2),
+            np.sqrt((-np.sqrt(r ** 2 - z ** 2) + R) ** 2 - y ** 2),
+            -np.sqrt((np.sqrt(r ** 2 - z ** 2) + R) ** 2 - y ** 2),
+            -np.sqrt((-np.sqrt(r ** 2 - z ** 2) + R) ** 2 - y ** 2)
+        )
+
+    def yf(x, z):
+        return (
+            np.sqrt((np.sqrt(r ** 2 - z ** 2) + R) ** 2 - x ** 2),
+            np.sqrt((-np.sqrt(r ** 2 - z ** 2) + R) ** 2 - x ** 2),
+            -np.sqrt((np.sqrt(r ** 2 - z ** 2) + R) ** 2 - x ** 2),
+            -np.sqrt((-np.sqrt(r ** 2 - z ** 2) + R) ** 2 - x ** 2)
+        )
+
+    def zf(x, y):
+        return (
+            np.sqrt(-(np.sqrt(x ** 2 + y ** 2) - R) ** 2 + r ** 2),
+            -np.sqrt(-(np.sqrt(x ** 2 + y ** 2) - R) ** 2 + r ** 2)
+        )
+
+    return _f(xf), _f(yf), _f(zf),
+
+
 if __name__ == '__main__':
     fig, ax = plt.subplots()
-    ps = rasterize(*ball(10), (-10, 10), (-10, 10), (-10, 10))
+    ps = rasterize(*tours(15, 5), (-30, 30), (-30, 30), (-30, 30))
     # ps = rasterize(*singleLeafHyperboloid(10, 20), (-20, 20), (-20, 20), (-20, 20))
     drawBlock(ax, ps)
     plt.show()

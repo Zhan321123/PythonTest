@@ -4,11 +4,21 @@
 from test1ImageInfo import *
 
 
-def matrixCover(bottomMatrix: np.ndarray, topMatrix: np.ndarray, startPosition: tuple[int, int]) -> np.ndarray:
-    row, col = startPosition
-    coverLength = min(bottomMatrix.shape[0] - row, topMatrix.shape[0])
-    coverWidth = min(bottomMatrix.shape[1] - col, topMatrix.shape[1])
-    bottomMatrix[row:row + coverLength, col:col + coverWidth] = topMatrix[0:coverLength, 0:coverWidth]
+def matrixCover(bottomMatrix: np.ndarray, topMatrix: np.ndarray, startPosition: tuple[int, int],
+                copy: bool = False) -> np.ndarray:
+    """
+    产生一个新的数组，不改变原数组
+    :param copy:
+    :param bottomMatrix:
+    :param topMatrix:
+    :param startPosition:
+    :return:
+    """
+    xPos, yPos = startPosition
+    length, width = topMatrix.shape[:2]
+    if copy:
+        bottomMatrix = bottomMatrix.copy()
+    bottomMatrix[xPos:xPos + length, yPos:yPos + width] = topMatrix
     return bottomMatrix
 
 
@@ -27,6 +37,15 @@ def getCenter(texture: np.ndarray, pad: int) -> np.ndarray:
     tex1 = texture[pad:16 - pad, pad:16 - pad]
     tex4 = matrixTile(tex1, (2, 2))
     return tex4[8 - 2 * pad:24 - 2 * pad, 8 - 2 * pad:24 - 2 * pad]
+
+
+def get4Corner(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+    """
+    获取四角
+    :param texture: 贴图16*16
+    :param pad: 边框格数
+    :return: 四角(left-top, left-bottom, right-bottom, right-top)
+    """
 
 
 def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
@@ -48,17 +67,15 @@ def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarr
             tb2[0:pad, 8 - 2 * pad:24 - 2 * pad])
 
 
-def replaceBlock(texture: np.ndarray, top: tuple[int, int], bottom: tuple[int, int]) -> np.ndarray:
+def suture(blocks: [[np.ndarray]]) -> np.ndarray:
     """
-    同图替换块
-    :param texture: 大图
-    :param top: 替换方块坐标*16, [y, x]
-    :param bottom: 被替换方块坐标*16, [y, x]
-    :return: 修改后的大图
+    缝合blocks
+    :param blocks:
+    :return:
     """
-    top = texture[top[0] * 16:top[0] * 16 + 16, top[1] * 16:top[1] * 16 + 16]
-    matrixCover(texture, top, (bottom[0] * 16, bottom[1] * 16))
-    return texture
+    rows = [np.concatenate(row, axis=1) for row in blocks]
+    result = np.concatenate(rows, axis=0)
+    return result
 
 
 def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
@@ -70,149 +87,183 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     :return: 生成好的像素图
     """
 
+    transparent = np.zeros((16, 16, 4), dtype=np.uint8)
     center = getCenter(texture, pad)
     centerHor, centerVer = center[pad:16 - pad, :], center[:, pad:16 - pad]
     rig, top, lef, bot = get4side(texture, pad)
     # 第一个block
-    first = matrixCover(texture, center[pad:16 - pad, pad:16 - pad], (pad, pad))  # 1A
-    # 阵列出全部块
-    result = matrixTile(first, (8, 6))
-    # 清除左下角右边为空白
-    transparent = np.zeros((16, 16, 4), dtype=np.uint8)
-    matrixCover(result, transparent, (80, 16))
-    # 替换其他方块
-    matrixCover(result, center[pad:16 - pad, pad:], (pad, 16 + pad))  # 2A
-    matrixCover(result, top[:, pad:], (0, 16 + pad))
-    matrixCover(result, bot[:, pad:], (16 - pad, 16 + pad))
-    matrixCover(result, centerHor, (pad, 32))  # 3A
-    matrixCover(result, top, (0, 32))
-    matrixCover(result, bot, (16 - pad, 32))
-    matrixCover(result, center[pad:16 - pad, :16 - pad], (pad, 48))  # 4A
-    matrixCover(result, top[:, :16 - pad], (0, 48))
-    matrixCover(result, bot[:, :16 - pad], (16 - pad, 48))
-    matrixCover(result, center[pad:16 - pad, pad:], (pad, 64 + pad))  # 5A
-    matrixCover(result, center[pad:, pad:16 - pad], (pad, 64 + pad))
-    matrixCover(result, top[:, pad:], (0, 64 + pad))
-    matrixCover(result, lef[pad:, :], (pad, 64))
-    matrixCover(result, center[pad:16 - pad, :16 - pad], (pad, 80))  # 6A
-    matrixCover(result, center[pad:, pad:16 - pad], (pad, 80 + pad))
-    matrixCover(result, top[:, :16 - pad], (0, 80))
-    matrixCover(result, rig[pad:, :], (pad, 96 - pad))
-    matrixCover(result, center[pad:16 - pad, pad:], (pad, 96 + pad))  # 7A
-    matrixCover(result, centerVer, (0, 96 + pad))
-    matrixCover(result, lef, (0, 96))
-    matrixCover(result, center[pad:, pad:16 - pad], (pad, 112 + pad))  # 8A
-    matrixCover(result, centerHor, (pad, 112))
-    matrixCover(result, top, (0, 112))
-    matrixCover(result, center[pad:, pad:16 - pad], (16 + pad, pad))  # 1B
-    matrixCover(result, lef[pad:, :], (16 + pad, 0))
-    matrixCover(result, rig[pad:, :], (16 + pad, 16 - pad))
-    matrixCover(result, center[pad:, pad:], (16 + pad, 16 + pad))  # 2B
-    matrixCover(result, top[:, pad:], (16, 16 + pad))
-    matrixCover(result, lef[pad:, :], (16 + pad, 16))
-    matrixCover(result, center[pad:, :], (16 + pad, 32))  # 3B
-    matrixCover(result, top, (16, 32))
-    matrixCover(result, center[pad:, :16 - pad], (16 + pad, 48))  # 4B
-    matrixCover(result, top[:, :16 - pad], (16, 48))
-    matrixCover(result, rig[pad:, :], (16 + pad, 64 - pad))
-    matrixCover(result, center[:16 - pad, pad:16 - pad], (16, 64 + pad))  # 5B
-    matrixCover(result, center[pad:16 - pad, pad:], (16 + pad, 64 + pad))
-    matrixCover(result, lef[:16 - pad, :], (16, 64))
-    matrixCover(result, bot[:, pad:], (32 - pad, 64 + pad))
-    matrixCover(result, center[pad:16 - pad, :16 - pad], (16 + pad, 80))  # 6B
-    matrixCover(result, center[:16 - pad, pad:16 - pad], (16, 80 + pad))
-    matrixCover(result, bot[:, :16 - pad], (32 - pad, 80))
-    matrixCover(result, rig[:16 - pad, :], (16, 96 - pad))
-    matrixCover(result, centerHor, (16 + pad, 96))  # 7B
-    matrixCover(result, center[:16 - pad, pad:16 - pad], (16, 96 + pad))
-    matrixCover(result, bot, (32 - pad, 96))
-    matrixCover(result, centerVer, (16, 112 + pad))  # 8B
-    matrixCover(result, center[pad:16 - pad, :16 - pad], (16 + pad, 112))
-    matrixCover(result, rig, (16, 128 - pad))
-    matrixCover(result, centerVer, (32, pad))  # 1C
-    matrixCover(result, lef, (32, 0))
-    matrixCover(result, rig, (32, 16 - pad))
-    matrixCover(result, center[:, pad:], (32, 16 + pad))  # 2C
-    matrixCover(result, lef, (32, 16))
-    matrixCover(result, center, (32, 32))  # 3C
-    matrixCover(result, center[:, :16 - pad], (32, 48))  # 4C
-    matrixCover(result, rig, (32, 64 - pad))
-    replaceBlock(result, (2, 1), (2, 4))  # 5C
-    matrixCover(result, first[16 - pad:, 16 - pad:], (48 - pad, 80 - pad))
-    replaceBlock(result, (1, 2), (2, 5))  # 6C
-    matrixCover(result, first[16 - pad:, :pad], (48 - pad, 80))
-    replaceBlock(result, (2, 1), (2, 6))  # 7C
-    matrixCover(result, first[:pad, 16 - pad:], (32, 112 - pad))
-    replaceBlock(result, (1, 2), (2, 7))  # 8C
-    matrixCover(result, first[16 - pad:, 16 - pad:], (48 - pad, 128 - pad))
-    matrixCover(result, center[:16 - pad, pad:16 - pad], (48, pad))  # 1D
-    matrixCover(result, lef[:16 - pad, :], (48, 0))
-    matrixCover(result, rig[:16 - pad, :], (48, 16 - pad))
-    matrixCover(result, center[:16 - pad, pad:], (48, 16 + pad))  # 2D
-    matrixCover(result, lef[:16 - pad, :], (48, 16))
-    matrixCover(result, bot[:, pad:], (64 - pad, 16 + pad))
-    matrixCover(result, center[:16 - pad, :], (48, 32))  # 3D
-    matrixCover(result, bot, (64 - pad, 32))
-    matrixCover(result, center[:16 - pad, :16 - pad], (48, 48))  # 4D
-    matrixCover(result, bot[:, :16 - pad], (64 - pad, 48))
-    matrixCover(result, rig[:16 - pad, :], (48, 64 - pad))
-    replaceBlock(result, (3, 2), (3, 4))  # 5D
-    matrixCover(result, first[:pad, 16 - pad:], (48, 80 - pad))
-    replaceBlock(result, (2, 3), (3, 5))  # 6D
-    matrixCover(result, first[:pad, :pad], (48, 80))
-    replaceBlock(result, (3, 2), (3, 6))  # 7D
-    matrixCover(result, first[:pad, :pad], (48, 96))
-    replaceBlock(result, (2, 3), (3, 7))  # 8D
-    matrixCover(result, first[16 - pad:, :pad], (64 - pad, 112))
-    matrixCover(result, center[:16 - pad, pad:], (64, pad))  # 1E
-    matrixCover(result, center[pad:, :16 - pad], (64 + pad, 0))
-    matrixCover(result, centerVer, (64, 16 + pad))  # 2E
-    matrixCover(result, centerHor, (64 + pad, 16))
-    matrixCover(result, center[:, pad:], (64, 32 + pad))  # 3E
-    matrixCover(result, centerHor, (64 + pad, 32))
-    matrixCover(result, center[pad:, :], (64 + pad, 48))  # 4E
-    matrixCover(result, centerVer, (64, 48 + pad))
-    replaceBlock(result, (4, 3), (4, 4))  # 5E
-    matrixCover(result, first[16 - pad:, :pad], (80 - pad, 64))
-    replaceBlock(result, (4, 3), (4, 5))  # 6E
-    matrixCover(result, first[16 - pad:, 16 - pad:], (80 - pad, 96 - pad))
-    replaceBlock(result, (2, 2), (4, 6))  # 7E
-    matrixCover(result, first[16 - pad:, 16 - pad:], (80 - pad, 112 - pad))
-    replaceBlock(result, (2, 2), (4, 7))  # 8E
-    matrixCover(result, first[16 - pad:, :pad], (80 - pad, 112))
-    matrixCover(result, center[:16 - pad, :16 - pad], (80, 0))  # 1F
-    matrixCover(result, center[pad:, pad:], (80 + pad, pad))
-    matrixCover(result, center[:16 - pad, :], (80, 32))  # 3F
-    matrixCover(result, centerVer, (80, 32 + pad))
-    matrixCover(result, center[:, :16-pad], (80, 48))  # 4F
-    matrixCover(result, centerHor, (80 + pad, 48))
-    replaceBlock(result, (4,2), (5,4))  # 5F
-    matrixCover(result, first[16 - pad:, 16 - pad:], (96 - pad, 80 - pad))
-    replaceBlock(result, (5,2), (5,5))  # 6F
-    matrixCover(result, first[:pad, 16 - pad:], (80, 96 - pad))
-    replaceBlock(result, (2, 2), (5, 6))  # 7F
-    matrixCover(result, first[:pad, 16 - pad:], (80, 112 - pad))
-    replaceBlock(result, (2, 2), (5, 7))  # 8F
-    matrixCover(result, first[:pad, :pad], (80, 112))
+    b1 = matrixCover(texture, center[pad:16 - pad, pad:16 - pad], (pad, pad))
 
-    return result
+    b2 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 2A
+    matrixCover(b2, top[:, pad:], (0, pad))
+    matrixCover(b2, bot[:, pad:], (16 - pad, pad))
+
+    b3 = matrixCover(b1, centerHor, (pad, 0), True)
+    matrixCover(b3, top, (0, 0))
+    matrixCover(b3, bot, (16 - pad, 0))
+
+    b4 = matrixCover(b1, center[pad:16 - pad, :16 - pad], (pad, 0), True)  # 4A
+    matrixCover(b4, top[:, :16 - pad], (0, 0))
+    matrixCover(b4, bot[:, :16 - pad], (16 - pad, 0))
+
+    b5 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 5A
+    matrixCover(b5, center[pad:, pad:16 - pad], (pad, pad))
+    matrixCover(b5, top[:, pad:], (0, pad))
+    matrixCover(b5, lef[pad:, :], (pad, 0))
+
+    b6 = matrixCover(b1, center[pad:16 - pad, :16 - pad], (pad, 0), True)  # 6A
+    matrixCover(b6, center[pad:, pad:16 - pad], (pad, 0 + pad))
+    matrixCover(b6, top[:, :16 - pad], (0, 0))
+    matrixCover(b6, rig[pad:, :], (pad, 16 - pad))
+
+    b7 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 7A
+    matrixCover(b7, centerVer, (0, pad))
+    matrixCover(b7, lef, (0, 0))
+
+    b8 = matrixCover(b1, center[pad:, pad:16 - pad], (pad, pad), True)  # 8A
+    matrixCover(b8, centerHor, (pad, 0))
+    matrixCover(b8, top, (0, 0))
+
+    b9 = matrixCover(b1, center[pad:, pad:16 - pad], (pad, pad), True)  # 1B
+    matrixCover(b9, lef[pad:, :], (pad, 0))
+    matrixCover(b9, rig[pad:, :], (pad, 16 - pad))
+
+    b10 = matrixCover(b1, center[pad:, pad:], (pad, pad), True)  # 2B
+    matrixCover(b10, top[:, pad:], (0, pad))
+    matrixCover(b10, lef[pad:, :], (pad, 0))
+
+    b11 = matrixCover(b1, center[pad:, :], (pad, 0), True)  # 3B
+    matrixCover(b11, top, (0, 0))
+
+    b12 = matrixCover(b1, center[pad:, :16 - pad], (pad, 0), True)  # 4B
+    matrixCover(b12, top[:, :16 - pad], (0, 0))
+    matrixCover(b12, rig[pad:, :], (pad, 16 - pad))
+
+    b13 = matrixCover(b1, center[:16 - pad, pad:16 - pad], (0, pad), True)  # 5B
+    matrixCover(b13, center[pad:16 - pad, pad:], (pad, pad))
+    matrixCover(b13, lef[:16 - pad, :], (0, 0))
+    matrixCover(b13, bot[:, pad:], (16 - pad, pad))
+
+    b14 = matrixCover(b1, center[pad:16 - pad, :16 - pad], (pad, 0), True)  # 6B
+    matrixCover(b14, center[:16 - pad, pad:16 - pad], (0, pad))
+    matrixCover(b14, bot[:, :16 - pad], (16 - pad, 0))
+    matrixCover(b14, rig[:16 - pad, :], (0, 16 - pad))
+
+    b15 = matrixCover(b1, centerHor, (pad, 0), True)  # 7B
+    matrixCover(b15, center[:16 - pad, pad:16 - pad], (0, pad))
+    matrixCover(b15, bot, (16 - pad, 0))
+
+    b16 = matrixCover(b1, centerVer, (0, pad), True)  # 8B
+    matrixCover(b16, center[pad:16 - pad, :16 - pad], (pad, 0))
+    matrixCover(b16, rig, (0, 16 - pad))
+
+    b17 = matrixCover(b1, centerVer, (0, pad), True)  # 1C
+    matrixCover(b17, lef, (0, 0))
+    matrixCover(b17, rig, (0, 16 - pad))
+
+    b18 = matrixCover(b1, center[:, pad:], (0, pad), True)  # 2C
+    matrixCover(b18, lef, (0, 0))
+
+    b19 = center
+
+    b20 = matrixCover(b1, center[:, :16 - pad], (0, 0), True)  # 4C
+    matrixCover(b20, rig, (0, 16 - pad))
+
+    b21 = matrixCover(b18, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+
+    b22 = matrixCover(b11, b1[16 - pad:, :pad], (16 - pad, 0), True)
+
+    b23 = matrixCover(b18, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+
+    b24 = matrixCover(b11, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+
+    b25 = matrixCover(b1, center[:16 - pad, pad:16 - pad], (0, pad), True)  # 1D
+    matrixCover(b25, lef[:16 - pad, :], (0, 0))
+    matrixCover(b25, rig[:16 - pad, :], (0, 16 - pad))
+
+    b26 = matrixCover(b1, center[:16 - pad, pad:], (0, pad), True)  # 2D
+    matrixCover(b26, lef[:16 - pad, :], (0, 0))
+    matrixCover(b26, bot[:, pad:], (16 - pad, pad))
+
+    b27 = matrixCover(b1, center[:16 - pad, :], (0, 0), True)  # 3D
+    matrixCover(b27, bot, (16 - pad, 0))
+
+    b28 = matrixCover(b1, center[:16 - pad, :16 - pad], (0, 0), True)  # 4D
+    matrixCover(b28, bot[:, :16 - pad], (16 - pad, 0))
+    matrixCover(b28, rig[:16 - pad, :], (0, 16 - pad))
+
+    b29 = matrixCover(b27, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+
+    b30 = matrixCover(b20, b1[:pad, :pad], (0, 0), True)
+
+    b31 = matrixCover(b27, b1[:pad, :pad], (0, 0), True)
+
+    b32 = matrixCover(b28, b1[16 - pad:, :pad], (16 - pad, 0), True)
+
+    b33 = matrixCover(b1, center[:16 - pad, pad:], (0, pad), True)  # 1E
+    matrixCover(b33, center[pad:, :16 - pad], (pad, 0))
+
+    b34 = matrixCover(b1, centerVer, (0, pad), True)  # 2E
+    matrixCover(b34, centerHor, (pad, 0))
+
+    b35 = matrixCover(b1, center[:, pad:], (0, pad), True)  # 3E
+    matrixCover(b35, centerHor, (pad, 0))
+
+    b36 = matrixCover(b1, center[pad:, :], (pad, 0), True)  # 4E
+    matrixCover(b36, centerVer, (0, 0 + pad))
+
+    b37 = matrixCover(b36, b1[16 - pad:, :pad], (16 - pad, 0), True)
+
+    b38 = matrixCover(b36, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+
+    b39 = matrixCover(b19, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+
+    b40 = matrixCover(b19, b1[16 - pad:, :pad], (16 - pad, 0), True)
+
+    b41 = matrixCover(b1, center[:16 - pad, :16 - pad], (0, 0), True)  # 1F
+    matrixCover(b41, center[pad:, pad:], (pad, pad))
+
+    b42 = transparent
+
+    b43 = matrixCover(b1, center[:16 - pad, :], (0, 0), True)  # 3F
+    matrixCover(b43, centerVer, (0, pad))
+
+    b44 = matrixCover(b1, center[:, :16 - pad], (0, 0), True)  # 4F
+    matrixCover(b44, centerHor, (0 + pad, 0))
+
+    b45 = matrixCover(b35, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+
+    b46 = matrixCover(b43, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+
+    b47 = matrixCover(b19, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+
+    b48 = matrixCover(b19, b1[:pad, :pad], (0, 0), True)
+
+    arranged = [
+        [b1, b2, b3, b4, b5, b6, b7, b8],
+        [b9, b10, b11, b12, b13, b14, b15, b16],
+        [b17, b18, b19, b20, b21, b22, b23, b24],
+        [b25, b26, b27, b28, b29, b30, b31, b32],
+        [b33, b34, b35, b36, b37, b38, b39, b40],
+        [b41, b42, b43, b44, b45, b46, b47, b48],
+        [transparent] * 8,
+        [transparent] * 8,
+    ]
+    return suture(arranged)
 
 
 if __name__ == '__main__':
-    file = r"C:\Users\刘高瞻\Desktop\fusion\fusion-createBlock\industrial_iron_block.png"
+    file = r"C:\Users\刘高瞻\Desktop\Sprite-0001.png"
     image = Image.open(file)
     getInfo(image)
     pixels = getPixelData(image)
-    result = generate(pixels, 3)
-    last = drawPixel(result)
-    last.convert('P')
-    # last.save(r"C:\Users\刘高瞻\Desktop\industrial_iron_block.png")
-
+    out = generate(pixels, 3)
+    last = drawPixel(out)
+    # last.convert('P')
+    # last.save(r"C:\Users\刘高瞻\Desktop\Sprite-0002.png")
 
     fig, ax = plt.subplots()
     ax.xaxis.set_major_locator(plt.MultipleLocator(16))
     ax.yaxis.set_major_locator(plt.MultipleLocator(16))
     show(last, ax)
     plt.show()
-
-

@@ -33,6 +33,13 @@ def love(x, y, s=2):
     return (x ** 2 + y ** 2 - 1) ** 3 - x ** 2 * y ** 3
 
 
+def clover(x, y, a=3):
+    """
+    三叶草
+    """
+    return (x ** 2 + y ** 2) ** 2 + a * x ** 3 - 3 * a * x * y ** 2
+
+
 def arch(x, a=2):
     """
     拱形
@@ -50,6 +57,7 @@ def drop(x, y, n=3):
     return (x ** 2 + y ** 2) ** 2 - 2 * y * (x ** 2 + y ** 2) + n * x ** 2
 
 
+
 if __name__ == '__main__':
     fig, axs = plt.subplots(1, 3)
 
@@ -63,6 +71,7 @@ if __name__ == '__main__':
     # zss = circle(xss, yss)
     # zss = oval(xss, yss)
     # zss = love(xss, yss)
-    zss = drop(xss, yss)
+    # zss = drop(xss, yss)
+    zss = clover(xss, yss)
     graph2(axs[1], xss, yss, zss)
     plt.show()
