@@ -1,6 +1,8 @@
-# pyqt5
+<h1 style="text-align:center">pyqt5</h1>
 
-## 配置external tools：
+---
+
+### 配置external tools：
 
 - pyqt5-designer.exe
 

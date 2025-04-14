@@ -46,6 +46,34 @@ def get4Corner(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.nda
     :param pad: 边框格数
     :return: 四角(left-top, left-bottom, right-bottom, right-top)
     """
+    if pad == 1:
+        lt = [[(0, 0)]]
+    elif pad == 2:
+        lt = [[(0, 0), (1, 2)],
+              [(2, 1), (1, 1)]]
+    elif pad == 3:
+        lt = [[(0, 0), (1, 2), (2, 4)],
+              [(2, 1), (1, 1), (2, 3)],
+              [(4, 2), (3, 2), (2, 2)]]
+    else:
+        lt = [[(0, 0), (1, 2), (2, 4), (3, 6)],
+              [(2, 1), (1, 1), (2, 3), (3, 5)],
+              [(4, 2), (3, 2), (2, 2), (3, 4)],
+              [(6, 3), (5, 3), (4, 3), (3, 3)]]
+    lt = np.array(lt)
+    lb = np.array([[(point[0], 15 - point[1]) for point in sub] for sub in lt])
+    lb = np.transpose(np.rot90(lb, -1), (1, 0, 2))
+    rb = np.array([[(15 - point[0], 15 - point[1]) for point in sub] for sub in lt])
+    rb = np.rot90(rb, 2)
+    rt = np.array([[(15 - point[0], point[1]) for point in sub] for sub in lt])
+    rt = np.transpose(np.rot90(rt, 1), (1, 0, 2))
+
+    lt = texture[lt[..., 1], lt[..., 0]]
+    lb = texture[lb[..., 1], lb[..., 0]]
+    rb = texture[rb[..., 1], rb[..., 0]]
+    rt = texture[rt[..., 1], rt[..., 0]]
+
+    return lt, lb, rb, rt
 
 
 def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
@@ -65,6 +93,20 @@ def get4side(texture: np.ndarray, pad: int) -> (np.ndarray, np.ndarray, np.ndarr
             tp2[0:pad, 8 - 2 * pad:24 - 2 * pad],
             tl2[8 - 2 * pad:24 - 2 * pad, 0:pad],
             tb2[0:pad, 8 - 2 * pad:24 - 2 * pad])
+
+
+def replaceCorner(texture: np.ndarray, corner: np.ndarray, direction: str):
+    pad = len(corner)
+    if direction == 'lt':
+        texture[0:pad, 0:pad] = corner
+    elif direction == 'lb':
+        texture[16 - pad:16, 0:pad] = corner
+    elif direction == 'rb':
+        texture[16 - pad:16, 16 - pad:16] = corner
+    elif direction == 'rt':
+        texture[0:pad, 16 - pad:16] = corner
+    else:
+        raise ValueError('direction must be lt, lb, rb,rt')
 
 
 def suture(blocks: [[np.ndarray]]) -> np.ndarray:
@@ -91,7 +133,9 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     center = getCenter(texture, pad)
     centerHor, centerVer = center[pad:16 - pad, :], center[:, pad:16 - pad]
     rig, top, lef, bot = get4side(texture, pad)
-    # 第一个block
+    lt, lb, rb, rt = get4Corner(pixels, pad)
+
+    # 第一个完整block
     b1 = matrixCover(texture, center[pad:16 - pad, pad:16 - pad], (pad, pad))
 
     b2 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 2A
@@ -106,23 +150,17 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b4, top[:, :16 - pad], (0, 0))
     matrixCover(b4, bot[:, :16 - pad], (16 - pad, 0))
 
-    b5 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 5A
-    matrixCover(b5, center[pad:, pad:16 - pad], (pad, pad))
-    matrixCover(b5, top[:, pad:], (0, pad))
-    matrixCover(b5, lef[pad:, :], (pad, 0))
-
-    b6 = matrixCover(b1, center[pad:16 - pad, :16 - pad], (pad, 0), True)  # 6A
-    matrixCover(b6, center[pad:, pad:16 - pad], (pad, 0 + pad))
-    matrixCover(b6, top[:, :16 - pad], (0, 0))
-    matrixCover(b6, rig[pad:, :], (pad, 16 - pad))
-
     b7 = matrixCover(b1, center[pad:16 - pad, pad:], (pad, pad), True)  # 7A
     matrixCover(b7, centerVer, (0, pad))
     matrixCover(b7, lef, (0, 0))
+    replaceCorner(b7, rt, 'rt')
+    replaceCorner(b7, rb, 'rb')
 
     b8 = matrixCover(b1, center[pad:, pad:16 - pad], (pad, pad), True)  # 8A
     matrixCover(b8, centerHor, (pad, 0))
     matrixCover(b8, top, (0, 0))
+    replaceCorner(b8, lb, 'lb')
+    replaceCorner(b8, rb, 'rb')
 
     b9 = matrixCover(b1, center[pad:, pad:16 - pad], (pad, pad), True)  # 1B
     matrixCover(b9, lef[pad:, :], (pad, 0))
@@ -132,6 +170,9 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b10, top[:, pad:], (0, pad))
     matrixCover(b10, lef[pad:, :], (pad, 0))
 
+    b5 = b10.copy()
+    replaceCorner(b5, rb, 'rb')
+
     b11 = matrixCover(b1, center[pad:, :], (pad, 0), True)  # 3B
     matrixCover(b11, top, (0, 0))
 
@@ -139,23 +180,18 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b12, top[:, :16 - pad], (0, 0))
     matrixCover(b12, rig[pad:, :], (pad, 16 - pad))
 
-    b13 = matrixCover(b1, center[:16 - pad, pad:16 - pad], (0, pad), True)  # 5B
-    matrixCover(b13, center[pad:16 - pad, pad:], (pad, pad))
-    matrixCover(b13, lef[:16 - pad, :], (0, 0))
-    matrixCover(b13, bot[:, pad:], (16 - pad, pad))
+    b6 = b12.copy()
+    replaceCorner(b6, lb, 'lb')
 
-    b14 = matrixCover(b1, center[pad:16 - pad, :16 - pad], (pad, 0), True)  # 6B
-    matrixCover(b14, center[:16 - pad, pad:16 - pad], (0, pad))
-    matrixCover(b14, bot[:, :16 - pad], (16 - pad, 0))
-    matrixCover(b14, rig[:16 - pad, :], (0, 16 - pad))
-
-    b15 = matrixCover(b1, centerHor, (pad, 0), True)  # 7B
-    matrixCover(b15, center[:16 - pad, pad:16 - pad], (0, pad))
+    b15 = matrixCover(b1, center[:16 - pad, :], (0, 0), True)
     matrixCover(b15, bot, (16 - pad, 0))
+    replaceCorner(b15, lt, 'lt')
+    replaceCorner(b15, rt, 'rt')
 
-    b16 = matrixCover(b1, centerVer, (0, pad), True)  # 8B
-    matrixCover(b16, center[pad:16 - pad, :16 - pad], (pad, 0))
+    b16 = matrixCover(b1, center[:, :16 - pad], (0, 0), True)
     matrixCover(b16, rig, (0, 16 - pad))
+    replaceCorner(b16, lt, 'lt')
+    replaceCorner(b16, lb, 'lb')
 
     b17 = matrixCover(b1, centerVer, (0, pad), True)  # 1C
     matrixCover(b17, lef, (0, 0))
@@ -170,12 +206,16 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b20, rig, (0, 16 - pad))
 
     b21 = matrixCover(b18, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+    replaceCorner(b21, rb, 'rb')
 
     b22 = matrixCover(b11, b1[16 - pad:, :pad], (16 - pad, 0), True)
+    replaceCorner(b22, lb, 'lb')
 
     b23 = matrixCover(b18, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+    replaceCorner(b23, rt, 'rt')
 
     b24 = matrixCover(b11, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+    replaceCorner(b24, rb, 'rb')
 
     b25 = matrixCover(b1, center[:16 - pad, pad:16 - pad], (0, pad), True)  # 1D
     matrixCover(b25, lef[:16 - pad, :], (0, 0))
@@ -185,6 +225,9 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b26, lef[:16 - pad, :], (0, 0))
     matrixCover(b26, bot[:, pad:], (16 - pad, pad))
 
+    b13 = b26.copy()
+    replaceCorner(b13, rt, 'rt')
+
     b27 = matrixCover(b1, center[:16 - pad, :], (0, 0), True)  # 3D
     matrixCover(b27, bot, (16 - pad, 0))
 
@@ -192,52 +235,72 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
     matrixCover(b28, bot[:, :16 - pad], (16 - pad, 0))
     matrixCover(b28, rig[:16 - pad, :], (0, 16 - pad))
 
-    b29 = matrixCover(b27, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+    b14 = b28.copy()
+    replaceCorner(b14, lt, 'lt')
 
-    b30 = matrixCover(b20, b1[:pad, :pad], (0, 0), True)
+    b29 = b27.copy()
+    replaceCorner(b29, rt, 'rt')
 
-    b31 = matrixCover(b27, b1[:pad, :pad], (0, 0), True)
+    b30 = b20.copy()
+    replaceCorner(b30, lt, 'lt')
 
-    b32 = matrixCover(b28, b1[16 - pad:, :pad], (16 - pad, 0), True)
+    b31 = b27.copy()
+    replaceCorner(b31, lt, 'lt')
 
-    b33 = matrixCover(b1, center[:16 - pad, pad:], (0, pad), True)  # 1E
-    matrixCover(b33, center[pad:, :16 - pad], (pad, 0))
+    b32 = b20.copy()
+    replaceCorner(b32, lb, 'lb')
 
-    b34 = matrixCover(b1, centerVer, (0, pad), True)  # 2E
-    matrixCover(b34, centerHor, (pad, 0))
+    b33 = b19.copy()
+    replaceCorner(b33, lt, 'lt')
+    replaceCorner(b33, rb, 'rb')
 
-    b35 = matrixCover(b1, center[:, pad:], (0, pad), True)  # 3E
-    matrixCover(b35, centerHor, (pad, 0))
+    b34 = b33.copy()
+    replaceCorner(b34, lb, 'lb')
+    replaceCorner(b34, rt, 'rt')
 
-    b36 = matrixCover(b1, center[pad:, :], (pad, 0), True)  # 4E
-    matrixCover(b36, centerVer, (0, 0 + pad))
+    b35 = b19.copy()
+    replaceCorner(b35, lt, 'lt')
+    replaceCorner(b35, lb, 'lb')
 
-    b37 = matrixCover(b36, b1[16 - pad:, :pad], (16 - pad, 0), True)
+    b36 = b19.copy()
+    replaceCorner(b36, lt, 'lt')
+    replaceCorner(b36, rt, 'rt')
 
-    b38 = matrixCover(b36, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+    b37 = b36.copy()
+    replaceCorner(b37, lb, 'lb')
 
-    b39 = matrixCover(b19, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+    b38 = b36.copy()
+    replaceCorner(b38, rb, 'rb')
 
-    b40 = matrixCover(b19, b1[16 - pad:, :pad], (16 - pad, 0), True)
+    b39 = b19.copy()
+    replaceCorner(b39, rb, 'rb')
 
-    b41 = matrixCover(b1, center[:16 - pad, :16 - pad], (0, 0), True)  # 1F
-    matrixCover(b41, center[pad:, pad:], (pad, pad))
+    b40 = b19.copy()
+    replaceCorner(b40, lb, 'lb')
+
+    b41 = b19.copy()
+    replaceCorner(b41, lb, 'lb')
+    replaceCorner(b41, rt, 'rt')
 
     b42 = transparent
 
-    b43 = matrixCover(b1, center[:16 - pad, :], (0, 0), True)  # 3F
-    matrixCover(b43, centerVer, (0, pad))
+    b43 = b40.copy()
+    replaceCorner(b43, rb, 'rb')
 
-    b44 = matrixCover(b1, center[:, :16 - pad], (0, 0), True)  # 4F
-    matrixCover(b44, centerHor, (0 + pad, 0))
+    b44 = b39.copy()
+    replaceCorner(b44, rt, 'rt')
 
-    b45 = matrixCover(b35, b1[16 - pad:, 16 - pad:], (16 - pad, 16 - pad), True)
+    b45 = b43.copy()
+    replaceCorner(b45, lt, 'lt')
 
-    b46 = matrixCover(b43, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+    b46 = b43.copy()
+    replaceCorner(b46, rt, 'rt')
 
-    b47 = matrixCover(b19, b1[:pad, 16 - pad:], (0, 16 - pad), True)
+    b47 = b19.copy()
+    replaceCorner(b47, rt, 'rt')
 
-    b48 = matrixCover(b19, b1[:pad, :pad], (0, 0), True)
+    b48 = b19.copy()
+    replaceCorner(b48, lt, 'lt')
 
     arranged = [
         [b1, b2, b3, b4, b5, b6, b7, b8],
@@ -253,14 +316,15 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
 
 
 if __name__ == '__main__':
-    file = r"C:\Users\刘高瞻\Desktop\Sprite-0001.png"
+    file = r"C:\Users\刘高瞻\Desktop\fusion\fusion-metalBlock\pack.png"
     image = Image.open(file)
     getInfo(image)
     pixels = getPixelData(image)
-    out = generate(pixels, 3)
+    padding = 3
+    out = generate(pixels, padding)
     last = drawPixel(out)
     # last.convert('P')
-    # last.save(r"C:\Users\刘高瞻\Desktop\Sprite-0002.png")
+    # last.save(file.replace('.png', f'{padding}.png'))
 
     fig, ax = plt.subplots()
     ax.xaxis.set_major_locator(plt.MultipleLocator(16))

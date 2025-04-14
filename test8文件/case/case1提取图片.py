@@ -97,11 +97,12 @@ def pptImage(pptPath: str, outputFolder: str) -> list[str]:
 
 
 if __name__ == '__main__':
-    doc = r'D:\code\pythonProject\PythonTest\test2office\file\doc.docx'
-    pdf = r'D:\code\pythonProject\PythonTest\test2office\file\pdf.pdf'
-    ppt = r'D:\code\pythonProject\PythonTest\test2office\file\ppt.pptx'
-    output = rf"{os.environ['USERPROFILE']}\Desktop"
-    # docxImage(doc, output)
+    doc = r"C:\Users\刘高瞻\Desktop\扉页文本集合V7.8.docx"
+    # pdf = r'D:\code\pythonProject\PythonTest\test2office\file\pdf.pdf'
+    # ppt = r'D:\code\pythonProject\PythonTest\test2office\file\ppt.pptx'
+    # output = rf"{os.environ['USERPROFILE']}\Desktop"
+    output=r"C:\Users\刘高瞻\Desktop\图片"
+    docxImage(doc, output)
     # pdfImage(pdf, output)
-    pptImage(ppt, output)
+    # pptImage(ppt, output)
     pass

@@ -1,6 +1,9 @@
-![logo](./logo.png)
+<h1 style="text-align:center">Python</h1>
+
+---
 
 ![python](https://img.shields.io/badge/python-3.9-blue)
+
 ### python国内库源
 
 #### 库源
@@ -76,4 +79,16 @@
   pyinstaller -F [py] (-i [图标])
 - 打包为文件夹
   pyinstaller -d [py] (-i [图标])
-  
+
+### 卸载python系统环境变量的所有第三方库
+```
+@echo off
+   setlocal enabledelayedexpansion
+
+   for /f "tokens=1* delims==" %%a in ('pip freeze') do (
+     set pkg_name=%%a
+     if "!pkg_name!" neq "-e" (
+       pip uninstall -y "!pkg_name!"
+     )
+   )
+```
