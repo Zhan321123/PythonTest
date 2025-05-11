@@ -1,5 +1,5 @@
 """
-TODO 目前完成一半
+TODO
 """
 
 import time

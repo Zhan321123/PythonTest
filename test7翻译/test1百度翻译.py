@@ -69,9 +69,9 @@ class BaiduTranslator:
             time.sleep(1/self.rate)
 
 
-if __name__ == '__main__':
-    aid = '20240508002045378'
-    key = 'nDWuwx0XqnEZuiGfIgEW'
-    r = 1
-    translator = BaiduTranslator(aid, key,r)
-    print(translator.translate(r"XVIII", "zh"))
+# if __name__ == '__main__':
+#     aid = '20240508002045378'
+#     key = 'nDWuwx0XqnEZuiGfIgEW'
+#     r = 1
+#     translator = BaiduTranslator(aid, key,r)
+#     print(translator.translate(r"XVIII", "zh"))

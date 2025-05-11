@@ -316,7 +316,7 @@ def generate(texture: np.ndarray, pad: int, mode: str = 'full') -> np.ndarray:
 
 
 if __name__ == '__main__':
-    file = r"C:\Users\刘高瞻\Desktop\fusion\fusion-metalBlock\pack.png"
+    file = r"C:\Users\Desktop\fusion\fusion-metalBlock\pack.png"
     image = Image.open(file)
     getInfo(image)
     pixels = getPixelData(image)

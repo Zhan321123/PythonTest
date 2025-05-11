@@ -117,10 +117,10 @@ class StitchImages:
 
 
 if __name__ == '__main__':
-    f1 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-16-37.png"
-    f2 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-17-14.png"
-    f3 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-18-48.png"
-    f4 = r"C:\Users\刘高瞻\Desktop\Snipaste_2025-02-23_16-19-16.png"
+    f1 = r"C:\Users\Desktop\Snipaste_2025-02-23_16-16-37.png"
+    f2 = r"C:\Users\Desktop\Snipaste_2025-02-23_16-17-14.png"
+    f3 = r"C:\Users\Desktop\Snipaste_2025-02-23_16-18-48.png"
+    f4 = r"C:\Users\Desktop\Snipaste_2025-02-23_16-19-16.png"
     out = rf"{os.environ['USERPROFILE']}\Desktop\img.png"
     si = StitchImages([f1, f2, f3, f4])
     # si.openShow(True)

@@ -64,5 +64,5 @@ def clearTxt(filePath: str, newFilePath: str = None) -> bool:
 
 
 if __name__ == '__main__':
-    tf = r"C:\Users\刘高瞻\Desktop\新建 文本文档.txt"
+    tf = r"C:\Users\Desktop\新建 文本文档.txt"
     clearTxt(tf)
