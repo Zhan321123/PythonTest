@@ -17,21 +17,21 @@ This is only a python project for learning.
 
 ---
 # Significant Libs
-- <img alt="matplotlib" src="./images/matplotlib.ico" width="32"/>
+- <img alt="matplotlib" src="./images/logos/matplotlib.ico" width="32"/>
   matplotlib
-- <img alt="numpy" src="./images/numpy.ico" width="32"/>
+- <img alt="numpy" src="./images/logos/numpy.ico" width="32"/>
   numpy
-- <img alt="PIL" src="./images/pil.ico" width="32"/>
+- <img alt="PIL" src="./images/logos/pil.ico" width="32"/>
   PIL
-- <img alt="scipy" src="./images/scipy.ico" width="32"/>
+- <img alt="scipy" src="./images/logos/scipy.ico" width="32"/>
   scipy
-- <img alt="scikit-learn" src="./images/scikit-learn.ico" width="32"/>
+- <img alt="scikit-learn" src="./images/logos/scikit-learn.ico" width="32"/>
   scikit-learn
-- <img alt="flask" src="./images/flask.webp" width="32"/>
+- <img alt="flask" src="./images/logos/flask.webp" width="32"/>
   flask
-- <img alt="django" src="./images/django.png" width="32"/>
+- <img alt="django" src="./images/logos/django.png" width="32"/>
   django
-- <img alt="openpyxl" src="./images/openpyxl.png" width="32"/>
+- <img alt="openpyxl" src="./images/logos/openpyxl.png" width="32"/>
   openpyxl
 
 ---
@@ -45,3 +45,4 @@ This is only a python project for learning.
 - [pyqt5](./introduction/pyqt5.md)
 - [markdown](./introduction/markdown.md)
 - [software](./introduction/software.md)
+- [web](./introduction/web.md)

@@ -9,5 +9,5 @@ dist/
 .idea/
 .vscode/
 
-
+lib
 *.log

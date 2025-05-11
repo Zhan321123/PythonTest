@@ -5,9 +5,6 @@
 from copy import copy, deepcopy
 from typing import Sequence, Union, Any
 
-from lib.zCalculate.importBase import importMatplotlib
-
-
 class _Flat(Sequence):
     """
     二维数组列表
@@ -318,15 +315,6 @@ class FlatList(_Flat, _FlatMove):
             result.extend(i)
         return result
 
-    def transpose(self):
-        if self.isRectangle():
-            self.data = list(zip(*self.data))
-            self._reformList()
-        return self
-
-    def transposeSymmetry(self):
-        return self.rotate90().mirrorHorizon()
-
     def mirrorHorizon(self):
         if self.isRectangle():
             self.data = list(zip(*self.data[::-1]))
@@ -428,24 +416,3 @@ class FlatList(_Flat, _FlatMove):
     def __iter__(self):
         return iter(self.data)
 
-    def generateHotMap(self):
-        plt = importMatplotlib()
-        plt.imshowChart(self.data)
-        return plt
-
-    def generateLineFigure(self):
-        plt = importMatplotlib()
-        for i in range(self.row()):
-            plt.plot(self.data[i])
-        plt.show()
-        return self
-
-
-if __name__ == '__main__':
-    a = FlatList([[1, 2, 3], [1, 2, 3], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24],
-                  [25, 26, 27], [28, 29, 30], [31, 32, 33], [34, 35, 36], [37, 38, 39], [40, 41, 42]])
-    # a.t().print().printAll()
-    b = FlatList([(1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40),
-                  (2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41),
-                  (3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42)])
-    print(b[2, 3])

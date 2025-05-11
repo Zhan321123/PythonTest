@@ -55,4 +55,7 @@ if __name__ == '__main__':
     points = calcSphere(16)
     drawBlock(axs, points)
 
+    points = list(list(i) for i in points)
+    print(points)
+
     plt.show()

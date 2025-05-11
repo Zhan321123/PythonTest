@@ -101,14 +101,31 @@ P为点集，t范围为$[0,1]$，该式适用于任何维度。
 
 ## 概率分布函数
 
-### 正太分布
+### 正态分布
 
 ### 伽马分布
 
-### t分布
+### $t$ 分布
 
-### $X^2$分布
+### $X^2$ 分布
 
 ### 泊松分布
 
 ### 二项式分布
+
+## 回归模型
+
+### 一元线性回归
+
+- 线性回归模型 $y = \beta_0 + \beta_1 x + \epsilon$
+- 回归方程 $\hat y = b_0 + b_1 x$
+  - $\bar x = \frac{\sum x_i}{n}$
+  - $\bar y = \frac{\sum y_i}{n}$
+  - $b_1 = \frac{\sum (x_i - \bar x)(y_i - \bar y)}{\sum (x_i - \bar x)^2}$
+  - $b_0 = \bar y - b_1 \bar x$
+- 相关系数 $r = \frac{\sum (x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum (x_i - \bar x)^2 \sum (y_i - \bar y)^2}}$
+- 决定系数 $r^2$
+
+### 多元线性回归
+
+### 一元非线性回归

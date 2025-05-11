@@ -361,30 +361,6 @@ class LineList(_Line, _LineAnalysis, _LineFigure, _LineToFlat):
         self.data = [new if i == old else i for i in self.data]
         return self
 
-    def interpolate(self, method: str = 'slinear', old=np.nan, lowest=None):
-        if method not in self._kinds:
-            print('interpolate method error, will use slinear method')
-            method = 'slinear'
-
-        if old is not np.nan:
-            self.replace(old, np.nan)
-        indexes = self._reverse(self.isIt(np.nan))
-        x = self._boolsToIndexes(indexes)
-
-        if len(x) == 0:
-            print('no value need to interpolate')
-            return self
-        y = self[indexes]
-        f = interp1d(x, y, kind=method, bounds_error=False, fill_value=(y[0], y[-1]))
-        x = list(range(self.length()))
-        self.data = f(x).tolist()
-
-        if lowest is not None:
-            self[self._boolsToIndexes(self._reverse(self.greaterThan(lowest)))] = np.nan
-            self.interpolate()
-
-        return self
-
     def toSet(self):
         self.data = list(set(self.data))
         return self

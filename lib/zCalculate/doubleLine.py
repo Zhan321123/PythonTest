@@ -4,14 +4,11 @@
 没有增删改功能，仅有计算功能
 情况为
     y = f(x)
-
 """
 from typing import Sequence
 
 import numpy as np
 from scipy.stats import theilslopes
-
-from lib.zCalculate.importBase import importMatplotlib
 
 
 class _DoubleLine:
@@ -59,12 +56,6 @@ class DoubleList(_DoubleLine):
     def __init__(self, x: Sequence, y: Sequence):
         super().__init__(x, y)
 
-    def linearRegression(self) -> tuple[float, float, float]:
-        k, b = np.polyfit(self.x, self.y, 1)
-        r = np.corrcoef(self.x, self.y)[0][1]
-        print('k:', k, 'b:', b, 'r:', r)
-        return k, b, r
-
     def pearsonCorrelationCoefficient(self) -> float:
         r = np.corrcoef(self.x, self.y)[0][1]
         return r
@@ -73,30 +64,6 @@ class DoubleList(_DoubleLine):
         slope = theilslopes(self.x, self.y)
         print(f"slope:{slope[0]}, intercept:{slope[1]}, lowSlope:{slope[2]}, upSlope:{slope[3]}")
         return *slope,
-
-    def generateLineFigure(self):
-        plt = importMatplotlib()
-        plt.plot(self.x, self.y, marker='o')
-        plt.grid()
-        plt.show()
-        return self
-
-    def generateDotsFigure(self):
-        plt = importMatplotlib()
-        plt.scatter(self.x, self.y)
-        plt.grid()
-        plt.show()
-        return self
-
-    def generateRegressionLine(self):
-        plt = importMatplotlib()
-        k, b, r = self.linearRegression()
-        plt.plot(self.x, [k * i + b for i in self.x], marker='+')
-        plt.scatter(self.x, self.y, marker='o')
-        plt.grid()
-        plt.show()
-        return self
-
 
 if __name__ == '__main__':
     x = [1, 2, 3, 4, 5]
