@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
+  <script src="/lib/axios.min.js"></script>
+  <title>Document</title>
+  <style>
+    * {
+      font-size: 20px
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+<!-- nav -->
+<div class="container">
+  <svg viewBox="0 0 1024 1024" style="height: 2em;vertical-align: middle;" xmlns="http://www.w3.org/2000/svg">
+    <path d="M512 512m-512 0a512 512 0 1 0 1024 0 512 512 0 1 0-1024 0Z" fill="#F54335" opacity=".406"></path>
+    <path d="M512 128a384 384 0 1 1-384 384 384 384 0 0 1 384-384z" fill="#F54335"></path>
+    <path
+      d="M347.584 704v-50.624l211.2-264.064q22.528-28.096 42.752-48.96h-230.336v-48.64h295.616v48.64l-231.616 286.016-25.024 28.992h263.424v48.64z"
+      fill="#FFFFFF"></path>
+  </svg>
+
+  <span>欢迎使用fusion贴图生成器</span>
+</div>
+<hr>
+
+<!-- main -->
+<div class="container" style="display: flex;align-items: center;">
+  <div style="display: flex;flex-direction: column;">
+    <input type="file" id="fileInput" accept="image/png">
+    <br><br>
+    <div>
+      <span>选择模式</span>
+      <select name="mode" id="selectMode">
+        <option value="full" selected>full</option>
+        <option value="simple">simple</option>
+      </select>
+    </div>
+    <br><br>
+    <div>
+      <span>边框长度</span>
+      <input type="number" id="pad" placeholder="请输入1~4" min="1" max="4" value="3">
+    </div>
+    <br><br>
+    <div>
+      <button id="generate">生成</button>
+    </div>
+  </div>
+  <div>
+    <!-- 缩放模式修改为不模糊 -->
+    <img id="preview" src="" alt="" width="128px" style="image-rendering: pixelated;">
+  </div>
+</div>
+<div class="container">
+  <div style="display: flex;align-items: center;justify-content: space-between;">
+    <h3>生成结果：</h3>
+    <button id="clear">清空</button>
+  </div>
+  <hr>
+  <div id="result"></div>
+</div>
+
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+  const generate = document.getElementById('generate');
+  const result = document.getElementById('result');
+  let png = null;
+  fileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      png = event.target.result;
+      preview.src = event.target.result;
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  });
+  generate.addEventListener('click', function () {
+    const formData = new FormData();
+    formData.append('file', png);
+    formData.append('mode', document.getElementById('selectMode').value);
+    formData.append('pad', document.getElementById('pad').value);
+    axios.post(
+      '/api/generate',
+      formData,
+      {
+        headers: {'Content-Type': 'multipart/form-data'},
+        responseType: 'arraybuffer'
+      }
+    ).then(res => {
+      const blob = new Blob([res.data], { type: 'image/png' });
+      const imgUrl = URL.createObjectURL(blob);
+      const imgElement = document.createElement('img');
+      imgElement.style.width = '512px';
+      imgElement.style.imageRendering = 'pixelated';
+      imgElement.style.margin = '10px';
+      imgElement.style.border = '1px solid #ccc';
+      imgElement.src = imgUrl;
+      imgElement.alt = 'Generated Image';
+      result.appendChild(imgElement);
+    }).catch(err => {
+      console.log(err);
+    });
+  });
+
+  const clear = document.getElementById('clear');
+  clear.addEventListener('click', function () {
+    result.innerHTML = '';
+  });
+</script>
+</body>
+
+</html>

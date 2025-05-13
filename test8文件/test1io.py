@@ -1,6 +1,10 @@
 r"""
+
+__file__ 当前文件路径
+pathlib.Path(__file__).resolve().parent 获取当前文件夹绝对路径
+
 os.
-    getcwd()，获取本模块的绝对路径
+    getcwd()，获取模块(运行时)的绝对路径
     listdir()，获取本模块所在文件夹中的所有文件和文件夹list
     listdir(dir/)，dir下的所有文件名list，不包含目录，"/"可要可不要
     chdir() 改变当前工作目录
@@ -33,6 +37,7 @@ os.path.
 
 """
 import os
+import pathlib
 import shutil
 import time
 import os.path
@@ -154,9 +159,11 @@ def copyDir(oldDirPath: str, newDirPath: str) -> bool:
 
 
 if __name__ == '__main__':
+    print(__file__)
     f = '../file/a.txt'
     # d = '../file'
-    # print(os.getcwd())  # 获取本模块的路径
+    print(os.getcwd())  # 获取本模块运行时的路径
+    print(pathlib.Path(__file__).resolve().parent) # 获取本py文件的路径
     # print(os.listdir())
     # dirs, file = op.split(f)  # 将f的目录和文件名分开
     # print(dirs, file)

@@ -81,7 +81,7 @@
   pyinstaller -d [py] (-i [图标])
 
 ### 卸载python系统环境变量的所有第三方库
-```
+```batch
 @echo off
    setlocal enabledelayedexpansion
 

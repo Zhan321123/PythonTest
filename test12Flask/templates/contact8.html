@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact8</title>
+</head>
+<body>
+<h1>contact form</h1>
+{% for message in form.name.errors %}
+  <p>{{ message }}</p>
+{% endfor %}
+
+{% for message in form.email.errors %}
+  <p>{{ message }}</p>
+{% endfor %}
+
+<form action="/" method="post">
+  <fieldset>
+    <legend>Contact Form</legend>
+    {{ form.hidden_tag() }}
+
+    <div>
+      {{ form.name.label }} <br>
+      {{ form.name }} <br>
+      {{ form.gender.label }} <br>
+      {{ form.gender }} <br>
+      {{ form.address.label }} <br>
+      {{ form.address }} <br>
+      {{ form.email.label }} <br>
+      {{ form.email }} <br>
+      {{ form.age.label }} <br>
+      {{ form.age }} <br>
+      {{ form.language.label }} <br>
+      {{ form.language }} <br>
+
+      {{ form.submit }}
+    </div>
+  </fieldset>
+</form>
+</body>
+</html>

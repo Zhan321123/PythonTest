@@ -1,10 +1,15 @@
 """
 flask服务端
+
+
+app.template_folder = './' 修改模板html文件路径为当前目录，默认是'templates/'
+
 """
 from flask import Flask, render_template, url_for, redirect, request, abort
 
 app = Flask(__name__)
 
+app.template_folder = './'
 
 @app.route('/')
 def index():
