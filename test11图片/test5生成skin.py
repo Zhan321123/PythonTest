@@ -2,6 +2,7 @@
 生成minecraft的skin
 """
 import os
+import pathlib
 import random
 
 import matplotlib
@@ -24,12 +25,12 @@ def getData(file: str):
 
 def createValue(w: int, h: int):
     # 随机色
-    # result = [[random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for i in range(h) for j in
-    #           range(w)]
+    result = [[random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] for _ in range(h) for _ in
+              range(w)]
 
     # 彩虹渐变色
-    cmap = matplotlib.colormaps['rainbow']
-    result = cmap(np.arange(0, w * h).reshape(w, h) / w / h) * 255
+    # cmap = matplotlib.colormaps['rainbow']
+    # result = cmap(np.arange(0, w * h).reshape(w, h) / w / h) * 255
 
     return tuple(result)
 
@@ -48,7 +49,8 @@ def createSkin(file: str):
     return image
 
 if __name__ == '__main__':
-    f = r"D:\code\pythonProject\PythonTest\test6媒体\file\skin.png"
+    folder = pathlib.Path(__file__).resolve().parent
+    f = os.path.join(folder,'./file/skin.png')
     out = rf"{os.environ['USERPROFILE']}\Desktop\output.png"  # 桌面路径
     img = createSkin(f)
     plt.imshow(img)
