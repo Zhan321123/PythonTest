@@ -1,3 +1,15 @@
+"""
+rgb(0~1,0~1,0~1)
+rgba(0~1,0~1,0~1,0~1)
+rgb(0~255,0~255,0~255)
+rgba(0~255,0~255,0~255,0~1)
+hex(#0~f,0~f,0~f,0~f,0~f,0~f)
+hex(#0~f,0~f,0~f)
+hex(#0~f)
+grayscale(0~1)
+
+"""
+
 import re
 from typing import Sequence
 

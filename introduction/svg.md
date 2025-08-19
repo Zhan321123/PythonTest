@@ -7,14 +7,11 @@
 
 ### 示例
 
-<svg xmlns="http://www.w3.org/2000/svg"
-  width=100 height=100 
-  version=1.1 
-  viewBox="0 0 100 100" 
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" version="1.1" viewBox="0 0 100 100" 
   style = "border: 1px solid #0ff;">
-  <circle cx=50 cy=50 r=40 fill="red"/>
-  <text x=50 y=50 text-anchor="middle" fill="white" font-size=20>SVG</text>
-  <path  d="M 0 0 L 100 100" stroke="black" stroke-width="2" fill="none"/>
+  <circle cx="50" cy="50" r="40" fill="red"/>
+  <text x="50" y=50 text-anchor="middle" fill="white" font-size="20">SVG</text>
+  <path d="M 0 0 L 100 100" stroke="black" stroke-width="2" fill="none"/>
 </svg>
 
 ### svg属性

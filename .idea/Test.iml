@@ -8,6 +8,10 @@
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/codeStyles" />
+      <excludeFolder url="file://$MODULE_DIR$/test13minecraft/fusion/build" />
+      <excludeFolder url="file://$MODULE_DIR$/test13minecraft/fusion/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/test15database/build" />
+      <excludeFolder url="file://$MODULE_DIR$/test15database/dist" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (PythonTest)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

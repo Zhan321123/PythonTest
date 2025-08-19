@@ -21,6 +21,8 @@ load excel参数
     Protection 保护
 """
 import os
+
+import numpy as np
 import openpyxl
 
 def getSheetNames(file: str) -> list:

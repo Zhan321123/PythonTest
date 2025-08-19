@@ -9,13 +9,13 @@
 ### 使用方法
 
 1. `(venv) PS ...> pip install -U pyinstaller`
-2. `pyinstaller [file.py]`
+2. `(venv) PS ...> pyinstaller [file.py] -[options]`
 
-### 配置
+### options
 
 - `-i [icon.ico]` 配置图标
 - `-F` 打包为单个大文件
-- `-d` 打包为文件夹
+- `-D` 打包为文件夹
 - `--hidden-import [module]` 添加第三方库
 - `--onefile` 打包为单个大文件
 - `--add-data [file;destination]` 添加文件

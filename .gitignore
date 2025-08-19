@@ -9,6 +9,7 @@ dist/
 .idea/
 .vscode/
 
-lib
+./lib/
+
 *.log
 *.spec

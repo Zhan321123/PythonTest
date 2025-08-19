@@ -43,7 +43,7 @@ def eqSolving(equation:callable, xl:float, xr:float, error=1e-7)->float:
 # 定义方程
 def f(x):
     try:
-        result = x ** 2 + 1 / x - (10 + math.exp(x))
+        result = 4*np.pi**2/9-9.8*x*np.tanh(x*13.94)
     except Exception as e:
         raise Exception(e, "超出函数定义域")
     return result
@@ -66,6 +66,6 @@ def fxChart(ax: plt.Axes, equation:callable, xl:float, xr:float):
 fig, ax = plt.subplots()
 fxChart(ax, f, 0, 1)
 
-eqSolving(f, 0.0001, 0.2)
+eqSolving(f, 0.0001, 100)
 
-plt.show()
+# plt.show()

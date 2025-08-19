@@ -16,9 +16,9 @@
 #### 使用方法（拿清华源举例）
 
 - 安装单个第三方库
-  pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple
+  pip install [库名] -i [库源]
 - 配置全局第三方库
-  pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+  pip config set global.index-url [库源]
 
 ### 配置python库的环境
 
