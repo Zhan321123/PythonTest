@@ -23,7 +23,7 @@ MySQL 服务器
 - show grants 查看权限
 - grant [privilege] on [databaseName].[tableName] to [userName]@[hostName] 授予用户userName权限
 - revoke [privilege] on [databaseName].[tableName] from [userName]@[hostName] 撤销用户userName权限
-- flush privileges 刷新权限
+  - flush privileges 刷新权限 
 #### 初始化用户
 - create user [userName]@[hostName] identified by [password] 创建用户userName，密码为password，允许连接的host为hostName
 - select * from mysql.user 获取所有用户
@@ -43,6 +43,20 @@ MySQL 服务器
 
 #### 查询表
 - select * from [tableName] 获取tableName表所有行数据
+- select distinct [name] from [table] 去重查询table的name列
+- select * from [table] order by [column1] [column2] 查询结果按照column排序，从小到大
+- select * from [table] order by [column] desc 查询结果按照column排序，从大到小
+- select * from [table] where [???] 筛选查询
+  - =,>,<,>=,<=,!=,<>不等于
+  - and,or
+  - between [left] [right], not between
+  - in [value1,value2], not in
+  - 模糊查询，%任意数量，_单个
+    - %S xxxS
+    - S% Sxxx
+    - %S% xxxSxxx
+    - _S xS
+  - is null, is not null
 
 #### 列操作
 - alter table [tableName] add [columnName] [columnType] [columnOption] [position]在tableName表最后添加一列columnName
@@ -106,3 +120,39 @@ MySQL 服务器
   - alter table [tableName] drop constraint [constraintName]
 
 #### 复制表
+- create table [newTableName] as select * from [oldTableName] 复制完整表
+- create table [newTableName] as select [columnName1], [columnName2], ... from [oldTableName] 复制表，只复制指定列
+- create table [newTableName] as select * from [oldTableName] where [condition] 复制表，只复制满足条件的行
+
+#### 事务
+1. start transaction 开启事务
+2. 执行sql语句，临时生效，脏读
+3. commit 提交事务，永久生效sql语句
+4. rollback 回滚事务，取消临时生效的sql语句
+
+#### 索引
+show index from [tableName]
+
+#### 视图
+
+#### 函数
+
+#### 连表查询
+- select * from [table1] join [table2] using([column]) 查询table1和table2中column列相同的行
+- select * from [table1] join [table2] on [table1].[column1]=[table2].[column2] 查询table1.column1=table2.column2的行
+- select * from [table1] [t1] join [table2] [t2] on [t1].[column1]=[t2].[column2] 自关联查询
+
+#### 特殊
+- select * from [table1] [t1] 别名，用于自关联时区分使用
+- case语句
+  ```
+  select * 
+    case
+      when [condition1] then [value1]
+      when [condition2] then [value2]
+      else [value3]
+    end
+    as [columnName]
+  from [table]
+  ```
+  查询table，增一列columnName，满足condition1，就是value1，...

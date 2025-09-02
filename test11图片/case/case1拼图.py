@@ -2,6 +2,7 @@ import pathlib
 from typing import Literal, Sequence
 
 import matplotlib
+import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt
 
@@ -92,17 +93,32 @@ def verticalAssemble(images: Sequence[Image.Image], border: int = 0, borderColor
   return img
 
 
-def matrixAssemble(imagess: Sequence[Sequence[Image.Image]], border: int = 0,
-    borderColor: str = "#ffffff", ) -> Image.Image:
+def matrixAssemble(imagess: Sequence[Sequence[Image.Image]], border: int = 0,borderColor: str = "#ffffff",
+    mode:Literal["standard", "averageWidth", "averageHeight","max", "min", "specific", "lazy"] = 'standard') -> Image.Image:
   """
   阵列拼合图像
 
   :param imagess: 二维图像组
   :param border: 边框宽度
   :param borderColor: 边框颜色
+  :param mode: 模式
   :return:
   """
-  # TODO
+  if len(imagess) ==1 and len(imagess[0])==1:
+    print("仅有一张图片")
+    return imagess[0][0]
+  wss = np.array([[image.width for image in images] for images in imagess])
+  hss = np.array([[image.height for image in images] for images in imagess])
+  ws = wss.flatten()
+  hs = hss.flatten()
+
+  if mode=="standard":
+    if len(set(ws)) != 1 or len(set(hs)):
+      raise Exception("图片长宽不一致")
+  elif mode=="averageWidth":
+    width = ws.sum() // len(ws)
+    images = [[_resizeByWidth(image, width) for image in images] for images in imagess]
+
 
 def packingAssemble(images: Sequence[Image.Image], border: int = 0, borderColor: str = "#ffffff") -> Image.Image:
   """

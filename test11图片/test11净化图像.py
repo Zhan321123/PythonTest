@@ -48,7 +48,7 @@ def purifyImage(image, num_colors):
 
 
 if __name__ == '__main__':
-    dirty = r"D:\code\pythonProject\PythonTest\logo.jpg"
+    dirty = r"D:\code\minecraft\WorldFillMachine\worldFillMachine-forge-1.20.1\src\main\resources\assets\worldfill\textures\mob_effect\falling_immunity.png"
     img = Image.open(dirty)
-    new_image = purifyImage(img, 8)
-    new_image.save(r"D:\code\pythonProject\PythonTest\logo.png")
+    new_image = purifyImage(img, 24)
+    new_image.save(r"D:\code\minecraft\WorldFillMachine\worldFillMachine-forge-1.20.1\src\main\resources\assets\worldfill\textures\mob_effect\falling_immunity1.png")
