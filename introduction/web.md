@@ -131,6 +131,7 @@ protocol://domain:port/path?query#anchor
 ### cmd
 
 - `ipconfig` 显示网络信息
+- `ipconfig /all` 显示所有网络信息
 - `ping [ip]` 测试网络连接
 - `tracert [ip]` 测试网络路径
 - `nslookup [ip]` 域名解析

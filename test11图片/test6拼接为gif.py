@@ -38,7 +38,12 @@ def imgsToGif(images: Sequence[Image], savePath: str, duration: Union[int, Seque
         if len(duration) != len(images):
             print("duration序列长度与图片数量不一致")
             return
-    images[0].save(savePath, save_all=True, append_images=images[1:], duration=duration, loop=0)
+    images[0].save(savePath,
+        save_all=True, # 保存所有帧
+        append_images=images[1:], # 动画帧
+        duration=duration, # 帧间隔
+        loop=0 # 循环次数，0为无限循环
+    )
 
 if __name__ == '__main__':
     path = r'D:\code\pythonProject\PythonTest\test10dataAnalysis\test1科学绘图\file'

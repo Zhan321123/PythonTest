@@ -69,15 +69,19 @@ if __name__ == '__main__':
   fig, axs = plt.subplots(1, 3)
   size = lambda define, n: np.array([define() for _ in range(n)])
 
-  dr1 = lambda: random.random() ** (1 / 2)
-  dr2 = lambda: math.acos(1 - 2 * random.random())
-  dr3 = lambda: math.e**random.random()
+  # dr1 = lambda: random.random() ** (1 / 2)
+  # dr2 = lambda: math.acos(1 - 2 * random.random())
+  # dr3 = lambda: math.e**random.random()
 
-  r1 = size(dr1, 10000)
-  r2 = size(dr2, 10000)
-  r3 = size(dr3, 10000)
+  dr1 = lambda: random.random() * random.random()
+  dr2 = lambda: random.random() + random.random()
+  dr3 = lambda: random.random()
 
-  axs[0].hist(r1, bins=12, histtype='step')
-  axs[1].hist(r2, bins=12, histtype='step')
-  axs[2].hist(r3, bins=12, histtype='step')
+  r1 = size(dr1, 20000)
+  r2 = size(dr2, 20000)
+  r3 = size(dr3, 20000)
+
+  axs[0].hist(r1, bins=20, histtype='step')
+  axs[1].hist(r2, bins=20, histtype='step')
+  axs[2].hist(r3, bins=20, histtype='step')
   plt.show()
