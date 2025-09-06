@@ -57,6 +57,7 @@ def selectSort(arr: list):
 def heapSort(arr: list):
   """堆排序"""
   yield "origin", arr
+
   def heapify(arr, n, i):
     largest = i  # 初始化根节点为最大值
     yield "info", {"largest": largest}
@@ -83,6 +84,121 @@ def heapSort(arr: list):
     arr[0], arr[i] = arr[i], arr[0]
     yield "swap", (0, i, arr)
     yield from heapify(arr, i, 0)
+
+
+def bubbleSort(arr: list):
+  """冒泡排序"""
+  yield "origin", arr
+  for i in range(len(arr) - 1, 0, -1):
+    for j in range(i):
+      yield "compare", (j, j + 1)
+      if arr[j] > arr[j + 1]:
+        arr[j], arr[j + 1] = arr[j + 1], arr[j]
+        yield "swap", (j, j + 1, arr)
+
+
+def quickHoareSort(arr: list):
+  """快速排序(Hoare)"""
+  yield "origin", arr
+
+  def partition(left: int, right: int) -> int:
+    pivot = arr[left]  # 选最左元素为基准
+    i, j = left, right
+    while i < j:
+      # 右指针左移，找小于基准的值
+      while i < j:
+        yield "compare", (left, j)
+        if arr[j] >= pivot:
+          j -= 1
+        else: break
+      # 左指针右移，找大于基准的值
+      while i < j:
+        yield "compare", (i, left)
+        if arr[i] <= pivot:
+          i += 1
+        else: break
+      arr[i], arr[j] = arr[j], arr[i]  # 交换左右指针指向的元素
+      yield "swap", (i, j, arr)
+    arr[left], arr[i] = arr[i], arr[left]  # 基准值归位
+    yield "swap", (i, left, arr)
+    return i  # 返回基准值最终位置
+
+  def quickSort(left: int, right: int):
+    if left < right:
+      # 调用Hoare分区，获取基准值位置
+      pivot_idx = yield from partition(left, right)
+      # 递归排序左侧子数组（left到pivot_idx-1）
+      yield from quickSort(left, pivot_idx - 1)
+      # 递归排序右侧子数组（pivot_idx+1到right）
+      yield from quickSort(pivot_idx + 1, right)
+
+  yield from quickSort(0, len(arr) - 1)
+
+
+def quickPointerSort(arr: list):
+  """快速排序(前后指针)"""
+  yield "origin", arr
+
+  def pointerPartition(left, right):
+    pivot = arr[left]
+    prev = left  # 前指针
+    for curr in range(left + 1, right + 1):
+      yield "compare", (curr, left)
+      if arr[curr] < pivot:
+        prev += 1
+        arr[prev], arr[curr] = arr[curr], arr[prev]
+        yield "swap", (prev, curr, arr)
+    arr[left], arr[prev] = arr[prev], arr[left]  # 基准值归位
+    yield "swap", (left, prev, arr)
+    return prev
+
+  def quickSort(left: int, right: int):
+    if left < right:
+      # 调用Hoare分区，获取基准值位置
+      pivot_idx = yield from pointerPartition(left, right)
+      # 递归排序左侧子数组（left到pivot_idx-1）
+      yield from quickSort(left, pivot_idx - 1)
+      # 递归排序右侧子数组（pivot_idx+1到right）
+      yield from quickSort(pivot_idx + 1, right)
+
+  yield from quickSort(0, len(arr) - 1)
+
+
+def quickHoleSort(arr: list):
+  """快速排序(挖坑法)"""
+  yield "origin", arr
+
+  def holePartition(arr, left, right):
+    pivot = arr[left]  # 取出基准值，left位置形成"坑"
+    i, j = left, right
+    while i < j:
+      # 从右向左找小于基准的值，填左坑
+      while i < j:
+        yield "compare", (j, left)
+        if arr[j] >= pivot:
+          j -= 1
+        else: break
+      arr[i] = arr[j]  # j位置形成新坑
+      yield "swap", (i, j, arr)
+      # 从左向右找大于基准的值，填右坑
+      while i < j:
+        if arr[i] <= pivot:
+          yield "compare", (i, left)
+          i += 1
+        else: break
+      arr[j] = arr[i]  # i位置形成新坑
+      yield "swap", (i, j, arr)
+    arr[i] = pivot  # 基准值填入最后一个坑
+    yield "swap", (i, left, arr)
+    return i
+
+  def quickSort(left: int, right: int):
+    if left < right:
+      pivot_idx = yield from holePartition(arr, left, right)
+      yield from quickSort(left, pivot_idx - 1)
+      yield from quickSort(pivot_idx + 1, right)
+
+  yield from quickSort(0, len(arr) - 1)
 
 
 def createGif(iterable: iter, savePath: str):
@@ -135,6 +251,6 @@ def createGif(iterable: iter, savePath: str):
 
 
 if __name__ == '__main__':
-  seq = generateRandomRange(16)
+  seq = generateRandomRange(100)
 
-  createGif(heapSort(seq), r"C:\Users\刘高瞻\Desktop\heapSort.gif")
+  createGif(quickPointerSort(seq), r"C:\Users\刘高瞻\Desktop\quickPointerSort.gif")
