@@ -2,6 +2,7 @@
 图像缩放
 """
 import os
+import pathlib
 
 import matplotlib
 from PIL import Image
@@ -10,56 +11,66 @@ import matplotlib.pyplot as plt
 matplotlib.use('TkAgg')
 
 
-def showResizeImage():
-    """展示几种缩放图像的区别"""
-    image = Image.open(r'../file/small.png')
-    newSize = (600, 600)
+def showResizeImage(img: Image.Image):
+  """展示几种缩放图像的区别"""
+  newSize = (600, 600)
 
-    titles = ('NEAREST', 'BILINEAR', 'BICUBIC', 'LANCZOS')
-    nearest = image.resize(newSize, Image.NEAREST)  # 最近邻插值
-    bilinear = image.resize(newSize, Image.BILINEAR)  # 双线性插值
-    bicubic = image.resize(newSize, Image.BICUBIC)  # 三次样条插值
-    lanczos = image.resize(newSize, Image.LANCZOS)  # Lanczos 插值
+  titles = ('NEAREST', 'BILINEAR', 'BICUBIC', 'LANCZOS')
+  nearest = img.resize(newSize, Image.NEAREST)  # 最近邻插值
+  bilinear = img.resize(newSize, Image.BILINEAR)  # 双线性插值
+  bicubic = img.resize(newSize, Image.BICUBIC)  # 三次样条插值
+  lanczos = img.resize(newSize, Image.LANCZOS)  # Lanczos 插值
 
-    fig, axs = plt.subplots(2, 2)
-    for ax, img, title in zip(axs.flatten(), [nearest, bilinear, bicubic, lanczos], titles):
-        ax.axis('off')
-        ax.imshow(img)
-        ax.set_title(title)
-    plt.show()
+  fig, axs = plt.subplots(2, 2)
+  for ax, img, title in zip(axs.flatten(), [nearest, bilinear, bicubic, lanczos], titles):
+    ax.axis('off')
+    ax.imshow(img)
+    ax.set_title(title)
+  plt.show()
 
-def resizeImageBySize(filePath:str, savePath:str,newSize:tuple[int,int], method:int=Image.NEAREST):
-    """
-    以新的尺寸缩放图像
-    目前在nearest中存在一些问题，放大之后像素边缘出现摩尔纹
-    :param filePath: 文件路径
-    :param savePath: 保存路径
-    :param newSize: 新的尺寸
-    :param method: 缩放方法，默认最近邻插值
-    """
-    image = Image.open(filePath)
-    image.resize(newSize, method).save(savePath)
-    print('缩放并保存完成')
 
-def resizeImageByRatio(filePath:str, savePath:str, ratio:float, method:int=Image.NEAREST):
-    """
-    按比例缩放图片
-    :param filePath: 文件路径
-    :param savePath: 保存路径
-    :param ratio: 比例
-    :param method: 缩放方法，默认最近邻插值
-    """
-    image = Image.open(filePath)
-    width, height = image.size
-    newSize = (int(width * ratio), int(height * ratio))
-    image.resize(newSize, method).save(savePath)
-    print('缩放并保存完成')
+def resizeImageBySize(img: Image.Image, newSize: tuple[int, int], method: int = Image.NEAREST) -> Image.Image:
+  """
+  以新的尺寸缩放图像
+  目前在nearest中存在一些问题，放大之后像素边缘出现摩尔纹
+  :param img:
+  :param newSize: 新的尺寸
+  :param method: 缩放方法，默认最近邻插值
+  """
+  img.resize(newSize, method)
+  return img
+
+
+def resizeImageByRatio(img: Image.Image, ratio: float, method: int = Image.NEAREST) -> Image.Image:
+  """
+  按比例缩放图片
+  :param img:
+  :param ratio: 比例
+  :param method: 缩放方法，默认最近邻插值
+  """
+  width, height = img.size
+  newSize = (int(width * ratio), int(height * ratio))
+  img.resize(newSize, method)
+  return img
+
+
+def _resizeByWidth(image: Image.Image, width: int, method: int = Image.NEAREST):
+  if width == image.width:
+    return image
+  newSize = (width, width * image.height // image.width)
+  return image.resize(newSize, method)
+
+
+def _resizeByHeight(image: Image.Image, height: int, method: int = Image.NEAREST):
+  if height == image.height:
+    return image
+  newSize = (image.width * height // image.height, height)
+  return image.resize(newSize, method)
 
 if __name__ == '__main__':
-    # showResizeImage()
-    # fp = r'D:\code\pythonProject\PythonTest\test6媒体\file\small.png'
-    # sp = rf"{os.environ['USERPROFILE']}\Desktop\output.jpg"  # 桌面路径
-    # resizeImageBySize(fp, sp, (640, 640))
-    # resizeImageByRatio(fp, sp, 10)
-    logo = '../file/zhan_logo.png'
-    resizeImageByRatio(logo, '../file/zhan_logo4.png', 1/16,method=Image.LANCZOS)
+  rootPath = pathlib.Path(__file__).resolve().parent
+  filePath = rootPath / "./file"
+  fs = filePath / "brass_block.png"
+  img = Image.open(fs)
+  img = _resizeByHeight(img, 600)
+  img.show()
