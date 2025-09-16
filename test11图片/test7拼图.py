@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageOps
 from matplotlib import pyplot as plt
 
-from test9算法.test1数据计算.case1矩形装箱优化问题 import EncloseFixedRatio, MaxRectsBssf, showRectInBox
+from test9算法.test1数据计算.test4矩形装箱 import EncloseFixedRatio, MaxRectsBssf, showRectInBox
 
 matplotlib.use("TkAgg")
 

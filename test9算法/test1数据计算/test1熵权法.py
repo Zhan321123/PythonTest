@@ -26,7 +26,7 @@ def entropyWeight(data: Sequence[Sequence], distinct: Sequence[bool] = None, mov
                 fl2[i][j] = (fl[i][j] - mins[j]) / (maxs[j] - mins[j] + move)
             else:
                 fl2[i, j] = (maxs[j] - fl[i, j]) / (maxs[j] - mins[j] + move)
-    nd = fl2.get()
+    nd = fl2._getNode()
 
     # 每个指标的概率分布
     p_ij = nd / np.sum(nd, axis=0)
