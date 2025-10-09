@@ -19,7 +19,7 @@ def generateRandomRange(n: int) -> list:
   return random.sample(range(1, n + 1), n)
 
 
-def generateRandomStrings(n: int, length: int, ):
+def generateRandomStrings(n: int, length: int, ) -> list[str]:
   """
   生成n个字符串，长度(0,length]
   """

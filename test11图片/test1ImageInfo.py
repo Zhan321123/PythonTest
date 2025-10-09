@@ -6,6 +6,8 @@ import numpy as np
 from PIL import Image, ImageOps
 from matplotlib import pyplot as plt
 
+from test1python基础.test1.test35类属性 import printObject
+
 matplotlib.use('TkAgg')
 
 
@@ -125,7 +127,7 @@ def addBorder(image: Image.Image, border: int = 1, borderColor: str = "#ffffff")
   return bordered_image
 
 
-def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, Sequence[int, int]]):
+def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, list[int,int]]):
   """提升图片的dpi"""
   if isinstance(dpi, (Sequence, np.ndarray)):
     img.info["dpi"] = dpi
@@ -165,8 +167,9 @@ def save(img: Image.Image, outputDir: Union[str, pathlib.Path], name: str):
 if __name__ == "__main__":
   file = "./file/brass_block.png"
   img = Image.open(file)
-  getInfo(img)
-  pixels = getPixelData(img)
-  print(pixels)
+  printObject(img)
+  # getInfo(img)
+  # pixels = getPixelData(img)
+  # print(pixels)
 
-  show(pixels)
+  # show(pixels)

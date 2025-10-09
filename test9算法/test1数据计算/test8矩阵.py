@@ -48,6 +48,7 @@ import math
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 
 matplotlib.use('TkAgg')
 
@@ -353,15 +354,41 @@ def multipleLinearEquation(matrix: np.ndarray, values: np.ndarray) -> tuple:
   return tuple(np.linalg.solve(matrix, values))
 
 
+def matrixConvolution(matrix: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+  """
+  矩阵卷积
+  :param matrix: 被卷积矩阵
+  :param kernel: 卷积核
+  :return: 卷积结果
+  """
+  if matrix.shape[0] < kernel.shape[0] or matrix.shape[1] < kernel.shape[1]:
+    raise ValueError('矩阵的形状小于卷积核的形状')
+  return scipy.signal.convolve2d(matrix, kernel, 'valid')
+
+
+def matrixPadding(matrix: np.ndarray, pad: int, padValue) -> np.ndarray:
+  """
+  矩阵拓展边缘
+  :param matrix: 被填充矩阵
+  :param pad: 填充数
+  :param padValue: 填充值
+  :return: 填充结果
+  """
+  return np.pad(matrix, pad, 'constant', constant_values=padValue)
+
+
 if __name__ == '__main__':
   array16 = np.linspace(0, 1, 256).reshape((16, 16))
   array8 = np.linspace(1, 0, 64).reshape((4, 16))
   # a = matrixCover(array16, array16, (4, 4))
   # a = matrixTile(array8, (2, 3))
   # print(a)
-  a = matrixRotate90(array8)
-  matrixDisplay([
-    array8, a, matrixRotate180(array8), matrixRotate270(array8), mirrorHorizontal(array8), mirrorVertical(array8)
-  ])
-  v = multipleLinearEquation(np.array([[2, 1], [1, 2]]), np.array([3, 5]))
-  print(v)
+  # a = matrixRotate90(array8)
+  # matrixDisplay([
+  #   array8, a, matrixRotate180(array8), matrixRotate270(array8), mirrorHorizontal(array8), mirrorVertical(array8)
+  # ])
+  # v = multipleLinearEquation(np.array([[2, 1], [1, 2]]), np.array([3, 5]))
+  # print(v)
+  array9 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+  core = np.array([[1, 0], [0, 1]])
+  print(matrixConvolution(array9, core))

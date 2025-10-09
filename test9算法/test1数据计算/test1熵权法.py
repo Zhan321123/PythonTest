@@ -3,7 +3,6 @@
 """
 from typing import Sequence
 import numpy as np
-import lib.zCalculate as zc
 from scipy.stats import entropy
 
 

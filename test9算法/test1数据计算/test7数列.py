@@ -38,50 +38,50 @@ import math
 
 
 def euler():
-    """欧拉常数"""
-    x = 0
-    last = 0
-    while True:
-        x += 1
-        a = math.log(x)
-        b = sum(1 / j for j in range(1, x + 1))
-        deta = a - b
-        if abs(deta - last) < 1e-9:
-            print(deta)
-            return deta
-        last = deta
+  """欧拉常数"""
+  x = 0
+  last = 0
+  while True:
+    x += 1
+    a = math.log(x)
+    b = sum(1 / j for j in range(1, x + 1))
+    deta = a - b
+    if abs(deta - last) < 1e-9:
+      print(deta)
+      return deta
+    last = deta
 
 
 def harmonicSum(n):
-    """调和数列求和"""
-    result = sum(1 / i for i in range(1, n + 1))
-    print(result)
-    return result
+  """调和数列求和"""
+  result = sum(1 / i for i in range(1, n + 1))
+  print(result)
+  return result
 
 
 def fibonacci(n, fast=False):
-    """斐波那契数列"""
-    if not fast:
-        a, b = 1, 1
-        for i in range(n - 2):
-            a, b = b, a + b
-        # print(b)
-        return b
+  """斐波那契数列"""
+  if not fast:
+    a, b = 1, 1
+    for i in range(n - 2):
+      a, b = b, a + b
+    # print(b)
+    return b
 
-    result = (((1 + math.sqrt(5)) / 2) ** n - ((1 - math.sqrt(5)) / 2) ** n) / math.sqrt(5)
-    # print(result)
-    return result
+  result = (((1 + math.sqrt(5)) / 2) ** n - ((1 - math.sqrt(5)) / 2) ** n) / math.sqrt(5)
+  # print(result)
+  return result
 
 
 def fibonacciSum(n):
-    """斐波那契数列求和"""
-    result = 2 * fibonacci(n) + fibonacci(n - 1) - 1
-    print(result)
-    return result
+  """斐波那契数列求和"""
+  result = 2 * fibonacci(n) + fibonacci(n - 1) - 1
+  print(result)
+  return result
 
 
 if __name__ == '__main__':
-    # euler()
-    # harmonicSum(10)
-    # fibonacci(10)
-    fibonacciSum(10)
+  # euler()
+  # harmonicSum(10)
+  # fibonacci(10)
+  fibonacciSum(10)

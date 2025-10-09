@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 
 def purifyImage(image: Image.Image, num_colors: int)->Image.Image:
   """
-  净化图像，聚集颜色以减少颜色数量
+  净化图像，K-Means聚集算法，减少颜色数量
 
   :param image: 图像
   :param num_colors: 颜色数量
@@ -44,6 +44,7 @@ def purifyImage(image: Image.Image, num_colors: int)->Image.Image:
           pixels[y, x] = [newR, newG, newB, a]
 
   newImage = Image.fromarray(pixels)  # 将NumPy数组转换回PIL图像
+  newImage = newImage.convert("RGB")
   return newImage
 
 
