@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多个随机运动方块</title>
+  <style>
+    *{
+        cursor: none;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #000;
+    }
+    .box {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: red;
+    }
+  </style>
+</head>
+<body>
+<script>
+  const boxCount = 30; // 方块数量（可自行调整）
+  const boxes = [];
+
+  for (let i = 0; i < boxCount; i++) {
+      const box = document.createElement('div');
+      box.className = 'box';
+      // 可以给不同方块设置略微不同的初始颜色（可选）
+      const hue = (360 / boxCount) * i;
+      box.style.backgroundColor = `hsl(${hue}, 80%, 50%)`;
+      document.body.appendChild(box);
+
+      boxes.push({
+          element: box,
+          x: 500,
+          y: 300,
+          rotation: 0,
+          vx: 0,
+          vy: 0,
+          vr: 0
+      });
+  }
+
+  // 每0.02秒更新所有方块的位置
+  setInterval(() => {
+      boxes.forEach(box => {
+          const ax = 0.1*(Math.random() - 0.5);
+          const ay = 0.1*(Math.random() - 0.5);
+          const ar = 0.2*(Math.random() - 0.5);
+
+          box.vx += ax;
+          box.vy += ay;
+          box.vr += ar;
+
+          box.x += box.vx;
+          box.y += box.vy;
+          box.rotation += box.vr;
+
+          if (box.x < 0) box.vx = 0.8 * Math.abs(box.vx);
+          if (box.x > window.innerWidth) box.vx = -0.8 * Math.abs(box.vx);
+          if (box.y < 0) box.vy = 0.8 * Math.abs(box.vy);
+          if (box.y > window.innerHeight) box.vy = -0.8 * Math.abs(box.vy);
+
+          box.element.style.left = `${box.x}px`;
+          box.element.style.top = `${box.y}px`;
+          box.element.style.transform = `rotate(${box.rotation}deg)`;
+      });
+  }, 20); // 毫秒
+</script>
+</body>
+</html>

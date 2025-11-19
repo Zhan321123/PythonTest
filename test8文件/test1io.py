@@ -38,6 +38,7 @@ os.path.
 """
 import os
 import pathlib
+import re
 import shutil
 import time
 import os.path
@@ -163,12 +164,46 @@ def copyDir(oldDirPath: str, newDirPath: str) -> bool:
     print(f"发生了其他错误: {e}")
 
 
+def increasePath(filePath: pathlib.Path) -> pathlib.Path:
+  """
+  路径名递增（确保返回的路径不存在）
+  :param filePath: 原始路径
+  :return: 递增后的新路径（不存在）
+  """
+  if not filePath.parent.exists():
+    raise Exception(f"父级目录 {filePath.parent} 不存在")
+  if not filePath.exists():
+    return filePath
+
+  name, ext = os.path.splitext(filePath.name)
+  pattern = r'^(.*?)\((\d+)\)$'
+  match = re.match(pattern, name)
+
+  # 确定基础前缀和起始数字
+  if match:
+    # 已有数字后缀，从下一个数字开始
+    prefix = match.group(1)
+    current_number = int(match.group(2)) + 1
+  else:
+    # 无数字后缀，从 1 开始
+    prefix = name
+    current_number = 1
+
+  # 循环查找不存在的路径
+  while True:
+    new_name = f"{prefix}({current_number}){ext}"
+    new_path = filePath.parent / new_name
+    if not new_path.exists():
+      return new_path
+    current_number += 1
+
 if __name__ == '__main__':
   print(__file__)
   f = '../file/a.txt'
   # d = '../file'
-  print(os.getcwd())  # 获取本模块运行时的路径
-  print(pathlib.Path(__file__).resolve().parent)  # 获取本py文件的路径
+  # print(os.getcwd())  # 获取本模块运行时的路径
+  # print(pathlib.Path(__file__).resolve().parent)  # 获取本py文件的路径
+  print(increasePath(pathlib.Path(__file__).parent))
   # print(os.listdir())
   # dirs, file = op.split(f)  # 将f的目录和文件名分开
   # print(dirs, file)
@@ -192,5 +227,5 @@ if __name__ == '__main__':
   # renameFile('../file/newFile.txt', 'new.txt')
   # copyDir('file/META-INF', 'file/dir1')
   # print(getDirPathsInDir('file/META-INF'))
-  l = getAllFiles('file')
-  print(l)
+  # l = getAllFiles('file')
+  # print(l)

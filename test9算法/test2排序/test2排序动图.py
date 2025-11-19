@@ -4,7 +4,7 @@ import io
 from PIL import Image
 from matplotlib import pyplot as plt
 
-from test0 import *
+from test0utils import *
 
 
 def insertSort(arr: list):

@@ -27,10 +27,10 @@ matrix
 	旋转 rotate90/rotate180/rotate270
 	镜像 mirrorVertical/mirrorHorizontal
 
-
 矩阵与数
 	数乘矩阵
 	矩阵余子式
+	矩阵扩展边缘
 
 矩阵与矩阵
 	矩阵相乘
@@ -39,11 +39,15 @@ matrix
 	是否可交换
 	矩阵相加
 
+	矩阵卷积
+	矩阵池化
+
 其他
 	多元线性方程组求解 multipleLinearEquation
 
 """
 import math
+from typing import Literal
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -354,16 +358,19 @@ def multipleLinearEquation(matrix: np.ndarray, values: np.ndarray) -> tuple:
   return tuple(np.linalg.solve(matrix, values))
 
 
-def matrixConvolution(matrix: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+def matrixConvolution(matrix: np.ndarray, kernel: np.ndarray, stride: tuple = (1, 1)) -> np.ndarray:
   """
   矩阵卷积
   :param matrix: 被卷积矩阵
   :param kernel: 卷积核
+  :param stride: 步长
   :return: 卷积结果
   """
   if matrix.shape[0] < kernel.shape[0] or matrix.shape[1] < kernel.shape[1]:
     raise ValueError('矩阵的形状小于卷积核的形状')
-  return scipy.signal.convolve2d(matrix, kernel, 'valid')
+  return np.array([[np.sum(matrix[i:i + kernel.shape[0], j:j + kernel.shape[1]] * kernel) for j in
+                    range(0, matrix.shape[1] - kernel.shape[1] + 1, stride[1])] for i in
+                   range(0, matrix.shape[0] - kernel.shape[0] + 1, stride[0])])
 
 
 def matrixPadding(matrix: np.ndarray, pad: int, padValue) -> np.ndarray:
@@ -375,6 +382,35 @@ def matrixPadding(matrix: np.ndarray, pad: int, padValue) -> np.ndarray:
   :return: 填充结果
   """
   return np.pad(matrix, pad, 'constant', constant_values=padValue)
+
+
+def matrixPooling(matrix: np.ndarray, pool: tuple = (2, 2), stride: tuple = (2, 2),
+    mode: Literal['max', 'min', 'avg'] = 'max') -> np.ndarray:
+  """
+  矩阵池化
+  :param matrix:
+  :param pool: 池化核
+  :param stride: 步长
+  :param mode: 池化模式 max最大池化 / min最小池化 / avg平均池化
+  :return:
+  """
+  if matrix.shape[0] < pool[0] or matrix.shape[1] < pool[1]:
+    raise ValueError('矩阵的形状小于池化核的形状')
+  if mode == 'max':
+    result = np.array([[np.max(matrix[i:i + pool[0], j:j + pool[1]])
+                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
+                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
+  elif mode == 'min':
+    result = np.array([[np.min(matrix[i:i + pool[0], j:j + pool[1]])
+                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
+                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
+  elif mode == 'avg':
+    result = np.array([[np.mean(matrix[i:i + pool[0], j:j + pool[1]])
+                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
+                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
+  else:
+    raise ValueError('池化模式错误')
+  return result
 
 
 if __name__ == '__main__':
@@ -389,6 +425,7 @@ if __name__ == '__main__':
   # ])
   # v = multipleLinearEquation(np.array([[2, 1], [1, 2]]), np.array([3, 5]))
   # print(v)
-  array9 = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+  array9 = np.arange(25).reshape((5, 5))
   core = np.array([[1, 0], [0, 1]])
-  print(matrixConvolution(array9, core))
+  # print(matrixConvolution(array9, core))
+  print(matrixPooling(array9))

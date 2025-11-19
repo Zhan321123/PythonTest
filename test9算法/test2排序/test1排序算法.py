@@ -10,7 +10,7 @@
 """
 import copy
 
-from test0 import *
+from test0utils import *
 
 
 @timing

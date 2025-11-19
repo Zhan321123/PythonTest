@@ -1,6 +1,6 @@
 import random
 
-from test9算法.test2排序.test0 import timing
+from test9算法.test2排序.test0utils import timing
 
 
 @timing

@@ -1,12 +1,12 @@
 import pathlib
-from typing import Union, Sequence
+from typing import Union, Sequence, Tuple
 
 import matplotlib
 import numpy as np
 from PIL import Image, ImageOps
 from matplotlib import pyplot as plt
 
-from test1python基础.test1.test35类属性 import printObject
+from test1python基础.test1.test35类属性 import printObject, printAttribute
 
 matplotlib.use('TkAgg')
 
@@ -34,8 +34,13 @@ def getPixelData(image: Image.Image) -> np.ndarray[tuple]:
   return pixels
 
 
-def drawPixel(pixels: np.ndarray) -> Image.Image:
+def drawPixel(pixels: Union[np.ndarray, list[list[list]]]) -> Image.Image:
   """根据像素数据画图像"""
+  try:
+    pixels[0][0][0]
+  except TypeError:
+    raise ValueError("图片像素数据必须是3维数组")
+  pixels = np.array(pixels).astype(np.uint8)
   image = Image.fromarray(pixels)
   return image
 
@@ -50,11 +55,14 @@ def show(img: Image.Image, ax: plt.Axes = None):
   if not ax:
     img.show()
   else:
-    ax.pcolormesh(img)
+    if img.mode == "L":
+      ax.imshow(img, cmap='gray', vmin=0, vmax=255)
+    else:
+      ax.imshow(img)
+    ax.grid(False)
     ax.invert_yaxis()
     ax.xaxis.tick_top()
     ax.set_aspect(1)
-    ax.grid()
 
 
 def remove_unused_palette_colors(image: Image.Image):
@@ -89,7 +97,10 @@ def printImage(image: Image.Image):
   for y in range(image.height):
     for x in range(image.width):
       cell = image.getpixel((x, y))
-      print(str(sum(cell)).center(4, ' '), end='')
+      if image.mode == 'L':
+        print(str(cell).center(4, ' '), end='')
+      else:
+        print(str(sum(cell)).center(4, ' '), end='')
     print()
 
 
@@ -127,7 +138,7 @@ def addBorder(image: Image.Image, border: int = 1, borderColor: str = "#ffffff")
   return bordered_image
 
 
-def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, list[int,int]]):
+def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, list[int, int]]):
   """提升图片的dpi"""
   if isinstance(dpi, (Sequence, np.ndarray)):
     img.info["dpi"] = dpi
@@ -136,12 +147,64 @@ def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, list[int,int]]):
   img.save(savePath, quality=95, dpi=img.info["dpi"])
 
 
-def toGray(img: Image.Image) -> Image.Image:
+def toGray(img: Image.Image, w=[0.299, 0.587, 0.114]) -> Image.Image:
   """
   将图片转为灰度图
+
+  :param img:
+  :param w: 颜色权重
+  :return:
   """
-  img = img.convert("L")
-  return img
+  if img.mode != 'RGB':
+    img = img.convert('RGB')
+  r, g, b = img.split()
+  r_np = np.array(r, dtype=np.float32)
+  g_np = np.array(g, dtype=np.float32)
+  b_np = np.array(b, dtype=np.float32)
+
+  gray_np = w[0] * r_np + w[1] * g_np + w[2] * b_np
+  gray_np = np.clip(gray_np, 0, 255)  # 确保灰度值在0-255范围内（截断超出部分）
+  gray_img = Image.fromarray(gray_np.astype(np.uint8), mode='L')  # 转换为8位整数（0-255）并转为PIL Image对象
+  return gray_img
+
+
+def mirrorLR(img: Image.Image) -> Image.Image:
+  """
+  水平镜像
+
+  :param img:
+  :return:
+  """
+  return ImageOps.mirror(img)
+
+
+def mirrorUD(img: Image.Image) -> Image.Image:
+  """
+  垂直镜像
+
+  :param img:
+  :return:
+  """
+  return ImageOps.flip(img)
+
+
+def getRgbChanelImages(img: Image.Image) -> Tuple[Image.Image, Image.Image, Image.Image]:
+  """
+  展示image的RGB颜色通道值
+  :param img:
+  :return:
+  """
+  if img.mode not in ("RGB", "RGBA"):
+    img = img.convert("RGB")
+
+  r_channel, g_channel, b_channel = img.split()
+  black_channel = Image.new('L', img.size, 0)  # 'L'表示8位灰度图，值为0（黑色）
+  # 组合通道：保留目标通道，其他通道用黑色填充
+  # 每个通道图仍为RGB模式，但仅目标通道有值
+  rImage = Image.merge("RGB", (r_channel, black_channel, black_channel))
+  gImage = Image.merge("RGB", (black_channel, g_channel, black_channel))
+  bImage = Image.merge("RGB", (black_channel, black_channel, b_channel))
+  return rImage, gImage, bImage
 
 
 def save(img: Image.Image, outputDir: Union[str, pathlib.Path], name: str):
@@ -157,19 +220,37 @@ def save(img: Image.Image, outputDir: Union[str, pathlib.Path], name: str):
   if not outputDir.exists():
     raise Exception("输出目录不存在")
   if not ("." in name and name.split(".")[-1] in
-      ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp", "jfif", "heif", "avif", "svg",
-       "eps", "psd", "ai", "cdr", "svgz", "ico", "cur", "webp", ]):
+          ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp", "jfif", "heif", "avif", "svg",
+           "eps", "psd", "ai", "cdr", "svgz", "ico", "cur", "webp", ]):
     name += ".png"
   img.save(outputDir / name)
 
 
-# 示例用法
 if __name__ == "__main__":
   file = "./file/brass_block.png"
   img = Image.open(file)
-  printObject(img)
+  # printObject(img.palette)
   # getInfo(img)
   # pixels = getPixelData(img)
   # print(pixels)
 
   # show(pixels)
+
+  fig, axs = plt.subplots(3, 3)
+  axs = axs.flatten()
+  ri, gi, bi = getRgbChanelImages(img)
+  show(ri, axs[0])
+  show(gi, axs[1])
+  show(bi, axs[2])
+  show(img, axs[4])
+  save(ri, "./file", "r.png")
+  save(gi, "./file", "g.png")
+  save(bi, "./file", "b.png")
+  gray = toGray(img.copy())
+  printImage(gray)
+  show(gray, axs[3])
+  mlr = mirrorLR(img)
+  show(mlr, axs[5])
+  mud = mirrorUD(img)
+  show(mud, axs[6])
+  plt.show()
