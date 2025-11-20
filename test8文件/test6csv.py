@@ -42,4 +42,4 @@ def readCsv(file: str) -> list[list]:
 if __name__ == '__main__':
     d = [[1, 2, 3], [4, 5, 6]]
     # writeCsv('../file/csv1.csv', d)
-    print(readCsv('../file/csv1.csv'))
+    print(readCsv('../files/csv1.csv'))
