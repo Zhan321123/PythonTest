@@ -1,10 +1,12 @@
 import copy
 import io
+from pathlib import Path
 
 from PIL import Image
 from matplotlib import pyplot as plt
 
-from test0utils import *
+from test8文件.test1io import increasePath
+from test9算法.test15概率论.test6随机序列 import generateRandomRange
 
 
 def insertSort(arr: list):
@@ -251,6 +253,9 @@ def createGif(iterable: iter, savePath: str):
 
 
 if __name__ == '__main__':
-  seq = generateRandomRange(100)
+  # seq = generateRandomRange(64)
+  seq = list(range(32, 0, -1))
+  path = Path(r"C:\Users\刘高瞻\Desktop")
 
-  createGif(quickPointerSort(seq), r"C:\Users\刘高瞻\Desktop\quickPointerSort.gif")
+  for call in [bubbleSort, quickPointerSort, heapSort, insertSort, selectSort, hillSort]:
+    createGif(call(copy.deepcopy(seq)), str(increasePath(path / f"{call.__name__}.gif")))

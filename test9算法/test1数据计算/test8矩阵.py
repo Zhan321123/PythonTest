@@ -41,6 +41,7 @@ matrix
 
 	矩阵卷积
 	矩阵池化
+	矩阵转置卷积
 
 其他
 	多元线性方程组求解 multipleLinearEquation
@@ -358,14 +359,17 @@ def multipleLinearEquation(matrix: np.ndarray, values: np.ndarray) -> tuple:
   return tuple(np.linalg.solve(matrix, values))
 
 
-def matrixConvolution(matrix: np.ndarray, kernel: np.ndarray, stride: tuple = (1, 1)) -> np.ndarray:
+def matrixConvolution(matrix: np.ndarray, kernel: np.ndarray, stride: tuple[int, int], padding: int = 0) -> np.ndarray:
   """
   矩阵卷积
   :param matrix: 被卷积矩阵
   :param kernel: 卷积核
   :param stride: 步长
   :return: 卷积结果
+  :param padding: 填充宽度
   """
+  if padding < 0 or stride[0] <= 0 or stride[1] <= 0:
+    raise ValueError('参数不合法')
   if matrix.shape[0] < kernel.shape[0] or matrix.shape[1] < kernel.shape[1]:
     raise ValueError('矩阵的形状小于卷积核的形状')
   return np.array([[np.sum(matrix[i:i + kernel.shape[0], j:j + kernel.shape[1]] * kernel) for j in
@@ -396,26 +400,57 @@ def matrixPooling(matrix: np.ndarray, pool: tuple = (2, 2), stride: tuple = (2, 
   """
   if matrix.shape[0] < pool[0] or matrix.shape[1] < pool[1]:
     raise ValueError('矩阵的形状小于池化核的形状')
-  if mode == 'max':
-    result = np.array([[np.max(matrix[i:i + pool[0], j:j + pool[1]])
-                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
-                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
-  elif mode == 'min':
-    result = np.array([[np.min(matrix[i:i + pool[0], j:j + pool[1]])
-                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
-                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
-  elif mode == 'avg':
-    result = np.array([[np.mean(matrix[i:i + pool[0], j:j + pool[1]])
-                        for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
-                       for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
-  else:
-    raise ValueError('池化模式错误')
+  call = {
+    'max': np.max,
+    'min': np.min,
+    'avg': np.mean
+  }
+  result = np.array([[call[mode](matrix[i:i + pool[0], j:j + pool[1]])
+                      for j in range(0, matrix.shape[1] - pool[1] + 1, stride[1])]
+                     for i in range(0, matrix.shape[0] - pool[0] + 1, stride[0])])
   return result
 
 
+def transposedConvolution(matrix: np.ndarray, kernel: np.ndarray, stride: int = 1, padding: int = 0):
+  """
+  转置卷积
+  :param matrix: 输入特征图
+  :param kernel: 转置卷积核
+  :param stride: 转置卷积步幅
+  :param padding: 转置卷积填充
+  :return: 输出特征图
+  """
+  if padding <= 0 or stride <= 0:
+    raise ValueError('参数不合法')
+  h_img, w_img = len(matrix), len(matrix[0])  # 输入特征图尺寸
+  k_size = len(kernel)  # 卷积核尺寸
+  expanded_rows = []
+  # 每行插入stride-1个零
+  for row in matrix:
+    new_row = []
+    for idx, val in enumerate(row):
+      new_row.append(val)
+      # 非最后一个元素，插入stride-1个零
+      if idx < len(row) - 1:
+        new_row.extend([0] * (stride - 1))
+    expanded_rows.append(new_row)
+  expanded_img = []
+  # 每行插入stride-1行零
+  for idx, row in enumerate(expanded_rows):
+    expanded_img.append(row)
+    # 非最后一行，插入stride-1行零
+    if idx < len(expanded_rows) - 1:
+      expanded_img.extend([[0] * len(row)] * (stride - 1))
+  # 转置卷积对应的标准卷积填充大小 = 卷积核尺寸 - 1 - 转置卷积填充
+  pad_size = k_size - 1 - padding
+  h_exp, w_exp = len(expanded_img), len(expanded_img[0]) if expanded_img else 0
+  expanded_img = matrixPadding(expanded_img, pad_size, 0)
+  return matrixConvolution(expanded_img, kernel, (stride, stride), pad_size)
+
+
 if __name__ == '__main__':
-  array16 = np.linspace(0, 1, 256).reshape((16, 16))
-  array8 = np.linspace(1, 0, 64).reshape((4, 16))
+  # array16 = np.linspace(0, 1, 256).reshape((16, 16))
+  # array8 = np.linspace(1, 0, 64).reshape((4, 16))
   # a = matrixCover(array16, array16, (4, 4))
   # a = matrixTile(array8, (2, 3))
   # print(a)
@@ -426,6 +461,7 @@ if __name__ == '__main__':
   # v = multipleLinearEquation(np.array([[2, 1], [1, 2]]), np.array([3, 5]))
   # print(v)
   array9 = np.arange(25).reshape((5, 5))
+  print("array9\n", array9)
   core = np.array([[1, 0], [0, 1]])
-  # print(matrixConvolution(array9, core))
-  print(matrixPooling(array9))
+  print("core\n", core)
+  print(transposedConvolution(array9, core, 2, 1))

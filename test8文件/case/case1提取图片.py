@@ -46,7 +46,7 @@ def pdfImage(pdfPath: str, outputFolder: str) -> list[str]:
     """
     pdf_document = fitz.open(pdfPath)
     if not os.path.exists(outputFolder):
-        os.makedirs(outputFolder)  # 创建输出文件夹
+        os.makedirs(outputFolder)
     imageFiles = []
     # 遍历每一页
     for page_num in range(len(pdf_document)):

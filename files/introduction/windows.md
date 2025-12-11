@@ -3,4 +3,4 @@
 <hr>
 
 
-- 输入 “C:\Windows\Fonts” 并回车，即可进入字体文件所在文件夹
+- C:\Windows\Fonts 字体文件夹
