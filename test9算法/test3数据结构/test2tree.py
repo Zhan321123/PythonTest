@@ -1,3 +1,17 @@
+"""
+树
+
+二叉树
+二叉搜索树/二叉查找树
+深度优先遍历
+  先序遍历/前序遍历（根 -> 左 -> 右）
+  后序遍历（左 -> 右 -> 根）
+  中序遍历（左 -> 根 -> 右）
+
+广度优先遍历（从上到下，从左到右）
+"""
+
+
 class MultiTreeNode:
   """
   多叉树
@@ -72,6 +86,22 @@ class MultiTreeNode:
 
   def __repr__(self):
     return f"TreeNode({self.value})"
+
+
+class SearchTreeNode:
+  """
+  二叉搜索树
+  """
+
+  def __init__(self, value):
+    self.value = value
+    # TODO
+
+class BTreeNode:
+  """
+  多路平衡查找树/B-树
+  TODO
+  """
 
 if __name__ == '__main__':
   minecraft = MultiTreeNode('minecraft')
