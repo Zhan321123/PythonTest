@@ -1,5 +1,4 @@
 <h1 style="text-align: center;">MySQL</h1>
-<hr>
 
 ```
 MySQL 服务器

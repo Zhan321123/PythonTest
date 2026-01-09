@@ -42,6 +42,7 @@ import re
 import shutil
 import time
 import os.path
+from typing import Union
 
 
 def getDesktopDir():
@@ -82,14 +83,23 @@ def walk(files: list):
     print('-')
 
 
-def getAllFiles(dirPath: str) -> [str]:
+def getAllFiles(dirPath: Union[str, pathlib.Path]) -> Union[list[str], list[pathlib.Path]]:
   """
   获取文件夹中下及其子孙文件夹下的所有文件路径
   不包含文件夹
   """
   result = []
+  path = False
+  # dir是空文件夹，直接返回
+  if os.path.isdir(dirPath) and not os.listdir(dirPath):
+    return result
+  if isinstance(dirPath, pathlib.Path):
+    path = True
   for dirs, dirlist, filelist in os.walk(dirPath):
-    result.extend([os.path.join(dirs, i) for i in filelist])
+    if path:
+      result.extend([pathlib.Path(os.path.join(dirs, i)) for i in filelist])
+    else:
+      result.extend([os.path.join(dirs, i) for i in filelist])
   return result
 
 
@@ -196,6 +206,7 @@ def increasePath(filePath: pathlib.Path) -> pathlib.Path:
     if not new_path.exists():
       return new_path
     current_number += 1
+
 
 if __name__ == '__main__':
   print(__file__)
