@@ -147,27 +147,6 @@ def enhanceDpi(img: Image.Image, savePath: str, dpi: Union[int, list[int, int]])
   img.save(savePath, quality=95, dpi=img.info["dpi"])
 
 
-def toGray(img: Image.Image, w=[0.299, 0.587, 0.114]) -> Image.Image:
-  """
-  将图片转为灰度图
-
-  :param img:
-  :param w: 颜色权重
-  :return:
-  """
-  if img.mode != 'RGB':
-    img = img.convert('RGB')
-  r, g, b = img.split()
-  r_np = np.array(r, dtype=np.float32)
-  g_np = np.array(g, dtype=np.float32)
-  b_np = np.array(b, dtype=np.float32)
-
-  gray_np = w[0] * r_np + w[1] * g_np + w[2] * b_np
-  gray_np = np.clip(gray_np, 0, 255)  # 确保灰度值在0-255范围内（截断超出部分）
-  gray_img = Image.fromarray(gray_np.astype(np.uint8), mode='L')  # 转换为8位整数（0-255）并转为PIL Image对象
-  return gray_img
-
-
 def mirrorLR(img: Image.Image) -> Image.Image:
   """
   水平镜像
@@ -229,28 +208,3 @@ def save(img: Image.Image, outputDir: Union[str, pathlib.Path], name: str):
 if __name__ == "__main__":
   file = "./file/brass_block.png"
   img = Image.open(file)
-  # printObject(img.palette)
-  # getInfo(img)
-  # pixels = getPixelData(img)
-  # print(pixels)
-
-  # show(pixels)
-
-  fig, axs = plt.subplots(3, 3)
-  axs = axs.flatten()
-  ri, gi, bi = getRgbChanelImages(img)
-  show(ri, axs[0])
-  show(gi, axs[1])
-  show(bi, axs[2])
-  show(img, axs[4])
-  save(ri, "./file", "r.png")
-  save(gi, "./file", "g.png")
-  save(bi, "./file", "b.png")
-  gray = toGray(img.copy())
-  printImage(gray)
-  show(gray, axs[3])
-  mlr = mirrorLR(img)
-  show(mlr, axs[5])
-  mud = mirrorUD(img)
-  show(mud, axs[6])
-  plt.show()

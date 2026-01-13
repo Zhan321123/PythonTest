@@ -141,14 +141,23 @@ def copyFile(filePath: str, newDirPath: str, newName: str = None) -> bool:
     return True
 
 
-def renameFile(oldFilePath: str, newFileName: str) -> bool:
-  """重命名文件"""
+def renameFileWithOnlyName(oldFilePath: Union[pathlib.Path, str], newFileName: str) -> bool:
+  """
+  重命名文件
+
+  :param oldFilePath:
+  :param newFileName: 新文件名称，不包含路径
+  :return:
+  """
   if not os.path.exists(oldFilePath):
     print(f'{oldFilePath}不存在')
     return False
-  os.rename(oldFilePath, os.path.join(os.path.dirname(oldFilePath), newFileName))
-  print(f'重命名文件{oldFilePath}为{newFileName}成功')
-  return True
+  try:
+    os.rename(oldFilePath, os.path.join(os.path.dirname(oldFilePath), newFileName))
+    print(f'重命名文件{oldFilePath}为{newFileName}成功')
+    return True
+  except PermissionError:
+    print(f'修改{oldFilePath}文件名失败')
 
 
 def copyDir(oldDirPath: str, newDirPath: str) -> bool:

@@ -44,15 +44,15 @@ $	匹配字符串结尾
 
 import re
 
-p1 = '\d\.\d+'
-s = '2.21, I am study python 3.9.0 today'
+pattern = r".*_\d+\.png$"
+s = r'xp_crystal_0.png'
 # match只查找开头，没有则返回None
-print(re.match(p1, s))
+print(re.match(pattern, s))
 # search从开头开始查找，查到一个为止
-print(re.search(p1, s, re.I))
+print(re.search(pattern, s, re.I))
 # findall查找所有,返回列表
-print(re.findall(p1,s))
+print(re.findall(pattern,s))
 # sub替换，常用于隐藏和屏蔽
-print(re.sub(p1,'***',s))
+print(re.sub(pattern,'***',s))
 # split分割
-print(re.split(p1,s))
+print(re.split(pattern,s))

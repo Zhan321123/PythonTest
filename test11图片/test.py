@@ -1,21 +1,22 @@
-from test1ImageInfo import *
-from test9算法.test1数据计算.test8矩阵 import *
+import numpy as np
+from PIL import Image
 
-img = Image.open("file/ruby.png")
+from init import Root
+from test1python基础.test1.test35类属性 import printObject
 
-r, g, b = img.split()
-r, g, b = getPixelData(r), getPixelData(g), getPixelData(b)
-r = [[i[0] for i in j] for j in r]
-g = [[i[0] for i in j] for j in g]
-b = [[i[0] for i in j] for j in b]
-r, g, b = np.array(r), np.array(g), np.array(b)
-
-r = matrixPooling(r, (2**7, 2**7), (2**7, 2**7), 'min')
-g = matrixPooling(g, (2**7, 2**7), (2**7, 2**7), 'min')
-b = matrixPooling(b, (2**7, 2**7), (2**7, 2**7), 'min')
-
-new = [[(r[i][j], g[i][j], b[i][j]) for j in range(len(r[0]))] for i in range(len(r))]
-img = drawPixel(new)
-fig, axs = plt.subplots(1, 1)
-show(img, axs)
-plt.show()
+file2 = Root / 'test11图片/typicalImage/old.png'
+image3 = Image.open(file2)
+print(image3.mode)
+printObject(image3)
+printObject(image3.palette)
+printObject(image3.png)
+print(image3.getpalette())
+print(len(image3.getpalette()))
+print(np.array(image3))
+# image3 = image3.convert(
+#   'I',
+#   dither=Image.Dither.NONE,
+#   # palette=Image.Palette.ADAPTIVE,
+#   # colors=len(set(image3.getdata()))
+# )
+# image3.save(Root / 'test11图片/typicalImage/L.png', format='png', optimize=True, compress_level=9)
